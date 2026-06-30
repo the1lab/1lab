@@ -36,6 +36,7 @@ record is-connected-groupoid {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) 
 
 <!--
 ```agda
+{-# INLINE is-connected-groupoid.constructor #-}
 open is-connected-groupoid
 
 private unquoteDecl eqv = declare-record-iso eqv (quote is-connected-groupoid)
@@ -72,16 +73,17 @@ module _ {o ℓ} {C : Precategory o ℓ} (gpd : is-pregroupoid C) where
   mk-connected-groupoid
     : (c : Ob) → (∀ x → Hom c x)
     → is-connected-groupoid C
-  mk-connected-groupoid c paths .point = inc c
-  mk-connected-groupoid c paths .path x y =
-    inc (paths y ∘ gpd (paths x) .is-invertible.inv)
+  {-# INLINE mk-connected-groupoid #-}
+  mk-connected-groupoid c paths = record where
+    point = inc c
+    path x y = inc (paths y ∘ gpd (paths x) .is-invertible.inv)
 
 mk-connected-cat
   : ∀ {o ℓ} {C : Precategory o ℓ} (open Precategory C)
   → (c : Ob) → (∀ x → Meander C c x)
   → is-connected-cat C
-mk-connected-cat {C = C} =
-  mk-connected-groupoid (Free-groupoid-is-groupoid C)
+{-# INLINE mk-connected-cat #-}
+mk-connected-cat {C = C} = mk-connected-groupoid (Free-groupoid-is-groupoid C)
 ```
 
 As a simple example, any category with an initial or terminal object is
