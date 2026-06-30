@@ -62,16 +62,16 @@ selects its second argument.
 ```agda
 abstract
   `true↓₁ : ⌞ a ⌟ → ⌞ `true ⋆ a ⌟
-  `true↓₁ x = subst ⌞_⌟ (sym (abs-βₙ [] ((_ , x) ∷ []))) (abs↓ _ _)
+  `true↓₁ x = subst ⌞_⌟ (sym (abs-βₙ []v ((_ , x) ∷v []v))) (abs↓ _ _)
 
   `false↓₁ : ⌞ a ⌟ → ⌞ `false ⋆ a ⌟
-  `false↓₁ ah = subst ⌞_⌟ (sym (abs-βₙ [] ((_ , ah) ∷ []))) (abs↓ _ _)
+  `false↓₁ ah = subst ⌞_⌟ (sym (abs-βₙ []v ((_ , ah) ∷v []v))) (abs↓ _ _)
 
   `true-β : ⌞ a ⌟ → ⌞ b ⌟ → `true ⋆ a ⋆ b ≡ a
-  `true-β {a} {b} ah bh = abs-βₙ [] ((b , bh) ∷ (a , ah) ∷ [])
+  `true-β {a} {b} ah bh = abs-βₙ []v ((b , bh) ∷v (a , ah) ∷v []v)
 
   `false-β : ⌞ a ⌟ → ⌞ b ⌟ → `false ⋆ a ⋆ b ≡ b
-  `false-β {a} {b} ah bh = abs-βₙ [] ((b , bh) ∷ (a , ah) ∷ [])
+  `false-β {a} {b} ah bh = abs-βₙ []v ((b , bh) ∷v (a , ah) ∷v []v)
 ```
 
 We can define negation using `` `if_then_else_ ``{.Agda}, and show that
@@ -83,8 +83,8 @@ it computes as expected.
 
 abstract
   `not-βt : `not ⋆ `true ≡ `false .fst
-  `not-βt = abs-β _ [] `true ∙ abs-βₙ [] (`true ∷ `false ∷ [])
+  `not-βt = abs-β _ []v `true ∙ abs-βₙ []v (`true ∷v `false ∷v []v)
 
   `not-βf : `not ⋆ `false ≡ `true .fst
-  `not-βf = abs-β _ [] `false ∙ abs-βₙ [] (`true ∷ `false ∷ [])
+  `not-βf = abs-β _ []v `false ∙ abs-βₙ []v (`true ∷v `false ∷v []v)
 ```

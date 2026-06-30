@@ -10,7 +10,7 @@ open import Cat.Prelude
 
 open import Data.Partial.Total
 open import Data.Partial.Base
-open import Data.Vec.Base using ([] ; _∷_)
+open import Data.Vec.Base using ([]v ; _∷v_)
 
 open import Realisability.PCA
 
@@ -156,7 +156,7 @@ tracked by the constant function with value $\sf{x}$.
 !Asm {X = X} = to-assembly-hom record where
   map    _  = lift tt
   realiser  = val ⟨ x ⟩ x
-  tracks ha = subst ⌞_⌟ (sym (abs-β _ [] (_ , X .def ha))) (X .def ha)
+  tracks ha = subst ⌞_⌟ (sym (abs-β _ []v (_ , X .def ha))) (X .def ha)
 ```
 
 <!--
@@ -191,7 +191,7 @@ Assemblies-equalisers f g .apex = Equ-asm f g
 Assemblies-equalisers {a = A} f g .equ = to-assembly-hom record where
   map (x , _) = x
   realiser    = val ⟨ x ⟩ x
-  tracks ha   = subst⊩ A ha (abs-β _ [] (_ , A .def ha))
+  tracks ha   = subst⊩ A ha (abs-β _ []v (_ , A .def ha))
 Assemblies-equalisers f g .has-is-eq .equal = ext λ x p → p
 ```
 

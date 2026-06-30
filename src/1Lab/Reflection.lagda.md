@@ -31,7 +31,7 @@ open import Meta.Alt public
 
 open Data.Product.NAry using ([_]) public
 open Data.List.Base hiding (lookup ; tabulate) public
-open Data.Vec.Base using (Vec ; [] ; _∷_ ; lookup ; tabulate) public
+open Data.Vec.Base hiding (_++_ ; tail ; head; zero; suc; zip; zip-with) public
 open Data.Bool.Base public
 open Data.Dec.Base public
 
