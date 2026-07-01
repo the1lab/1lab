@@ -4,12 +4,12 @@ open import Algebra.Monoid using (is-monoid)
 
 open import Cat.Displayed.Functor.Equivalence
 open import Cat.Monoidal.Instances.Cartesian
-open import Cat.Displayed.Univalence.Thin
 open import Cat.Displayed.Functor
 open import Cat.Bi.Diagram.Monad
 open import Cat.Monoidal.Functor
 open import Cat.Displayed.Base
 open import Cat.Displayed.Path
+open import Cat.Displayed.Thin
 open import Cat.Monoidal.Base
 open import Cat.Bi.Base
 open import Cat.Prelude
@@ -228,7 +228,7 @@ unquoteDecl H-Level-is-monoid-hom = declare-record-hlevel 1 H-Level-is-monoid-ho
 
 private
   Mon : ∀ {ℓ} → Displayed (Sets ℓ) _ _
-  Mon = Thin-structure-over (Mon.Monoid-structure _)
+  Mon = Thin-structure→displayed (Mon.Monoid-structure _)
 ```
 -->
 
@@ -282,7 +282,7 @@ into an identification.
   fiso T .from m .μ-unitl = funext λ _ → m .idl
   fiso T .from m .μ-unitr = funext λ _ → m .idr
   fiso T .from m .μ-assoc = funext λ _ → m .associative
-  fiso T .rinv x = Mon.Monoid-structure _ .id-hom-unique
+  fiso T .rinv x = Mon.Monoids-univalent .is-univalent-structure.id-hom-unique
     (record { pres-id = refl ; pres-⋆ = λ _ _ → refl })
     (record { pres-id = refl ; pres-⋆ = λ _ _ → refl })
   fiso T .linv m = Monoid-pathp Setsₓ refl refl

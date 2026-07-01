@@ -11,7 +11,6 @@ open import Algebra.Monoid
 open import Algebra.Group
 
 open import Cat.Instances.Sets.Congruences
-open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Hom.Representable
 open import Cat.Instances.Sets.Cocomplete
 open import Cat.Functor.Equivalence.Path
@@ -32,6 +31,7 @@ open import Cat.Functor.Adjoint
 open import Cat.Functor.Compose
 open import Cat.Instances.Slice
 open import Cat.Displayed.Base
+open import Cat.Displayed.Thin
 open import Cat.Functor.Closed
 open import Cat.Instances.Sets
 open import Cat.Univalent.Rezk
@@ -999,12 +999,12 @@ closely-related notion of [allegory].
 ```agda
 _ = Structured-objects-is-category
 _ = is-category-total
-_ = Thin-structure-over
+_ = Thin-structure→displayed
 _ = Displayed
 ```
 -->
 
-* Definition 9.8.1: `Thin-structure-over`{.Agda}, generalised into `Displayed`{.Agda}
+* Definition 9.8.1: `Thin-structure→displayed`{.Agda}, generalised into `Displayed`{.Agda}
 * Theorem 9.8.2: `Structured-objects-is-category`{.Agda}, generalised into `is-category-total`{.Agda}
 
 ### 9.9: The Rezk completion

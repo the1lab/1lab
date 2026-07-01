@@ -1,8 +1,8 @@
 <!--
 ```agda
-open import Cat.Displayed.Univalence.Thin
 open import Cat.Diagram.Coproduct
 open import Cat.Displayed.Total
+open import Cat.Displayed.Thin
 open import Cat.Instances.OFE
 open import Cat.Prelude
 

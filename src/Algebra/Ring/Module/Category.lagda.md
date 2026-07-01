@@ -9,7 +9,6 @@ open import Algebra.Group.Ab
 open import Algebra.Group
 open import Algebra.Ring
 
-open import Cat.Displayed.Univalence.Thin
 open import Cat.Abelian.Instances.Ab
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
@@ -28,7 +27,6 @@ private module R = Ring-on (R .snd)
 open Ab-category hiding (_+_)
 open is-additive hiding (_+_)
 open make-abelian-group
-open ∫Hom
 
 open Module-notation ⦃ ... ⦄
 open Additive-notation ⦃ ... ⦄

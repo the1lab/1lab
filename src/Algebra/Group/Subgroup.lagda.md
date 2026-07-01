@@ -7,6 +7,7 @@ open import Algebra.Group
 open import Cat.Diagram.Equaliser.Kernel
 open import Cat.Diagram.Coequaliser
 open import Cat.Diagram.Equaliser
+open import Cat.Displayed.Thin
 open import Cat.Diagram.Zero
 open import Cat.Prelude
 
