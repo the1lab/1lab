@@ -16,6 +16,7 @@
 html {
   height: 100%;
   margin: 0;
+  overscroll-behavior-y: none;
 
   background-color: theme(--text-bg);
   color:            theme(--text-fg);

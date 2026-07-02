@@ -62,9 +62,10 @@ of @CCHM), and freely assume [[**propositional resizing**]].
 Since the size of the library may make jumping into a particular topic
 slightly daunting, we have put a lot of effort into making entry points
 accessible as well. The simplest way to find something is by searching
-for it. You can hit <kbd>Ctrl+K</kbd>/<kbd>Cmd+K</kbd> to bring up the
-search prompt, as long as you have JavaScript enabled. Anything that has
-a name can be searched for:
+for it. As long you have JavaScript enabled, you can bring up the search
+by hitting <kbd>Ctrl+K</kbd>/<kbd>Cmd+K</kbd> on desktop or pulling down
+at the top of the page on mobile. Anything that has a name can be
+searched for:
 
 - Pages can be looked up by their module name (e.g. _[Algebra.Ring]_),
   or by their title (e.g. _[Abelian groups]_). These are organised
