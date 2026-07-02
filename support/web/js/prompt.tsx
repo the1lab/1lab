@@ -369,6 +369,29 @@ document.addEventListener("DOMContentLoaded", () => {
       closeSearch();
     }
   });
+
+  // Pull down for search on touch screen devices
+  let touchStartY = 0;
+  let isPulldown = false;
+
+  document.addEventListener("touchstart", e => {
+    touchStartY = e.touches[0].clientY;
+    isPulldown = false;
+  });
+
+  document.addEventListener("touchmove", e => {
+    const touchY = e.touches[0].clientY;
+    if (touchY > touchStartY) {
+      isPulldown = true;
+    }
+  })
+
+  document.addEventListener("touchend", e => {
+    if (isPulldown && !isSearching() && window.scrollY <= 0) {
+      e.preventDefault();
+      startSearch();
+    }
+  })
 });
 
 export { };
