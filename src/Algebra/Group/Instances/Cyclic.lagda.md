@@ -148,18 +148,17 @@ module _
   where
 
   ℤ/-out : Groups.Hom (Lift-group ℓ (ℤ/ n)) G
-  ℤ/-out .fst (lift i) = Coeq-rec (apply x^- ⊙ lift) (λ (a , b , n∣a-b) → zero-diff $
-    let k , k*n≡a-b = ∣ℤ→fibre n∣a-b in
-    x^ a — x^ b          ≡˘⟨ pres-diff (x^- .snd) {lift a} {lift b} ⟩
-    x^ (a -ℤ b)          ≡˘⟨ ap x^_ k*n≡a-b ⟩
-    x^ (k *ℤ pos n)      ≡⟨ ap x^_ (*ℤ-commutative k (pos n)) ⟩
-    x^ (pos n *ℤ k)      ≡⟨ pow-* G x (pos n) k ⟩
-    pow G ⌜ x^ pos n ⌝ k ≡⟨ ap! wraps ⟩
-    pow G unit k         ≡⟨ pow-unit G k ⟩
-    unit                 ∎)
-    i
-  ℤ/-out .snd .pres-⋆ = elim! λ x y →
-    x^- .snd .pres-⋆ (lift x) (lift y)
+  ℤ/-out .fst (lift i) = Coeq-rec (apply x^- ⊙ lift) coh i where abstract
+    coh : ((a , b , _) : Σ[ a ∈ Int ] Σ[ b ∈ Int ] n ∣ℤ (a -ℤ b)) → x^ a ≡ x^ b
+    coh (a , b , n∣a-b) using k , k*n≡a-b ← ∣ℤ→fibre n∣a-b = zero-diff $
+      x^ a — x^ b          ≡˘⟨ pres-diff (x^- .snd) {lift a} {lift b} ⟩
+      x^ (a -ℤ b)          ≡˘⟨ ap x^_ k*n≡a-b ⟩
+      x^ (k *ℤ pos n)      ≡⟨ ap x^_ (*ℤ-commutative k (pos n)) ⟩
+      x^ (pos n *ℤ k)      ≡⟨ pow-* G x (pos n) k ⟩
+      pow G ⌜ x^ pos n ⌝ k ≡⟨ ap! wraps ⟩
+      pow G unit k         ≡⟨ pow-unit G k ⟩
+      unit                 ∎
+  ℤ/-out .snd .pres-⋆ = elim! λ x y → x^- .snd .pres-⋆ (lift x) (lift y)
 ```
 
 We can check that $\ZZ/0\ZZ \is \ZZ$:

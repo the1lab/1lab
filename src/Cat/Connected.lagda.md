@@ -160,7 +160,7 @@ a zigzag.
     is .snd .is-iso.linv = elim! λ _ → refl
 
     conn : is-connected-cat C
-    conn .point = rec! inc (π₀-contr .centre)
+    conn .point = case π₀-contr .centre of λ { .inc* → inc }
     conn .path x y = effective R
       (is-contr→is-prop (Iso→is-hlevel 0 is π₀-contr) (inc x) (inc y))
 

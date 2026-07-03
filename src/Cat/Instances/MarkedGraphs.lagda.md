@@ -323,21 +323,16 @@ $G$ quotiented by the aforementioned closure.
 ```agda
   Marked-path-category : Precategory o (o ⊔ ℓ)
   Marked-path-category .Precategory.Ob = G.Node
-  Marked-path-category .Precategory.Hom x y =
-    Path-in G.graph x y / Marking
+  Marked-path-category .Precategory.Hom x y = Path-in G.graph x y / Marking
   Marked-path-category .Precategory.Hom-set _ _ = hlevel 2
   Marked-path-category .Precategory.id = inc nil
-  Marked-path-category .Precategory._∘_ =
-    Quot-op₂
-      (λ _ → reflexive) (λ _ → reflexive)
-      (flip _++_)
-      (λ p q r s p~q r~s → congruent r~s p~q)
-  Marked-path-category .Precategory.idr =
-    elim! λ p → refl
-  Marked-path-category .Precategory.idl =
-    elim! λ p → ap inc (++-idr p)
-  Marked-path-category .Precategory.assoc =
-    elim! λ p q r → ap inc (++-assoc r q p)
+  Marked-path-category .Precategory._∘_ = Quot-op₂
+    (λ _ → reflexive) (λ _ → reflexive)
+    (flip _++_)
+    (λ p q r s p~q r~s → congruent r~s p~q)
+  Marked-path-category .Precategory.idr   = elim! λ p → refl
+  Marked-path-category .Precategory.idl   = elim! λ p → ap inc (++-idr p)
+  Marked-path-category .Precategory.assoc = elim! λ p q r → ap inc (++-assoc r q p)
 ```
 
 Proving that this construction is free involves a bit more work.

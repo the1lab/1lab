@@ -1,7 +1,5 @@
 <!--
 ```agda
-open import 1Lab.Reflection.Copattern
-
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Displayed.Cocartesian.Weak
 open import Cat.Displayed.Instances.Slice

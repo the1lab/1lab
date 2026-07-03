@@ -1,7 +1,5 @@
 <!--
 ```agda
-open import 1Lab.Reflection.Copattern
-
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Displayed.GenericObject
 open import Cat.Instances.Sets.Complete
