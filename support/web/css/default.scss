@@ -452,6 +452,17 @@ kbd {
   }
 }
 
+#article-nav-left {
+  display: flex;
+  gap: 16px;
+}
+
+#narrow-search-btn {
+  background-color: transparent;
+  border: none;
+  font-size: 24px;
+}
+
 
 @include mixins.widescreen {
   .narrow-only {

@@ -352,7 +352,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("search-box-proxy")?.addEventListener("focus", () => startSearch())
-  document.getElementById("narrow-search-box-proxy")?.addEventListener("focus", () => startSearch())
+  document.getElementById("narrow-search-btn")?.addEventListener("click", () => startSearch())
 
 
   document.addEventListener("keydown", e => {

@@ -51,7 +51,7 @@
         display: none;
       }
 
-      .search-form {
+      .js-only {
         display: none !important;
       }
     </style>
@@ -97,7 +97,7 @@
           $endif$
 
           <!-- Navbar navigation (lol) -->
-          <div class="search-form search-form-proxy mathpar" role="form">
+          <div class="search-form search-form-proxy mathpar js-only" role="form">
             <input id="search-box-proxy" type_="text" placeholder="Search..." autocomplete="off" tabindex="0" />
           </div>
 
@@ -121,18 +121,16 @@
       <article>
         <!-- Article navigation (narrow screens only) -->
         <div class="narrow-only" id="article-nav">
-          <!-- Index return anchor (only if the page is not the index) -->
-          $if(is-index)$
-          $else$
-          <noscript>
-            <div id=return>
-              <a href="$base-url$/">back to index</a>
+          <div id="article-nav-left">
+            <div class="mathpar">
+              <a id=logo href="$base-url$/">
+                <img alt="1Lab" src="$base-url$/static/cube-72x.png" style="display: block; margin-bottom: 1em; margin: auto;"
+                  width="32px" height="32px" />
+              </a>
             </div>
-          </noscript>
-          $endif$
-
-          <div class="search-form search-form-proxy mathpar" role="form">
-            <input id="narrow-search-box-proxy" type_="text" placeholder="Search..." autocomplete="off" tabindex="0" />
+            <div class="mathpar js-only">
+              <button id="narrow-search-btn">🔍</button>
+            </div>
           </div>
 
           <!-- Navbar equations control -->
