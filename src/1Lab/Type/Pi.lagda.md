@@ -67,6 +67,29 @@ codomain of a dependent function by an equivalence across universe levels:
   equiv-path (k x) (f {x}) (g {x} , λ k → p k {x}) i .snd j
 ```
 
+<!--
+```agda
+Π-ap-cod₂
+  : ∀ {ℓa ℓb ℓp ℓq}
+  → {A : Type ℓa} {B : A → Type ℓb}
+  → {P : (a : A) → B a → Type ℓp}
+  → {Q : (a : A) → B a → Type ℓq}
+  → (∀ (a : A) → (b : B a) → P a b ≃ Q a b)
+  → (∀ (a : A) (b : B a) → P a b) ≃ (∀ (a : A) (b : B a) → Q a b)
+Π-ap-cod₂ e = Π-ap-cod λ x → Π-ap-cod (e x)
+
+Π-ap-cod₃
+  : ∀ {ℓa ℓb ℓc ℓp ℓq}
+  → {A : Type ℓa} {B : A → Type ℓb} {C : (a : A) → B a → Type ℓc}
+  → {P : (a : A) (b : B a) → C a b → Type ℓp}
+  → {Q : (a : A) (b : B a) → C a b → Type ℓq}
+  → (∀ (a : A) (b : B a) (c : C a b) → P a b c ≃ Q a b c)
+  → (∀ (a : A) (b : B a) (c : C a b) → P a b c) ≃ (∀ (a : A) (b : B a) (c : C a b) → Q a b c)
+Π-ap-cod₃ e = Π-ap-cod λ x → Π-ap-cod₂ (e x)
+```
+-->
+
+
 For non-dependent functions, we can easily perturb both domain and
 codomain:
 
@@ -282,5 +305,15 @@ flip f b a = f a b
 Π²-impl≃ .fst f = f _ _
 Π²-impl≃ .snd .is-eqv f .centre = strict-fibres (λ f _ _ → f) (λ {a} {b} → f {a} {b}) .fst
 Π²-impl≃ .snd .is-eqv f .paths  = strict-fibres (λ f _ _ → f) (λ {a} {b} → f {a} {b}) .snd
+
+const-fibre-prop≃
+  : ∀ {ℓa ℓb} {A : Type ℓa} {B : Type ℓb}
+  → is-prop A
+  → (a a' : A)
+  → fibre (λ (b : B) → a) a' ≃ B
+const-fibre-prop≃ {B = B} A-prop a a' =
+  fibre (λ b → a) a' ≃⟨⟩
+  B × a ≡ a'         ≃⟨ Σ-contr-snd (λ b → Path-is-hlevel' zero A-prop a a') ⟩
+  B                  ≃∎
 ```
 -->
