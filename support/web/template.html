@@ -50,6 +50,10 @@
       body span.reasoning-step .alternate {
         display: none;
       }
+
+      .search-form {
+        display: none !important;
+      }
     </style>
   </noscript>
 
@@ -120,10 +124,16 @@
           <!-- Index return anchor (only if the page is not the index) -->
           $if(is-index)$
           $else$
-          <div id=return>
-            <a href="$base-url$/">back to index</a>
-          </div>
+          <noscript>
+            <div id=return>
+              <a href="$base-url$/">back to index</a>
+            </div>
+          </noscript>
           $endif$
+
+          <div class="search-form search-form-proxy mathpar" role="form">
+            <input id="narrow-search-box-proxy" type_="text" placeholder="Search..." autocomplete="off" tabindex="0" />
+          </div>
 
           <!-- Navbar equations control -->
           <span class="equations" style="display: flex; gap: 0.25em; flex-wrap: nowrap;">
