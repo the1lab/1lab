@@ -153,17 +153,18 @@ constitutes a natural isomorphism.
 
 ```agda
   nat : F => よ₀ C (top .fst)
-  nat .η ob section = has⊤ (elem ob section) .centre .hom
-  nat .is-natural x y f = funext λ sect → ap hom $ has⊤ _ .paths $ elem-hom _ $
-    F.₁ (has⊤ _ .centre .hom C.∘ f) (top .snd)   ≡⟨ happly (F.F-∘ _ _) _ ⟩
-    F.₁ f (F.₁ (has⊤ _ .centre .hom) (top .snd)) ≡⟨ ap (F.₁ f) (has⊤ _ .centre .commute) ⟩
-    F.₁ f sect                                   ∎
+  nat .η ob section = ! {elem ob section} .hom
+  -- has⊤ (elem ob section) .centre .hom
+  nat .is-natural x y f = funext λ sect → ap hom $ sym $ !-unique $ elem-hom _ $
+    F.₁ (! .hom C.∘ f) (top .snd)   ≡⟨ happly (F.F-∘ _ _) _ ⟩
+    F.₁ f (F.₁ (! .hom) (top .snd)) ≡⟨ ap (F.₁ f) (! .commute) ⟩
+    F.₁ f sect                      ∎
 
   inv : ∀ x → Sets.is-invertible (nat .η x)
   inv x = Sets.make-invertible
     (λ f → F.₁ f (top .snd))
-    (funext λ x → ap hom $ has⊤ _ .paths (elem-hom x refl))
-    (funext λ x → has⊤ _ .centre .commute)
+    (funext λ x → ap hom $  sym (!-unique (elem-hom x refl)))
+    (funext λ x → ! .commute)
 
   f-rep : Representation F
   f-rep .rep = top .fst
@@ -178,30 +179,26 @@ identity on the representing object.
 representation→terminal-element
   : {F : Functor (C ^op) (Sets κ)}
   → Representation F → Terminal (∫ C F)
-representation→terminal-element {F} F-rep = term where
-  module F = Functor F
-  module R = rep F-rep
-  open Terminal
-
-  term : Terminal (∫ C F)
-  term .top .fst = F-rep .rep
-  term .top .snd = R.from .η _ C.id
-  term .has⊤ (elem o s) .centre .hom = R.to .η _ s
-  term .has⊤ (elem o s) .centre .commute =
-    F.₁ (R.to .η o s) (R.from .η _ C.id) ≡˘⟨ R.from .is-natural _ _ _ $ₚ _ ⟩
-    R.from .η _ ⌜ C.id C.∘ R.to .η o s ⌝ ≡⟨ ap! (C.idl _) ⟩
-    R.from .η _ (R.to .η o s)            ≡⟨ unext R.invr o s ⟩
-    s                                    ∎
-  term .has⊤ (elem o s) .paths h = ext $
-    R.to .η o ⌜ s ⌝                  ≡˘⟨ ap¡ comm ⟩
-    R.to .η o (R.from .η _ (h .hom)) ≡⟨ unext R.invl o _ ⟩
-    h .hom                           ∎
-    where
-      comm =
-        R.from .η _ ⌜ h .hom ⌝          ≡˘⟨ ap¡ (C.idl _) ⟩
-        R.from .η _ (C.id C.∘ h .hom)   ≡⟨ R.from .is-natural _ _ _ $ₚ _ ⟩
-        F.₁ (h .hom) (R.from .η _ C.id) ≡⟨ h .commute ⟩
-        s                               ∎
+{-# INLINE representation→terminal-element #-}
+representation→terminal-element {F} F-rep = record
+  { top = rep F-rep , R.from .η (rep F-rep) C.id
+  ; has-is-term = record
+    { ! = λ {x} → elem-hom (R.to .η _ (x .snd)) $
+      F.₁ (R.to .η _ _) (R.from .η _ C.id) ≡˘⟨ R.from .is-natural _ _ _ $ₚ _ ⟩
+      R.from .η _ ⌜ C.id C.∘ R.to .η _ _ ⌝ ≡⟨ ap! (C.idl _) ⟩
+      R.from .η _ (R.to .η _ _)            ≡⟨ unext R.invr (x .fst) (x .snd) ⟩
+      x .snd                               ∎
+    ; !-unique = λ {x} h → ext $
+      h .hom ≡˘⟨ unext R.invl _ _ ⟩
+      R.to .η _ (R.from .η _ (h .hom))            ≡˘⟨ ap (R.to .η _ ⊙ R.from .η _) (C.idl (h .hom)) ⟩
+      R.to .η _ (R.from .η _ (C.id C.∘ h .hom))   ≡⟨ ap (R.to .η _) (R.from .is-natural _ _ _ $ₚ _)  ⟩
+      R.to .η _ (F.₁ (h .hom) (R.from .η _ C.id)) ≡⟨ ap (R.to .η _) (h .commute) ⟩
+      R.to .η _ (x .snd) ∎
+    }
+  }
+  where
+    module F = Functor F
+    module R = rep F-rep
 ```
 
 ## Universal constructions
@@ -221,10 +218,14 @@ terminal object.
 
 ```agda
 representable-unit→terminal
-  : Representation (Const (el (Lift _ ⊤) (hlevel 2))) → Terminal C
-representable-unit→terminal repr .Terminal.top = repr .rep
-representable-unit→terminal repr .Terminal.has⊤ ob = retract→is-contr
-  (Rep.from repr) (λ _ → lift tt) (Rep.η repr) (hlevel 0)
+  : Representation (Const (el! (Lift _ ⊤)))
+  → Terminal C
+{-# INLINE representable-unit→terminal #-}
+representable-unit→terminal repr = record
+  { top = rep repr
+  ; has-is-term = hom-contr→is-terminal $ λ x →
+    retract→is-contr (Rep.from repr) (λ _ → lift tt) (Rep.η repr) (hlevel 0)
+  }
 ```
 
 This can be seen as a special case of the construction [above](#as-terminal-objects):

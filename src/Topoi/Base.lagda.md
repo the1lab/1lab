@@ -22,6 +22,7 @@ open import Cat.Instances.Elements
 open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
 open import Cat.Diagram.Pullback
+open import Cat.Diagram.Terminal
 open import Cat.Functor.Pullback
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Slice
@@ -322,11 +323,12 @@ limits directly for efficiency concerns. </summary>
 [adjoint equivalence]: Cat.Functor.Equivalence.html
 
 ```agda
-  sets .L-lex .pres-⊤ {T} psh-terminal set = contr (cent .η _) uniq where
-    func = incl .F₀ set
-    cent = psh-terminal func .centre
-    uniq : ∀ f → cent .η _ ≡ f
-    uniq f = psh-terminal func .paths f' ηₚ _ where
+  sets .L-lex .pres-⊤ {T} psh-terminal = term' where
+    open is-terminal
+
+    term' : is-terminal (Sets κ) _
+    term' .! {X} = psh-terminal .! {incl .F₀ X} .η _
+    term' .!-unique f = psh-terminal .!-unique f' ηₚ _ where
       f' : _ => _
       f' .η _ = f
       f' .is-natural _ _ _ = funext λ x → happly (sym (T .F-id)) _
@@ -677,7 +679,7 @@ The composition of two left-exact functors is again left-exact, so
 there's no impediment to composition there, either.
 
 ```agda
-  mk .Inv-lex .pres-⊤ term ob = g.Inv-lex .pres-⊤ (f.Inv-lex .pres-⊤ term) _
+  mk .Inv-lex .pres-⊤ term = g.Inv-lex .pres-⊤ (f.Inv-lex .pres-⊤ term)
   mk .Inv-lex .pres-pullback pb = g.Inv-lex .pres-pullback (f.Inv-lex .pres-pullback pb)
 ```
 

@@ -71,9 +71,8 @@ Zero-group-is-initial (_ , G) .paths x =
   ext λ _ → sym (is-group-hom.pres-id (x .snd))
 
 Zero-group-is-terminal : is-terminal (Groups ℓ) Zero-group
-Zero-group-is-terminal _ .centre =
-  ∫hom (λ _ → lift tt) record { pres-⋆ = λ _ _ _ → lift tt }
-Zero-group-is-terminal _ .paths x = ext λ _ → refl
+Zero-group-is-terminal .is-terminal.! = ∫hom (λ _ → lift tt) (record { pres-⋆ = λ _ _ → refl })
+Zero-group-is-terminal .is-terminal.!-unique h = ext λ _ → refl
 
 Zero-group-is-zero : is-zero (Groups ℓ) Zero-group
 Zero-group-is-zero = record
@@ -255,7 +254,7 @@ Groups-finitely-complete = with-equalisers (Groups ℓ) top prod Groups-equalise
   where
     top : Terminal (Groups ℓ)
     top .Terminal.top = Zero-group
-    top .Terminal.has⊤ = Zero-group-is-terminal
+    top .Terminal.has-is-term = Zero-group-is-terminal
 
     prod : ∀ A B → Product (Groups ℓ) A B
     prod A B .Product.apex = Direct-product A B

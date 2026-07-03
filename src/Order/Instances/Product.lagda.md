@@ -98,7 +98,7 @@ the set with one element is the [[terminal object]] in $\Pos$.
 ```agda
 Posets-terminal : ∀ {o ℓ} → Terminal (Posets o ℓ)
 Posets-terminal .top = 𝟙ᵖ
-Posets-terminal .has⊤ P .centre .hom    _ = lift tt
-Posets-terminal .has⊤ P .centre .pres-≤ _ = lift tt
-Posets-terminal .has⊤ P .paths f = ext λ _ → refl
+Posets-terminal .has-is-term .is-terminal.! .hom x = lift tt
+Posets-terminal .has-is-term .is-terminal.! .pres-≤ _ = lift tt
+Posets-terminal .has-is-term .is-terminal.!-unique h = ext λ _ → refl
 ```

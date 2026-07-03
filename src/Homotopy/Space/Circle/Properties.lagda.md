@@ -9,6 +9,8 @@ open import Algebra.Group.Cat.Base
 open import Algebra.Group.Homotopy
 open import Algebra.Group
 
+open import Cat.Diagram.Terminal
+
 open import Data.Set.Truncation
 open import Data.Int.Universal
 open import Data.Bool
@@ -272,6 +274,6 @@ get that all of its higher homotopy groups are trivial.
 
 πₙ₊₂S¹≡0 : ∀ n → πₙ₊₁ (suc n) S¹∙ ≡ Zero-group {lzero}
 πₙ₊₂S¹≡0 n = ∫-Path
-  (Zero-group-is-terminal _ .centre)
+  (Zero-group-is-terminal .is-terminal.!)
   (is-contr→≃ (is-contr→∥-∥₀-is-contr (Ωⁿ⁺²S¹-is-contr n)) (hlevel 0) .snd)
 ```

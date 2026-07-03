@@ -367,15 +367,16 @@ module props {o ℓ} {C : Precategory o ℓ} (pb : has-pullbacks C) (so : Subobj
       true .map ∘ classifies ⊤ₘ .top ∎
 
   true-domain-is-terminal : is-terminal C (true .dom)
-  true-domain-is-terminal X .centre  = classifies ⊤ₘ .top
-  true-domain-is-terminal X .paths h = true .monic _ _ (sym (is-total→factors record
-    { inv      = pb _ _ .universal (pullr refl)
-    ; inverses = record
-      { invl = pb _ _ .p₁∘universal
-      ; invr = Pullback.unique₂ (pb _ _) {p = pullr refl}
-        (pulll (pb _ _ .p₁∘universal)) (extendl (pb _ _ .p₂∘universal)) id-comm
-        (true .monic _ _ (extendl (sym (pb _ _ .square)) ∙ pullr (ap (h ∘_) id-comm)))
-      }
-    } .snd))
+  true-domain-is-terminal .is-terminal.! = classifies ⊤ₘ .top
+  true-domain-is-terminal .is-terminal.!-unique h =
+    true .monic h (classifies ⊤ₘ .top)
+    $ snd $ is-total→factors
+    $ make-invertible (pb _ _ .universal (pullr refl))
+      (pb _ _ .p₁∘universal)
+      (Pullback.unique₂ (pb _ _) {p = pullr refl}
+        (pulll (pb _ _ .p₁∘universal))
+        (extendl (pb _ _ .p₂∘universal))
+        id-comm
+        (true .monic _ _ (extendl (sym (pb _ _ .square)) ∙ pullr (ap (h ∘_) id-comm))))
 ```
 -->

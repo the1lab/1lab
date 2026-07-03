@@ -113,9 +113,9 @@ Graphs-products a b .has-is-product .unique p q = ext record where
 
 Graphs-terminal : ∀ {o ℓ} → Terminal (Graphs o ℓ)
 Graphs-terminal .Terminal.top = ⊤ᴳ
-Graphs-terminal .Terminal.has⊤ x .centre .node = _
-Graphs-terminal .Terminal.has⊤ x .centre .edge = _
-Graphs-terminal .Terminal.has⊤ x .paths h = trivialᴳ!
+Graphs-terminal .Terminal.has-is-term .is-terminal.! .node _ = lift tt
+Graphs-terminal .Terminal.has-is-term .is-terminal.! .edge _ = lift tt
+Graphs-terminal .Terminal.has-is-term .is-terminal.!-unique h = trivialᴳ!
 
 Graphs-pullbacks : ∀ {o ℓ} → has-pullbacks (Graphs o ℓ)
 Graphs-pullbacks f g .apex = f ⊓ᴳ g

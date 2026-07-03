@@ -190,6 +190,7 @@ differently.
     → is-terminal Cones K
     → is-limit F (Cone.apex K) (Cone→cone K)
   is-terminal-cone→is-limit {K = K} term = isl where
+    open is-terminal term
     open Cone-hom
     open is-ran
     open Cone
@@ -202,10 +203,10 @@ differently.
       α' .commutes f = sym (α .is-natural _ _ f) ∙ C.elimr (M .Functor.F-id)
 
       nt : M => !Const (K .apex)
-      nt .η x = term α' .centre .map
+      nt .η x = ! {α'} .map
       nt .is-natural tt tt tt = C.elimr (M .Functor.F-id) ∙ C.introl refl
-    isl .σ-comm = ext λ x → term _ .centre .com _
-    isl .σ-uniq {σ' = σ'} x = ext λ _ → ap map $ term _ .paths λ where
+    isl .σ-comm = ext λ x → ! .com x
+    isl .σ-uniq {σ' = σ'} x = ext λ _ → ap map $ sym $ !-unique λ where
       .map   → σ' .η _
       .com _ → sym (x ηₚ _)
 ```
@@ -218,16 +219,18 @@ unpacking data.
     : ∀ {x} {eps : Const x => F}
     → (L : is-limit F x eps)
     → is-terminal Cones (record { commutes = is-limit.commutes L })
-  is-limit→is-terminal-cone {x = x} L K = term where
+  {-# INLINE is-limit→is-terminal-cone #-}
+  is-limit→is-terminal-cone {x = x} L = term where
     module L = is-limit L
-    module K = Cone K
     open Cone-hom
+    open Cone
 
-    term : is-contr (Cone-hom K _)
-    term .centre .map   = L.universal K.ψ K.commutes
-    term .centre .com _ = L.factors K.ψ K.commutes
-    term .paths f =
-      Cone-hom-path (sym (L.unique K.ψ K.commutes (f .map) (f .com)))
+    term : is-terminal Cones (record { commutes = is-limit.commutes L })
+    {-# INLINE term #-}
+    term = record
+      { ! = λ {K} → cone-hom (L.universal (K .ψ) (K .commutes)) (λ _ → L.factors _ _)
+      ; !-unique = λ {K} h → Cone-hom-path (L.unique (K .ψ) (K .commutes) (h .map) (h .com))
+      }
 ```
 
 <!--
@@ -237,11 +240,11 @@ unpacking data.
   Terminal-cone→Limit : Terminal Cones → Limit F
   Terminal-cone→Limit x .Ext     = _
   Terminal-cone→Limit x .eps     = _
-  Terminal-cone→Limit x .has-ran = is-terminal-cone→is-limit (x .Terminal.has⊤)
+  Terminal-cone→Limit x .has-ran = is-terminal-cone→is-limit (x .Terminal.has-is-term)
 
   Limit→Terminal-cone : Limit F → Terminal Cones
   Limit→Terminal-cone x .Terminal.top  = _
-  Limit→Terminal-cone x .Terminal.has⊤ = is-limit→is-terminal-cone
+  Limit→Terminal-cone x .Terminal.has-is-term = is-limit→is-terminal-cone
     (Limit.has-limit x)
 ```
 -->

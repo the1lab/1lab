@@ -209,9 +209,9 @@ R-Mod-is-additive .has-terminal = term where
 
   term : Terminal (R-Mod R _)
   term .Terminal.top = ∅ᴹ
-  term .Terminal.has⊤ x .centre .fst _ = lift tt
-  term .Terminal.has⊤ x .centre .snd .linear r s t = refl
-  term .Terminal.has⊤ x .paths r = ext λ _ → refl
+  term .Terminal.has-is-term .is-terminal.! .fst _ = lift tt
+  term .Terminal.has-is-term .is-terminal.! .snd .linear r s t = refl
+  term .Terminal.has-is-term .is-terminal.!-unique r = ext λ _ → refl
 ```
 
 For the direct products, on the other hand, we have to do a bit more

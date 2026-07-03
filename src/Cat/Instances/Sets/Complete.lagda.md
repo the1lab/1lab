@@ -103,7 +103,8 @@ category of sets of _any_ level $\ell$ admits them.
 ```agda
   Sets-terminal : Terminal (Sets ℓ)
   Sets-terminal .top = el! (Lift _ ⊤)
-  Sets-terminal .has⊤ _ = hlevel 0
+  Sets-terminal .has-is-term .is-terminal.! _ = lift tt
+  Sets-terminal .has-is-term .is-terminal.!-unique _ = prop!
 ```
 
 Products are given by product sets:

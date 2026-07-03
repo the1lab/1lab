@@ -80,12 +80,7 @@ function.
 ```agda
 0≤1-top : Terminal 0≤1
 0≤1-top .top = true
-
-0≤1-top .has⊤ false .centre = _
-0≤1-top .has⊤ false .paths _ = refl
-
-0≤1-top .has⊤ true  .centre = _
-0≤1-top .has⊤ true  .paths _ = refl
+0≤1-top .has-is-term = hom-contr→is-terminal λ _ → hlevel 0
 
 0≤1-products : ∀ A B → Product 0≤1 A B
 0≤1-products A B .apex = and A B

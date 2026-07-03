@@ -478,7 +478,8 @@ opaque
 
 Sub-terminal : ∀ {y} → Terminal (Sub y)
 Sub-terminal .Terminal.top = ⊤ₘ
-Sub-terminal .Terminal.has⊤ m = contr !ₘ λ _ → prop!
+Sub-terminal .Terminal.has-is-term .is-terminal.! = !ₘ
+Sub-terminal .Terminal.has-is-term .is-terminal.!-unique _ = prop!
 ```
 
 Since products in slice categories are given by pullbacks, and pullbacks

@@ -163,8 +163,8 @@ tracked by the constant function with value $\sf{x}$.
 ```agda
 Assemblies-terminal : Terminal (Assemblies 𝔸 ℓ)
 Assemblies-terminal .top = ⊤Asm
-Assemblies-terminal .has⊤ X .centre  = !Asm
-Assemblies-terminal .has⊤ X .paths x = ext λ _ → refl
+Assemblies-terminal .has-is-term .is-terminal.! = !Asm
+Assemblies-terminal .has-is-term .is-terminal.!-unique _ = ext λ _ → refl
 ```
 -->
 

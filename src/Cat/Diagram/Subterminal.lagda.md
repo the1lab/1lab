@@ -38,7 +38,7 @@ In particular, every terminal object is subterminal.
 
 ```agda
   terminal→subterminal : ∀ {T} → is-terminal C T → is-subterminal T
-  terminal→subterminal term X = is-contr→is-prop (term X)
+  terminal→subterminal term X = is-terminal.!-unique₂ term
 ```
 
 Subterminal objects can be thought of as the interpretations of *truth

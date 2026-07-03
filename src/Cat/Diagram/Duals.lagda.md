@@ -146,35 +146,38 @@ $C\op$. We prove these correspondences here:
 
   is-coterminal→is-initial
     : ∀ {A} → is-terminal (C ^op) A → is-initial C A
-  is-coterminal→is-initial x = x
+  is-coterminal→is-initial term = Equiv.to is-terminal-univ term
 
   is-terminal→is-coinitial
     : ∀ {A} → is-terminal C A → is-initial (C ^op) A
-  is-terminal→is-coinitial x = x
+  is-terminal→is-coinitial term = Equiv.to is-terminal-univ term
 
   is-initial→is-coterminal
     : ∀ {A} → is-initial C A → is-terminal (C ^op) A
-  is-initial→is-coterminal x = x
+  {-# INLINE is-initial→is-coterminal #-}
+  is-initial→is-coterminal = hom-contr→is-terminal
 
   is-coinitial→is-terminal
     : ∀ {A} → is-initial (C ^op) A → is-terminal C A
-  is-coinitial→is-terminal x = x
+  {-# INLINE is-coinitial→is-terminal #-}
+  is-coinitial→is-terminal = hom-contr→is-terminal
 
   Coterminal→Initial : Terminal (C ^op) → Initial C
   Coterminal→Initial term .bot = term .top
-  Coterminal→Initial term .has⊥ = is-coterminal→is-initial (term .has⊤)
+  Coterminal→Initial term .has⊥ = is-coterminal→is-initial (term .has-is-term)
 
   Terminal→Coinitial : Terminal C → Initial (C ^op)
   Terminal→Coinitial term .bot = term .top
-  Terminal→Coinitial term .has⊥ = is-terminal→is-coinitial (term .has⊤)
+  Terminal→Coinitial term .has⊥ = is-terminal→is-coinitial (term .has-is-term)
 
   Initial→Coterminal : Initial C → Terminal (C ^op)
   Initial→Coterminal init .top = init .bot
-  Initial→Coterminal init .has⊤ = is-initial→is-coterminal (init .has⊥)
+  Initial→Coterminal init .has-is-term = is-initial→is-coterminal (init .has⊥)
 
   Coinitial→terminal : Initial (C ^op) → Terminal C
+  {-# INLINE Coinitial→terminal #-}
   Coinitial→terminal init .top = init .bot
-  Coinitial→terminal init .has⊤ = is-coinitial→is-terminal (init .has⊥)
+  Coinitial→terminal init .has-is-term = is-coinitial→is-terminal (init .has⊥)
 ```
 
 ## Pullback/pushout

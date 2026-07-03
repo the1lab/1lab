@@ -123,10 +123,10 @@ $\cC$, while the morphisms are induced by $F$'s comparison maps.
 
 ```agda
 Gl-terminal : TerminalP Gl D.terminal
-Gl-terminal .top'      = cut {dom = C.top} (pres-terminal _ .centre)
+Gl-terminal .top'      = cut {dom = C.top} (is-terminal.! image-is-terminal)
 Gl-terminal .has⊤' .!' = record
   { map = C.!
-  ; com = is-contr→is-prop (pres-terminal _) _ _
+  ; com = is-terminal.!-unique₂ image-is-terminal _ _
   }
 Gl-terminal .has⊤' .!-unique' h = Slice-pathp (C.!-unique _)
 ```

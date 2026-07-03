@@ -3,6 +3,7 @@
 open import Cat.Diagram.Colimit.Coequaliser
 open import Cat.Diagram.Colimit.Coproduct
 open import Cat.Instances.Shape.Terminal
+open import Cat.Instances.Shape.Initial
 open import Cat.Diagram.Colimit.Initial
 open import Cat.Diagram.Limit.Equaliser
 open import Cat.Diagram.Limit.Terminal
@@ -167,8 +168,9 @@ ff→reflects-Terminal
   : (term : Terminal D)
   → ∀ {o} → term .Terminal.top D.≅ F.₀ o
   → Terminal C
+{-# INLINE ff→reflects-Terminal #-}
 ff→reflects-Terminal term is =
-  Limit→Terminal C (ff→reflects-Limit _ (Terminal→Limit D term) is)
+  Limit→Terminal C ¡F (ff→reflects-Limit _ (Terminal→Limit D (F F∘ ¡F) term) is)
 
 ff→reflects-Initial
   : (init : Initial D)

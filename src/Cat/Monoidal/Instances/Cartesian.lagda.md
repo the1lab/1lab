@@ -60,7 +60,7 @@ formal proof requires a _lot_ of calculation, however:
     ni .eta x = ⟨ ! , id ⟩
     ni .inv x = π₂
     ni .eta∘inv x = ⟨⟩-unique₂
-      (pulll π₁∘⟨⟩ ∙ sym (!-unique _)) (cancell π₂∘⟨⟩) (!-unique₂ _ _) (idr _)
+      (pulll π₁∘⟨⟩ ∙ !-unique _) (cancell π₂∘⟨⟩) (!-unique₂ _ _) (idr _)
     ni .inv∘eta x = π₂∘⟨⟩
     ni .natural x y f = ⟨⟩-unique₂
       (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩ ∙ idl _) (pulll π₂∘⟨⟩ ∙ cancelr π₂∘⟨⟩)
@@ -70,8 +70,8 @@ formal proof requires a _lot_ of calculation, however:
     ni .eta x = ⟨ id , ! ⟩
     ni .inv x = π₁
     ni .eta∘inv x = ⟨⟩-unique₂
-      (pulll π₁∘⟨⟩ ∙ idl _) (pulll π₂∘⟨⟩ ∙ sym (!-unique _))
-      (idr _) (sym (!-unique _))
+      (pulll π₁∘⟨⟩ ∙ idl _) (pulll π₂∘⟨⟩ ∙ !-unique _)
+      (idr _) (!-unique _)
     ni .inv∘eta x = π₁∘⟨⟩
     ni .natural x y f = ⟨⟩-unique₂
       (pulll π₁∘⟨⟩ ∙∙ pullr π₁∘⟨⟩ ∙∙ idr f)
@@ -112,7 +112,7 @@ We also have a system of [[diagonal morphisms|monoidal category with diagonals]]
   Cartesian-diagonal : Diagonals Cartesian-monoidal
   Cartesian-diagonal .diagonals ._=>_.η A = δ
   Cartesian-diagonal .diagonals ._=>_.is-natural x y f = products! products
-  Cartesian-diagonal .diagonal-λ→ = ap ⟨_, id ⟩ (sym (!-unique _))
+  Cartesian-diagonal .diagonal-λ→ = ap ⟨_, id ⟩ (!-unique _)
 ```
 
 <!--

@@ -87,7 +87,7 @@ do it by hand for the [[terminal object]], binary [[products]], and binary
   open Terminal
   terminal-sheaf : Terminal 𝒯
   terminal-sheaf .top = L.₀ (PSh-terminal _ site .top)
-  terminal-sheaf .has⊤ = L-lex.pres-⊤ (PSh-terminal _ site .has⊤)
+  terminal-sheaf .has-is-term = L-lex.pres-⊤ (PSh-terminal _ site .has-is-term)
 
   product-sheaf : ∀ A B → Product 𝒯 A B
   product-sheaf A B = product' where
@@ -103,7 +103,7 @@ do it by hand for the [[terminal object]], binary [[products]], and binary
       let
         prod =
           L-lex.pres-product
-            (PSh-terminal _ site .has⊤)
+            (PSh-terminal _ site .has-is-term)
             (product-presheaf .has-is-product)
       in is-product-iso (Lι-iso _) (Lι-iso _) prod
 

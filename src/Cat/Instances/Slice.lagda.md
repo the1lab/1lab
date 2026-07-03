@@ -262,15 +262,14 @@ module _ {o ℓ} {C : Precategory o ℓ} {c : ⌞ C ⌟} where
   open /-Hom
   open /-Obj
 
-  Slice-terminal-object' : is-terminal (Slice C c) (cut C.id)
-  Slice-terminal-object' obj .centre .map = obj .map
-  Slice-terminal-object' obj .centre .com = C.idl _
-  Slice-terminal-object' obj .paths other =
-    ext (sym (other .com) ∙ C.idl _)
+  Slice-is-terminal-object : is-terminal (Slice C c) (cut C.id)
+  Slice-is-terminal-object .is-terminal.! {obj} .map = obj .map
+  Slice-is-terminal-object .is-terminal.! {obj} .com = C.idl _
+  Slice-is-terminal-object .is-terminal.!-unique h = ext (sym (C.idl _) ∙ h .com)
 
   Slice-terminal-object : Terminal (Slice C c)
   Slice-terminal-object .Terminal.top  = _
-  Slice-terminal-object .Terminal.has⊤ = Slice-terminal-object'
+  Slice-terminal-object .Terminal.has-is-term = Slice-is-terminal-object
 ```
 
 <!--

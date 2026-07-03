@@ -355,8 +355,9 @@ terminal→inclusion-is-final
   : ∀ {o ℓ} {𝒞 : Precategory o ℓ}
   → (top : 𝒞 .Ob) (term : is-terminal 𝒞 top)
   → is-final (!Const {C = 𝒞} top)
-terminal→inclusion-is-final top term = right-adjoint-is-final
-  (is-terminal→inclusion-is-right-adjoint _ top term)
+terminal→inclusion-is-final top term =
+  right-adjoint-is-final
+  $ is-terminal→inclusion-is-right-adjoint _ term
 ```
 
 ## Closure under composition

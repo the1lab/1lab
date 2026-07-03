@@ -74,10 +74,12 @@ Sh[]-pullbacks {A = A} {B} {X} f g = pb where
 
   pb : Pullback (Sheaves J _) _ _
   pb .apex .fst = pb' .apex
-  pb .apex .snd = is-sheaf-limit {o' = lzero} {ℓ' = lzero} (Limit.has-limit (Pullback→Limit (PSh ℓ C) pb')) λ where
-    cs-a → A .snd
-    cs-b → B .snd
-    cs-c → X .snd
+  pb .apex .snd =
+    is-sheaf-limit {o' = lzero} {ℓ' = lzero}
+      (Limit.has-limit (Pullback→Limit (PSh ℓ C) (cospan→cospan-diagram lzero lzero f g) pb')) λ where
+        cs-a → A .snd
+        cs-b → B .snd
+        cs-c → X .snd
   pb .p₁ = pb' .p₁
   pb .p₂ = pb' .p₂
   pb .has-is-pb = record { Pullback pb' }
@@ -89,11 +91,11 @@ The terminal object in sheaves is even easier to define:
 ```agda
 Sh[]-terminal : Terminal (Sheaves J ℓ)
 Sh[]-terminal .top .fst = PSh-terminal _ C .top
-Sh[]-terminal .has⊤ (S , _) = PSh-terminal _ C .has⊤ S
-
 Sh[]-terminal .top .snd .whole _ _     = lift tt
 Sh[]-terminal .top .snd .glues _ _ _ _ = refl
 Sh[]-terminal .top .snd .separate _ _  = refl
+Sh[]-terminal .has-is-term = hom-contr→is-terminal λ S →
+  is-terminal→hom-contr (PSh-terminal ℓ C .has-is-term) (S .fst)
 ```
 
 <!--

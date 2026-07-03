@@ -420,7 +420,7 @@ omit it from the page.
     f .F₀ h = pb {B = top} (-^B .F₁ (h .map)) (ƛ π₂) .apex
     f .F₁ {x} {y} h = pb _ _ .universal (sym p) where abstract
       p : ƛ π₂ ∘ !  ≡ -^B .F₁ (y .map) ∘ -^B .F₁ (h .map) ∘ pb {B = top} (-^B .F₁ (x .map)) (ƛ π₂) .p₁
-      p = ƛ π₂ ∘ !                                         ≡⟨ ap (ƛ π₂ ∘_) (!-unique _) ⟩
+      p = ƛ π₂ ∘ !                                         ≡˘⟨ ap (ƛ π₂ ∘_) (!-unique _) ⟩
           ƛ π₂ ∘ pb _ _ .p₂                                ≡˘⟨ pb _ _ .square ⟩
           ƛ (x .map ∘ ev) ∘ pb _ _ .p₁                     ≡˘⟨ ap (-^B .F₁) (h .com) ⟩∘⟨refl ⟩
           ƛ ((y .map ∘ h .map) ∘ ev) ∘ pb _ _ .p₁          ≡⟨ pushl (-^B .F-∘ _ _) ⟩
@@ -430,11 +430,11 @@ omit it from the page.
 <!--
 ```agda
     f .F-id = sym $ pb _ _ .Pullback.unique
-      (sym (eliml (-^B .F-id) ∙ intror refl)) (sym (!-unique _))
+      (sym (eliml (-^B .F-id) ∙ intror refl)) (!-unique _)
 
     f .F-∘ f g = sym $ pb _ _ .Pullback.unique
       (pulll (pb _ _ .p₁∘universal) ∙∙ pullr (pb _ _ .p₁∘universal) ∙∙ pulll (sym (-^B .F-∘ _ _)))
-      (sym (!-unique _))
+      (!-unique _)
 
   exponentiable→constant-family⊣product
     : (pb : has-pullbacks C)
@@ -501,7 +501,7 @@ $\Delta_B \dashv \Pi_B$ we've been chasing.
         Hom X (Π.₀ f)
           ≃⟨ Pullback.pullback-univ (pb _ _) ⟩
         Σ (Hom X (-^B .F₀ (f .dom))) (λ h → Σ (Hom X top) λ h' → ƛ (f .map ∘ ev) ∘ h ≡ ƛ π₂ ∘ h')
-          ≃⟨ Σ-ap-snd (λ x → Σ-contr-fst (has⊤ X)) ⟩
+          ≃⟨ Σ-ap-snd (λ x → Σ-contr-fst (is-terminal→hom-contr has-is-term X)) ⟩
         Σ (Hom X (-^B .F₀ (f .dom))) (λ h → ƛ (f .map ∘ ev) ∘ h ≡ ƛ π₂ ∘ !)
           ≃⟨ Σ-ap (Equiv.inverse (ƛ , lambda-is-equiv _)) (coh₁ f) ⟩
         Σ (Hom (X ⊗₀ B) (f .dom)) (λ h → f .map ∘ h ≡ π₂)

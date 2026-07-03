@@ -138,7 +138,7 @@ answer is yes!
     → (f : Hom x y)
     → Monoid-hom (Mon→Hom-mon y mon) (Mon→Hom-mon x mon) (_∘ f)
   precompose-hom-mon-hom {mon = mon} f .pres-id =
-    (mon .η ∘ !) ∘ f ≡⟨ pullr (sym (!-unique (! ∘ f))) ⟩
+    (mon .η ∘ !) ∘ f ≡⟨ pullr (!-unique (! ∘ f)) ⟩
     mon .η ∘ !       ∎
   precompose-hom-mon-hom {mon = mon} f .pres-⋆ g h =
     (mon .μ ∘ ⟨ g , h ⟩) ∘ f   ≡⟨ pullr (⟨⟩∘ f) ⟩
@@ -276,9 +276,9 @@ functor is also [[fully faithful]].
     → C-Monoid-hom (α .η m · id) m-mon n-mon
   Nat→internal-mon-hom {m} {n} {m-mon} {n-mon} α .pres-η =
     (α .η m · id) ∘ (m-mon .η) ≡˘⟨ α .is-natural _ _ _ ·ₚ _ ⟩
-    α .η top · (id ∘ m-mon .η) ≡⟨ ap (α .η _ ·_) (id-comm-sym ∙ ap (m-mon .η ∘_) (sym (!-unique _))) ⟩
+    α .η top · (id ∘ m-mon .η) ≡⟨ ap (α .η _ ·_) (id-comm-sym ∙ ap (m-mon .η ∘_) (!-unique _)) ⟩
     α .η top · (m-mon .η ∘ !)  ≡⟨ α .η _ .snd .pres-id ⟩
-    n-mon .η ∘ !               ≡⟨ elimr (!-unique _) ⟩
+    n-mon .η ∘ !               ≡⟨ elimr (sym (!-unique _)) ⟩
     n-mon .η                   ∎
   Nat→internal-mon-hom {m} {n} {m-mon} {n-mon} α .pres-μ =
     α .η m · id ∘ (m-mon .μ)                               ≡˘⟨ α .is-natural _ _ _ ·ₚ _ ⟩

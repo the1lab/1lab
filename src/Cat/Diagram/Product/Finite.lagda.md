@@ -83,7 +83,7 @@ Cartesian→standard-finite-products F = prod where
     : ∀ {Y} {n} (F : Fin n → Ob) (f : (i : Fin n) → Hom Y (F i))
     → {h : Hom Y (F-apex F)} → ((i : Fin n) → F-pi F i ∘ h ≡ f i)
     → h ≡ F-mult F f
-  F-unique {n = zero} F f {h} p = sym $ !-unique terminal _
+  F-unique {n = zero} F f {h} p = !-unique terminal _
   F-unique {n = suc zero} F f {h} p = sym (idl h) ∙ p fzero
   F-unique {n = suc (suc n)} F f {h} p =
     products _ _ .unique (p fzero)

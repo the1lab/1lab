@@ -156,7 +156,8 @@ module _ {o ℓ} {C : Precategory o ℓ} (A : Ab-category C) where
     h A.∘ A.id                       ≡⟨ A.refl⟩∘⟨ idm ⟩
     h A.∘ A.0m                       ≡⟨ A.∘-zero-r ⟩
     A.0m                             ∎
-  id-zero→zero idm .is-zero.has-is-terminal x = contr A.0m λ h → sym $
+  id-zero→zero idm .is-zero.has-is-terminal .is-terminal.! = A.0m
+  id-zero→zero idm .is-zero.has-is-terminal .is-terminal.!-unique = λ h →
     h                              ≡⟨ A.introl refl ⟩
     A.id A.∘ h                     ≡⟨ idm A.⟩∘⟨refl ⟩
     A.0m A.∘ h                     ≡⟨ A.∘-zero-l ⟩
@@ -199,7 +200,7 @@ record is-additive {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
   ∅ : Zero C
   ∅ .Zero.∅ = has-terminal .Terminal.top
   ∅ .Zero.has-is-zero = id-zero→zero has-ab $
-    is-contr→is-prop (has-terminal .Terminal.has⊤ _) _ _
+    Terminal.!-unique₂ has-terminal id 0m
   module ∅ = Zero ∅
 
   0m-unique : ∀ {A B} → ∅.zero→ {A} {B} ≡ 0m
@@ -432,8 +433,7 @@ the canonical subobject inclusion $\ker(f) \to B$.
           path : ∅.zero→ ∘ proj' ≡ Coker.coeq f ∘ proj'
           path = Coker.unique₂ (Ker.kernel f)
             {e' = 0m} (∘-zero-r ∙ sym ∘-zero-l)
-            (pushl (∅.zero-∘r _) ∙ pulll ( ap₂ _∘_ refl (∅.has⊤ _ .paths 0m)
-                                               ∙ ∘-zero-r)
+            (pushl (∅.zero-∘r _) ∙ pulll (∘-zero-r)
                  ∙ ∘-zero-l)
             (pullr (Coker.factors (Ker.kernel f)) ∙ sym (Coker.coequal _)
                  ∙ ∘-zero-r)

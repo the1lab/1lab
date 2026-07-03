@@ -86,7 +86,7 @@ Ab-functor-pres-∅
 Ab-functor-pres-∅ {A = A} {B = B} F ∅A =
   id-zero→zero B $
     B.id     ≡˘⟨ F.F-id ⟩
-    F.₁ A.id ≡⟨ ap F.₁ (is-contr→is-prop (Zero.has⊤ ∅A (Zero.∅ ∅A)) _ _) ⟩
+    F.₁ A.id ≡⟨ ap F.₁ (Zero.!-unique₂ ∅A A.id A.0m) ⟩
     F.₁ A.0m ≡⟨ F.F-0m ⟩
     B.0m     ∎
   where

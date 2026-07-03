@@ -95,9 +95,14 @@ hom-sets with hom-props!
 
 ```agda
 is-top→terminal : ∀ {x} → is-top x → is-terminal (poset→category P) x
-is-top→terminal is-top x .centre = is-top x
-is-top→terminal is-top x .paths _ = ≤-thin _ _
+{-# INLINE is-top→terminal #-}
+is-top→terminal is-top = record
+  { ! = λ {x} → is-top x
+  ; !-unique = λ {x} h → ≤-thin h (is-top x)
+  }
 
 terminal→is-top : ∀ {x} → is-terminal (poset→category P) x → is-top x
-terminal→is-top terminal x = terminal x .centre
+{-# INLINE terminal→is-top #-}
+terminal→is-top terminal x = is-terminal.! terminal
+-- terminal x .centre
 ```

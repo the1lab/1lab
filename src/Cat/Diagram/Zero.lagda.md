@@ -39,7 +39,7 @@ coincide. When this occurs, we call the object a **zero object**.
     open is-zero has-is-zero public
 
     terminal : Terminal C
-    terminal = record { top = ∅ ; has⊤ = has-is-terminal }
+    terminal = record { top = ∅ ; has-is-term = has-is-terminal }
 
     initial : Initial C
     initial = record { bot = ∅ ; has⊥ = has-is-initial }
@@ -62,7 +62,7 @@ $0 = ¡ \circ ! : x \to y$ is called the **zero morphism**.
     zero-∘l f = pulll (sym (¡-unique (f ∘ ¡)))
 
     zero-∘r : ∀ {x y z} → (f : Hom x y) → zero→ {y} {z} ∘ f ≡ zero→
-    zero-∘r f = pullr (sym (!-unique (! ∘ f)))
+    zero-∘r f = pullr (!-unique (! ∘ f))
 
     zero-comm : ∀ {x y z} → (f : Hom y z) → (g : Hom x y) → f ∘ zero→ ≡ zero→ ∘ g
     zero-comm f g = zero-∘l f ∙ sym (zero-∘r g)

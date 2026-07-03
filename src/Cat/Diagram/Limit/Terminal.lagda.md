@@ -23,7 +23,6 @@ module Cat.Diagram.Limit.Terminal {o h} (C : Precategory o h) where
 ```agda
 open Precategory C
 
-open Terminal
 open Functor
 open _=>_
 ```
@@ -34,28 +33,40 @@ open _=>_
 A [[terminal object]] is equivalently defined as a limit of the empty diagram.
 
 ```agda
-is-limit→is-terminal
-  : ∀ {T : Ob} {eps : Const T => ¡F}
-  → is-limit {C = C} ¡F T eps
-  → is-terminal C T
-is-limit→is-terminal lim Y = contr (lim.universal (λ ()) (λ ()))
-                                   (λ _ → sym (lim.unique _ _ _ λ ()))
-  where module lim = is-limit lim
 
-is-terminal→is-limit : ∀ {T : Ob} {F : Functor ⊥Cat C} → is-terminal C T → is-limit {C = C} F T ¡nt
-is-terminal→is-limit {T} {F} term = to-is-limitp ml λ {} where
-  open make-is-limit
-  ml : make-is-limit F T
-  ml .ψ ()
-  ml .commutes ()
-  ml .universal _ _ = term _ .centre
-  ml .factors {}
-  ml .unique _ _ _ _ = sym (term _ .paths _)
+module _ (Dia : Functor ⊥Cat C) where
 
-Limit→Terminal : Limit {C = C} ¡F → Terminal C
-Limit→Terminal lim .top = Limit.apex lim
-Limit→Terminal lim .has⊤ = is-limit→is-terminal (Limit.has-limit lim)
+  is-limit→is-terminal
+    : ∀ {T : Ob} {eps : Const T => Dia}
+    → is-limit {C = C} Dia T eps
+    → is-terminal C T
+  {-# INLINE is-limit→is-terminal #-}
+  is-limit→is-terminal lim = record
+    { ! = lim.universal (λ ()) (λ ())
+    ; !-unique = λ h → lim.unique (λ ()) (λ ()) h (λ ())
+    }
+    where module lim = is-limit lim
 
-Terminal→Limit : ∀ {F : Functor ⊥Cat C} → Terminal C → Limit {C = C} F
-Terminal→Limit term = to-limit (is-terminal→is-limit (term .has⊤))
+  is-terminal→is-limit : ∀ {T : Ob} {F : Functor ⊥Cat C} → is-terminal C T → is-limit {C = C} F T ¡nt
+  is-terminal→is-limit {T} {F} term = to-is-limitp ml λ {} where
+    open is-terminal term
+    open make-is-limit
+
+    ml : make-is-limit F T
+    ml .ψ ()
+    ml .commutes ()
+    ml .universal _ _ = !
+    ml .factors {}
+    ml .unique _ _ _ _ = !-unique _
+
+  Limit→Terminal
+    : Limit Dia → Terminal C
+  {-# INLINE Limit→Terminal #-}
+  Limit→Terminal lim = record
+    { top = Limit.apex lim
+    ; has-is-term = is-limit→is-terminal (Limit.has-limit lim)
+    }
+
+  Terminal→Limit : Terminal C → Limit Dia
+  Terminal→Limit term = to-limit (is-terminal→is-limit (Terminal.has-is-term term))
 ```

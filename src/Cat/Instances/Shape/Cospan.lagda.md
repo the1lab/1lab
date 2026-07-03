@@ -131,9 +131,10 @@ instance
 
 Terminal-·→·←· : ∀ {a b} → Terminal (·→·←· {a} {b})
 Terminal-·→·←· .Terminal.top = cs-c
-Terminal-·→·←· .Terminal.has⊤ cs-a = hlevel 0
-Terminal-·→·←· .Terminal.has⊤ cs-b = hlevel 0
-Terminal-·→·←· .Terminal.has⊤ cs-c = hlevel 0
+Terminal-·→·←· .Terminal.has-is-term = hom-contr→is-terminal λ where
+  cs-a → hlevel 0
+  cs-b → hlevel 0
+  cs-c → hlevel 0
 ```
 -->
 

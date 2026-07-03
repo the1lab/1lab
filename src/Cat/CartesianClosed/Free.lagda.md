@@ -150,7 +150,8 @@ module _ where
 
   Free-terminal : Terminal Free-ccc
   Free-terminal .top    = `⊤
-  Free-terminal .has⊤ x = contr `! `!-η
+  Free-terminal .has-is-term .is-terminal.! = `!
+  Free-terminal .has-is-term .is-terminal.!-unique h = sym (`!-η h)
 
   open Cartesian-category using (products ; terminal)
   Free-cartesian : Cartesian-category Free-ccc
@@ -1184,8 +1185,10 @@ Tm-cartesian .pres-products a b = Sem.make-invertible
   (NT (elim! (λ a p q → p `, q)) λ x y f → ext λ p q → sym (Syn.⟨⟩∘ _))
   (ext (λ i a b → `π₁β ,ₚ `π₂β))
   (ext (λ i x → sym `πη))
-Tm-cartesian .pres-terminal x .centre  = NT (λ _ _ → `!) (λ x y f → ext λ a → `!-η _)
-Tm-cartesian .pres-terminal x .paths a = ext λ i x → `!-η _
+Tm-cartesian .pres-terminal = Sem.make-invertible
+  (NT (λ _ _ → `!) λ x y f → ext (λ _ → `!-η _))
+  (ext (λ _ _ → refl))
+  (ext (λ _ _ → `!-η _))
 ```
 
 However, there is an off-the-shelf solution we can reach for: since

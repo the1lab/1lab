@@ -278,9 +278,9 @@ ren-⟦⟧ₙ ρ (lam t) =
 
 ren-⟦⟧ₙ ρ (pair a b) = ap₂ ⟨_,_⟩ (ren-⟦⟧ₙ ρ a) (ren-⟦⟧ₙ ρ b) ∙ sym (⟨⟩∘ _)
 ren-⟦⟧ₙ ρ (ne x) = ren-⟦⟧ₛ ρ x
-ren-⟦⟧ₙ ρ unit   = !-unique _
+ren-⟦⟧ₙ ρ unit   = sym (!-unique _)
 
-ren-⟦⟧ᵣ ρ ∅       = !-unique _
+ren-⟦⟧ᵣ ρ ∅       = sym (!-unique _)
 ren-⟦⟧ᵣ ρ (σ , n) = ap₂ ⟨_,_⟩ (ren-⟦⟧ᵣ ρ σ) (ren-⟦⟧ₙ ρ n) ∙ sym (⟨⟩∘ _)
 
 Tyᵖ : (τ : Ty) (Γ : Cx) → Hom ⟦ Γ ⟧ᶜ ⟦ τ ⟧ᵗ → Type (o ⊔ ℓ)
@@ -349,7 +349,7 @@ reifyᵖ-correct {τ = τ `⇒ σ} {h = h} ν =
     ≡˘⟨ unique _ refl ⟩
   h ∎
 reifyᵖ-correct {τ = ` x} d = d .snd
-reifyᵖ-correct {τ = `⊤}  d = !-unique _
+reifyᵖ-correct {τ = `⊤}  d = sym (!-unique _)
 
 private
   tickᵖ : ∀ {x y h} (m : Hom ⟦ x ⟧ᵗ ⟦ y ⟧ᵗ) → Tyᵖ x Γ h → Tyᵖ y Γ (m ∘ h)

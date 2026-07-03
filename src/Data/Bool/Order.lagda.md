@@ -30,6 +30,13 @@ record _≤_ (x y : Bool) : Type where
 instance
   H-Level-≤ᵇ : ∀ {x y n} → H-Level (x ≤ y) (suc n)
   H-Level-≤ᵇ = prop-instance λ x y → refl
+  {-# OVERLAPPABLE H-Level-≤ᵇ #-}
+
+
+  H-Level-x≤true : ∀ {x} {n} → H-Level (x ≤ true) n
+  H-Level-x≤true {x = true} = basic-instance zero (contr (lift ttˢ) (λ _ → refl))
+  H-Level-x≤true {x = false} = basic-instance zero (contr (lift ttˢ) (λ _ → refl))
+
 ```
 -->
 

@@ -145,12 +145,11 @@ if we do it by hand.
 
   right-adjoint→terminal
     : ∀ {x} → is-terminal D x → is-terminal C (R.₀ x)
-  right-adjoint→terminal term x = contr fin uniq where
-    fin = L-adjunct L⊣R (term (L.₀ x) .centre)
-    uniq : ∀ x → fin ≡ x
-    uniq x = ap fst $ is-contr→is-prop (R-adjunct-is-equiv L⊣R .is-eqv _)
-      (_ , equiv→counit (R-adjunct-is-equiv L⊣R) _)
-      (x , is-contr→is-prop (term _) _ _)
+  {-# INLINE right-adjoint→terminal #-}
+  right-adjoint→terminal term = record
+    { ! = L-adjunct L⊣R !
+    ; !-unique = λ h → sym $ Equiv.adjunctr (_ , L-adjunct-is-equiv L⊣R) (sym (!-unique _))
+    } where open is-terminal term
 
   right-adjoint→lex : is-lex R
   right-adjoint→lex .is-lex.pres-⊤ =

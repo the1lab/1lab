@@ -34,33 +34,33 @@ displayed over $!$.
 
 ```agda
 record is-terminal-over {top} (term : is-terminal B top) (top' : E ʻ top) : Type (o ⊔ o' ⊔ ℓ') where
-  open Terminal {C = B} record{ has⊤ = term } hiding (top)
+  open is-terminal term
   field
     !'        : ∀ {y} {y' : E ʻ y} → E.Hom[ ! ] y' top'
-    !-unique' : ∀ {y} {y' : E ʻ y} (h : E.Hom[ ! ] y' top') → !' ≡ h
+    !-unique' : ∀ {y} {y' : E ʻ y} (h : E.Hom[ ! ] y' top') → h ≡ !'
 
   opaque
     !ₚ : ∀ {y} {m : B.Hom y top} {y' : E ʻ y} → E.Hom[ m ] y' top'
-    !ₚ {m = m} = E.hom[ !-unique m ] !'
+    !ₚ {m = m} = E.hom[ sym $ !-unique m ] !'
 
     abstract
-      !ₚ-unique : ∀ {y} {m : B.Hom y top} {y' : E ʻ y} (h : E.Hom[ m ] y' top') → !ₚ ≡ h
+      !ₚ-unique : ∀ {y} {m : B.Hom y top} {y' : E ʻ y} (h : E.Hom[ m ] y' top') → h ≡ !ₚ
       !ₚ-unique {m = m} {y'} = J
-        (λ m p → (h : E.Hom[ m ] y' top') → E.hom[ p ] !' ≡ h)
-        (λ h → E.from-pathp[] (!-unique' h))
-        (!-unique m)
+        (λ m p → (h : E.Hom[ m ] y' top') → h ≡ E.hom[ p ] !')
+        (λ h → E.from-pathp[]⁻ (!-unique' h))
+        (sym $ !-unique m)
 
   abstract
     !'-unique₂
       : ∀ {y} {m m' : B.Hom y top} {y' : E ʻ y} {h : E.Hom[ m ] y' top'} {h' : E.Hom[ m' ] y' top'}
       → {p : m ≡ m'}
       → h E.≡[ p ] h'
-    !'-unique₂ {h = h} {h' = h'} = to-pathp (sym (!ₚ-unique _) ∙ !ₚ-unique _)
+    !'-unique₂ {h = h} {h' = h'} = to-pathp ((!ₚ-unique _) ∙ sym (!ₚ-unique _))
 
 record TerminalP (t : Terminal B) : Type (o ⊔ o' ⊔ ℓ') where
   open Terminal t
   field
     top'  : E ʻ top
-    has⊤' : is-terminal-over has⊤ top'
+    has⊤' : is-terminal-over has-is-term top'
   open is-terminal-over has⊤' public
 ```

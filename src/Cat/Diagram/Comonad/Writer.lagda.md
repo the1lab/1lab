@@ -128,13 +128,13 @@ products.
 
 ```agda
     mk .unit .is-natural x y f = ⟨⟩-unique₂ (pulll π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ idl f)
-      (pulll π₁∘⟨⟩ ∙ π₁∘⟨⟩ ∙ sym (pullr (sym (!-unique _))))
+      (pulll π₁∘⟨⟩ ∙ π₁∘⟨⟩ ∙ sym (pullr (!-unique _)))
       (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩ ∙ idr f)
     mk .mult .is-natural x y f = products! products
     mk .has-is-monad .μ-unitr =
       let
         lemma =
-          m.μ ∘ ⟨ π₁ , m.η ∘ ! ∘ π₂ ⟩               ≡˘⟨ ap₂ _∘_ refl (⟨⟩-unique (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩ ∙ idl π₁) (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩ ∙ ap₂ _∘_ refl (!-unique _))) ⟩
+          m.μ ∘ ⟨ π₁ , m.η ∘ ! ∘ π₂ ⟩               ≡˘⟨ ap₂ _∘_ refl (⟨⟩-unique (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩ ∙ idl π₁) (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩ ∙ ap₂ _∘_ refl (sym (!-unique _)))) ⟩
           m.μ ∘ ⟨ id ∘ π₁ , m.η ∘ π₂ ⟩ ∘ ⟨ π₁ , ! ⟩ ≡⟨ pulll m.μ-unitr ⟩
           π₁ ∘ ⟨ π₁ , ! ⟩                           ≡⟨ π₁∘⟨⟩ ⟩
           π₁                                        ∎

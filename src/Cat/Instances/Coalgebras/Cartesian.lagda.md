@@ -405,9 +405,10 @@ the former is contractible if the latter is.
 ```agda
 Terminal-coalgebra : Terminal (Coalgebras W)
 Terminal-coalgebra .top = _
-Terminal-coalgebra .has⊤ (A , α) = Equiv→is-hlevel 0
-  (Equiv.inverse (_ , L-adjunct-is-equiv (Forget⊣Cofree W)))
-  (terminal .has⊤ A)
+Terminal-coalgebra .has-is-term =
+  hom-contr→is-terminal λ (A , α) →
+    Equiv→is-hlevel 0 (Equiv.inverse (_ , L-adjunct-is-equiv (Forget⊣Cofree W)))
+      (is-terminal→hom-contr (terminal .has-is-term) A)
 ```
 
 Since we have a terminal object and pullbacks, we have arbitrary finite

@@ -97,7 +97,8 @@ function which is constantly the top element.
 ```agda
   term : ∀ S → Terminal (Fibre disp S)
   term S .top  _ = F.top
-  term S .has⊤ f = is-prop∙→is-contr (hlevel 1) (λ i → F.!)
+  term S .has-is-term .is-terminal.! _ = F.!
+  term S .has-is-term .is-terminal.!-unique _ = prop!
 ```
 
 ## As a fibration

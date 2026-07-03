@@ -75,12 +75,16 @@ comparison map is an isomorphism.
   record Cartesian-functor : Type (o ⊔ o' ⊔ ℓ ⊔ ℓ') where
     field
       pres-products : ∀ a b → D.is-invertible (product-comparison a b)
-      pres-terminal : is-terminal D (F.₀ C.top)
+      pres-terminal : D.is-invertible (D.! {F.₀ C.top})
 
     image-is-product
       : ∀ {a b} → is-product D {A = F.₀ a} {B = F.₀ b} (F.₁ C.π₁) (F.₁ C.π₂)
     image-is-product = is-product-iso-apex (pres-products _ _)
       D.π₁∘⟨⟩ D.π₂∘⟨⟩ D.has-is-product
+
+    image-is-terminal
+      : is-terminal D (F.₀ C.top)
+    image-is-terminal = !-invertible→is-terminal D.has-is-term pres-terminal
 ```
 
 <!--

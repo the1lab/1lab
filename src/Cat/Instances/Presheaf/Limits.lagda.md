@@ -61,9 +61,11 @@ contr→is-terminal-PSh
   : ∀ (T : ⌞ PSh κ C ⌟)
   → ⦃ ∀ {c n} → H-Level ⌞ T .F₀ c ⌟ n ⦄
   → is-terminal (PSh κ C) T
-contr→is-terminal-PSh T _ .centre .η _ _ = hlevel!
-contr→is-terminal-PSh T _ .centre .is-natural _ _ _ = prop!
-contr→is-terminal-PSh T _ .paths _ = ext λ _ _ → prop!
+{-# INLINE contr→is-terminal-PSh #-}
+contr→is-terminal-PSh T = record
+  { ! = NT (λ _ _ → hlevel!) λ _ _ _ → prop!
+  ; !-unique = λ _ → ext λ _ _ → prop!
+  }
 
 prop→is-subterminal-PSh
   : ∀ (T : ⌞ PSh κ C ⌟)
@@ -72,7 +74,7 @@ prop→is-subterminal-PSh
 prop→is-subterminal-PSh T _ _ _ = ext λ _ _ → prop!
 
 PSh-terminal : Terminal (PSh κ C)
-PSh-terminal = record { has⊤ = contr→is-terminal-PSh ⊤PSh }
+PSh-terminal = record { has-is-term = contr→is-terminal-PSh ⊤PSh }
 ```
 
 The product presheaf is as described in the introduction, now with all

@@ -9,6 +9,7 @@ open import Cat.Instances.Slice
 open import Cat.Functor.Base
 open import Cat.Prelude
 
+import Cat.Functor.Reasoning
 import Cat.Reasoning
 ```
 -->
@@ -102,6 +103,7 @@ Sliced-lex {C = C} {D = D} {F = F} {X = X} flex = lex where
   module D = Cat.Reasoning D
   module Dx = Cat.Reasoning (Slice D (F .F₀ X))
   module C = Cat.Reasoning C
+  module F = Cat.Functor.Reasoning F
   open is-lex
   lex : is-lex (Sliced F X)
   lex .pres-pullback = pullback-above→pullback-below
@@ -119,11 +121,11 @@ $F(T)$, being isomorphic to the terminal object, is itself terminal!
 
 ```agda
   lex .pres-⊤ {T = T} term =
-    is-terminal-iso (Slice D (F .F₀ X))
+    is-terminal-iso
       (subst (Dx._≅ cut (F .F₁ (T .map))) (ap cut (F .F-id))
-        (F-map-iso (Sliced F X)
-          (⊤-unique (Slice C X) Slice-terminal-object (record { has⊤ = term }))))
-      Slice-terminal-object'
+       (F-map-iso (Sliced F X)
+         (⊤-unique Slice-terminal-object (record { top = T ; has-is-term = term }))))
+      Slice-is-terminal-object
 ```
 
 # Sliced adjoints

@@ -10,7 +10,7 @@ open import Cat.Prelude
 -->
 
 ```agda
-module Cat.Diagram.Limit.Pullback {o h} (Cat : Precategory o h) where
+module Cat.Diagram.Limit.Pullback {oc ℓc} (C : Precategory oc ℓc) where
 ```
 
 We establish the correspondence between `Pullback`{.Agda} and the
@@ -18,11 +18,10 @@ We establish the correspondence between `Pullback`{.Agda} and the
 
 <!--
 ```agda
-open import Cat.Reasoning Cat
+open import Cat.Reasoning C
 
 -- Yikes:
 open is-pullback
-open Terminal
 open Cone-hom
 open Pullback
 open Functor
@@ -32,7 +31,7 @@ open Cone
 
 ```agda
 Square→Cone
-  : ∀ {x y} {P} {F : Functor (·→·←· {x} {y}) Cat}
+  : ∀ {x y} {P} {F : Functor (·→·←· {x} {y}) C}
   → (p1 : Hom P (F .F₀ cs-a)) (p2 : Hom P (F .F₀ cs-b))
   → F .F₁ {cs-a} {cs-c} _ ∘ p1 ≡ F .F₁ {cs-b} {cs-c} _ ∘ p2
   → Cone F
@@ -46,56 +45,78 @@ Square→Cone {F = F} p1 p2 square .commutes {cs-b} {cs-b} _ = eliml (F .F-id)
 Square→Cone {F = F} p1 p2 square .commutes {cs-b} {cs-c} _ = sym square
 Square→Cone {F = F} p1 p2 square .commutes {cs-c} {cs-c} _ = eliml (F .F-id)
 
-Pullback→Terminal-cone
-  : ∀ {x y} {A B C} {f : Hom A C} {g : Hom B C}
-  → Pullback Cat f g
-  → Terminal (Cones (cospan→cospan-diagram x y {C = Cat} f g))
-Pullback→Terminal-cone {f = f} {g} pb = lim where
-  module pb = Pullback pb
-  lim : Terminal (Cones _)
-  lim .top = Square→Cone _ _ pb.square
-  lim .has⊤ cone .centre .map      = pb.universal (cone .commutes (lift tt) ∙ sym (cone .commutes {cs-b} {cs-c} (lift tt)))
-  lim .has⊤ cone .centre .com cs-a = pb.p₁∘universal
-  lim .has⊤ cone .centre .com cs-b = pb.p₂∘universal
-  lim .has⊤ cone .centre .com cs-c = pullr pb.p₁∘universal ∙ cone .commutes (lift tt)
-  lim .has⊤ cone .paths otherhom = Cone-hom-path _ (sym (pb.unique (otherhom .com _) (otherhom .com _)))
+module _
+  {oj ℓj}
+  (Dia : Functor (·→·←· {oj} {ℓj}) C)
+  where
 
-Terminal-cone→Pullback
-  : ∀ {x y}
-  → {F : Functor (·→·←· {x} {y}) Cat}
-  → Terminal (Cones F)
-  → Pullback Cat (F .F₁ {cs-a} {cs-c} _) (F .F₁ {cs-b} {cs-c} _)
-Terminal-cone→Pullback {F = F} lim = pb where
-  module lim = Terminal lim
-  pb : Pullback Cat _ _
-  pb .apex = lim.top .apex
-  pb .p₁ = lim.top .ψ cs-a
-  pb .p₂ = lim.top .ψ cs-b
-  pb .has-is-pb .square = lim.top .commutes _ ∙ sym (lim.top .commutes {cs-b} {cs-c} _)
-  pb .has-is-pb .universal x = lim.has⊤ (Square→Cone _ _ x) .centre .map
-  pb .has-is-pb .p₁∘universal {p = p} = lim.has⊤ (Square→Cone _ _ p) .centre .com cs-a
-  pb .has-is-pb .p₂∘universal {p = p} = lim.has⊤ (Square→Cone _ _ p) .centre .com cs-b
-  pb .has-is-pb .unique {p₁' = p₁'} {p₂'} {p} {lim'} a b =
-    sym (ap map (lim.has⊤ (Square→Cone _ _ p) .paths other))
-    where
-      other : Cone-hom _ _ _
-      other .map = _
-      other .com cs-a = a
-      other .com cs-b = b
-      other .com cs-c =
-        lim.top .ψ cs-c ∘ lim'                         ≡˘⟨ pulll (lim.top .commutes _) ⟩
-        F .F₁ {cs-a} {cs-c} _ ∘ lim.top .ψ cs-a ∘ lim' ≡⟨ ap (_ ∘_) a ⟩
-        F .F₁ {cs-a} {cs-c} _ ∘ p₁'                    ∎
+  private
+    module Dia = Functor Dia
 
-Limit→Pullback
-  : ∀ {x y} {a b c} → {f : Hom a c} {g : Hom b c}
-  → Limit (cospan→cospan-diagram x y f g)
-  → Pullback Cat f g
-Limit→Pullback x = Terminal-cone→Pullback (Limit→Terminal-cone _ x)
+    a b c : Ob
+    a = Dia.₀ cs-a
+    b = Dia.₀ cs-b
+    c = Dia.₀ cs-c
 
-Pullback→Limit
-  : ∀ {x y} {A B C} {f : Hom A C} {g : Hom B C}
-  → Pullback Cat f g
-  → Limit (cospan→cospan-diagram x y {C = Cat} f g)
-Pullback→Limit x = Terminal-cone→Limit _ (Pullback→Terminal-cone x)
+    f : Hom a c
+    f = Dia.₁ (lift tt)
+
+    g : Hom b c
+    g = Dia.₁ (lift tt)
+
+  Pullback→Terminal-cone
+    : Pullback C f g
+    → Terminal (Cones Dia)
+  {-# INLINE Pullback→Terminal-cone #-}
+  Pullback→Terminal-cone pb = to-terminal (record { Pullback→Terminal-cone }) where
+    module Pullback→Terminal-cone where
+      module pb = Pullback pb
+
+      top : Cone Dia
+      top = Square→Cone pb.p₁ pb.p₂ pb.square
+
+      ! : ∀ {K : Cone Dia} → Cone-hom Dia K top
+      ! {K} .map = pb.universal (K .commutes (lift tt) ∙ sym (K .commutes {cs-b} {cs-c} (lift tt)))
+      ! {K} .com cs-a = pb.p₁∘universal
+      ! {K} .com cs-b = pb.p₂∘universal
+      ! {K} .com cs-c = pullr pb.p₁∘universal ∙ K .commutes (lift tt)
+
+      !-unique : ∀ {K} (h : Cone-hom Dia K top) → h ≡ !
+      !-unique h = Cone-hom-path Dia (pb.unique (h .com cs-a) (h .com cs-b))
+
+
+  Terminal-cone→Pullback
+    : Terminal (Cones Dia)
+    → Pullback C f g
+  Terminal-cone→Pullback lim = pb where
+    module lim = Terminal lim
+    pb : Pullback C _ _
+    pb .apex = lim.top .apex
+    pb .p₁ = lim.top .ψ cs-a
+    pb .p₂ = lim.top .ψ cs-b
+    pb .has-is-pb .square = lim.top .commutes _ ∙ sym (lim.top .commutes {cs-b} {cs-c} _)
+    pb .has-is-pb .universal x = lim.! {Square→Cone _ _ x} .map
+    pb .has-is-pb .p₁∘universal {p = p} = lim.! .com cs-a
+    pb .has-is-pb .p₂∘universal {p = p} = lim.! .com cs-b
+    pb .has-is-pb .unique {p₁' = p₁'} {p₂'} {p} {lim'} a b =
+      ap map (lim.!-unique other)
+      where
+        other : Cone-hom _ _ _
+        other .map = _
+        other .com cs-a = a
+        other .com cs-b = b
+        other .com cs-c =
+          lim.top .ψ cs-c ∘ lim'                         ≡˘⟨ pulll (lim.top .commutes _) ⟩
+          Dia.₁ {cs-a} {cs-c} _ ∘ lim.top .ψ cs-a ∘ lim' ≡⟨ ap (_ ∘_) a ⟩
+          Dia.₁ {cs-a} {cs-c} _ ∘ p₁'                    ∎
+
+  Limit→Pullback
+    : Limit Dia
+    → Pullback C f g
+  Limit→Pullback x = Terminal-cone→Pullback (Limit→Terminal-cone _ x)
+
+  Pullback→Limit
+    : Pullback C f g
+    → Limit Dia
+  Pullback→Limit x = Terminal-cone→Limit _ (Pullback→Terminal-cone x)
 ```

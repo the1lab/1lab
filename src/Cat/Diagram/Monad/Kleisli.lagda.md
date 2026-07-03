@@ -175,9 +175,9 @@ Kleisli-not-univalent {κ} =
     T : Monad-on _
     T =
       Adjunction→Monad $
-      is-terminal→inclusion-is-right-adjoint (Sets κ)
+      is-terminal→inclusion-is-right-adjoint
         (el! (Lift _ ⊤))
-        (λ _ → hlevel 0)
+        (hom-contr→is-terminal λ _ → hlevel 0)
 
     open Cat.Reasoning (Kleisli-maps T)
 

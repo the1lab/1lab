@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Instances.Shape.Parallel
+open import Cat.Instances.Shape.Initial
 open import Cat.Diagram.Limit.Equaliser
 open import Cat.Diagram.Limit.Pullback
 open import Cat.Diagram.Limit.Terminal
@@ -106,10 +107,10 @@ products).
     : is-finitely-complete → Finitely-complete
   is-finitely-complete→Finitely-complete flim = Flim where
     Flim : Finitely-complete
-    Flim .terminal = Limit→Terminal C (flim finite-cat _)
+    Flim .terminal = Limit→Terminal C ¡F (flim finite-cat _)
     Flim .products a b = Limit→Product C (flim Disc-finite _)
     Flim .equalisers f g = Limit→Equaliser C (flim ·⇉·-finite _)
-    Flim .pullbacks f g = Limit→Pullback C {lzero} {lzero} (flim ·→·←·-finite _)
+    Flim .pullbacks f g = Limit→Pullback C (cospan→cospan-diagram lzero lzero f g) (flim ·→·←·-finite _)
 ```
 
 ## With equalisers
@@ -275,7 +276,7 @@ object $*$.
 
     prod : is-product C p1 p2
     prod .is-product.⟨_,_⟩ p1' p2' =
-      Pb.universal {p₁' = p1'} {p₂' = p2'} (is-contr→is-prop (term _) _ _)
+      Pb.universal (is-terminal.!-unique₂ term (f ∘ p1') (g ∘ p2'))
     prod .is-product.π₁∘⟨⟩ = Pb.p₁∘universal
     prod .is-product.π₂∘⟨⟩ = Pb.p₂∘universal
     prod .is-product.unique p q = Pb.unique p q
@@ -287,8 +288,8 @@ object $*$.
   with-pullbacks top pb = fc where
     module top = Terminal top
     mkprod : ∀ A B → Product C A B
-    mkprod A B = record { has-is-product = terminal-pullback→product top.has⊤ pb' }
-      where pb' = pb (top.has⊤ A .centre) (top.has⊤ B .centre) .Pullback.has-is-pb
+    mkprod A B = record { has-is-product = terminal-pullback→product top.has-is-term pb' }
+      where pb' = pb (top.!) (top.!) .Pullback.has-is-pb
 
     mkeq : ∀ {A B} (f g : Hom A B) → Equaliser C f g
     mkeq {A = A} {B} f g = eq where
@@ -427,9 +428,10 @@ Putting it all together into a record we get our proof of finite completeness:
     : ∀ {P X Y T} {p1 : Hom P X} {p2 : Hom P Y} {f : Hom X T} {g : Hom Y T}
     → is-terminal C T → is-product C p1 p2 → is-pullback C p1 f p2 g
   product→terminal-pullback t r = pb where
+    open is-terminal t
     open is-pullback
     pb : is-pullback C _ _ _ _
-    pb .square = is-contr→is-prop (t _) _ _
+    pb .square = !-unique₂ _ _
     pb .universal _ = r .is-product.⟨_,_⟩ _ _
     pb .p₁∘universal = r .is-product.π₁∘⟨⟩
     pb .p₂∘universal = r .is-product.π₂∘⟨⟩
@@ -440,29 +442,10 @@ Putting it all together into a record we get our proof of finite completeness:
   is-complete→finitely {a} {b} compl = with-pullbacks term' pb
     where
       pb : ∀ {x y z} (f : Hom x z) (g : Hom y z) → Pullback C f g
-      pb f g = Limit→Pullback C (compl (cospan→cospan-diagram _ _ f g))
-
-      idx : Precategory a b
-      idx = Lift-cat a b (Disc ⊥ λ x → absurd x)
-
-      F : Functor idx C
-      F .Functor.F₀ ()
-      F .Functor.F₁ {()}
-      F .Functor.F-id {()}
-      F .Functor.F-∘ {()}
-
-      limF : Limit F
-      limF = compl F
-      open Terminal
-      open Cone-hom
-      open Cone
+      pb f g = Limit→Pullback C _ (compl (cospan→cospan-diagram _ _ f g))
 
       term' : Terminal C
-      term' = record { top = Limit.apex limF ; has⊤ = limiting } where
-        limiting : ∀ x → is-contr _
-        limiting x =
-          contr (Limit.universal limF (λ { () }) (λ { {()} })) λ h →
-            sym (Limit.unique limF _ _ h λ { () })
+      term' = Limit→Terminal C ¡F (is-complete-lower a b lzero lzero compl ¡F)
 ```
 -->
 
@@ -507,8 +490,9 @@ products.
       → is-product C p1 p2
       → is-product D (F.₁ p1) (F.₁ p2)
     pres-product term pr = terminal-pullback→product D (pres-⊤ term)
-      (pres-pullback {f = term _ .centre} {g = term _ .centre}
+      (pres-pullback {f = !} {g = !}
         (product→terminal-pullback C term pr))
+      where open is-terminal term
 ```
 
 Since $f : A \to B$ being a monomorphism is equivalent to certain squares

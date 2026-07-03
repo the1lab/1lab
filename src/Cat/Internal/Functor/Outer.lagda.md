@@ -168,7 +168,7 @@ universal property of the pullback.
         coh =
           src ∘ (g ∘i homi (p₁ ∘ fₓ)) .ihom ≡⟨ (g ∘i homi (p₁ ∘ fₓ)) .has-src ⟩
           src ∘ p₁ ∘ fₓ ≡⟨ pulll square ⟩
-          (x ∘ p₂) ∘ fₓ ≡⟨ pullr (sym (!-unique _)) ⟩
+          (x ∘ p₂) ∘ fₓ ≡⟨ pullr (!-unique _) ⟩
           x ∘ ! ∎
 ```
 
@@ -187,7 +187,7 @@ of maps into a limit.
         tgt ∘ (g ∘i homi (p₁ ∘ fₓ)) .ihom ≡˘⟨ ap (tgt ∘_) p₁∘universal ⟩
         tgt ∘ p₁ ∘ universal _            ∎
     outf .P-id fₓ =
-      sym $ unique (sym (ap ihom (idli _))) (sym (!-unique _))
+      sym $ unique (sym (ap ihom (idli _))) (!-unique _)
     outf .P-∘ fₓ g h = unique
       (p₁∘universal
       ∙ ap ihom (sym $ associ _ _ _)
@@ -204,7 +204,7 @@ of maps into a limit.
             (sym (assoc _ _ _) ∙ ap (src ∘_) (sym (assoc _ _ _)))
             (sym (assoc _ _ _) ∙ ap (tgt ∘_) (sym (assoc _ _ _)))
             refl refl (sym (assoc _ _ _)))
-      (sym (!-unique _))
+      (!-unique _)
 ```
 </details>
 
@@ -233,7 +233,7 @@ covariant construction, performed above.
         coh =
           tgt ∘ (homi (p₁ ∘ fₓ) ∘i op-ihom g) .ihom ≡⟨ (homi (p₁ ∘ fₓ) ∘i op-ihom g) .has-tgt ⟩
           tgt ∘ p₁ ∘ fₓ ≡⟨ pulll square ⟩
-          (x ∘ p₂) ∘ fₓ ≡⟨ pullr (sym (!-unique _)) ⟩
+          (x ∘ p₂) ∘ fₓ ≡⟨ pullr (!-unique _) ⟩
           x ∘ ! ∎
     outf .P₁-tgt fₓ {y} g = src-coh where abstract
       src-coh : y ≡ src ∘ p₁ ∘ universal (hom-into-action.coh fₓ g)
@@ -242,7 +242,7 @@ covariant construction, performed above.
         ∙ (homi (p₁ ∘ fₓ) ∘i op-ihom g) .has-src)
     outf .P-id fₓ = sym $ unique
       (sym (ap ihom (ap₂ _∘i_ refl op-ihom-involutive ∙ idri _)))
-      (sym (!-unique _))
+      (!-unique _)
     outf .P-∘ fₓ g h = unique
       (p₁∘universal
         ∙ ap ihom (ap₂ _∘i_ refl op-ihom-involutive ∙ associ _ _ _)
@@ -262,7 +262,7 @@ covariant construction, performed above.
              (sym (assoc _ _ _) ∙ ap (src ∘_) (sym (assoc _ _ _)))
              (sym (assoc _ _ _) ∙ ap (tgt ∘_) (sym (assoc _ _ _)))
              (sym (assoc _ _ _)) refl)
-        (sym (!-unique _))
+        (!-unique _)
 ```
 </details>
 
