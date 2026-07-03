@@ -226,7 +226,10 @@ p, table, details, ol, ul, div.diagram-container {
 
 table {
   border-collapse: collapse;
-  width: 100%;
+
+  article > & {
+    width: 100%;
+  }
 
   td, th {
     text-align: center;
