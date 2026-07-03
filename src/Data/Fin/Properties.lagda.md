@@ -95,6 +95,36 @@ squish-skip-fsuc i j p x with fin-view i | fin-view j | fin-view x
 ... | zero | suc x = refl
 ... | suc i | zero = refl
 ... | suc i | suc x = absurd (Nat.zero≠suc λ i → Nat.pred (p (~ i) .lower))
+```
+
+Both `skip`{.Agda} and `squish`{.Agda} are monotone, so that they
+present the coface and codegeneracy maps of the [[simplex
+category|simplex-category]].
+
+```agda
+skip-monotone
+  : ∀ {n} (i : Fin (suc n)) (x y : Fin n)
+  → x ≤ y → skip i x ≤ skip i y
+skip-monotone i x y le with fin-view i
+... | zero = s≤s le
+... | suc i with fin-view x | fin-view y | le
+...   | zero  | zero  | le = Nat.0≤x
+...   | zero  | suc y | le = Nat.0≤x
+...   | suc x | zero  | le = absurd (Nat.¬suc≤0 le)
+...   | suc x | suc y | le = s≤s (skip-monotone i x y (Nat.≤-peel le))
+
+squish-monotone
+  : ∀ {n} (i : Fin n) (x y : Fin (suc n))
+  → x ≤ y → squish i x ≤ squish i y
+squish-monotone i x y le with fin-view i | fin-view x | fin-view y | le
+... | zero  | zero  | zero  | le = Nat.0≤x
+... | zero  | zero  | suc y | le = Nat.0≤x
+... | zero  | suc x | zero  | le = absurd (Nat.¬suc≤0 le)
+... | zero  | suc x | suc y | le = Nat.≤-peel le
+... | suc i | zero  | zero  | le = Nat.0≤x
+... | suc i | zero  | suc y | le = Nat.0≤x
+... | suc i | suc x | zero  | le = absurd (Nat.¬suc≤0 le)
+... | suc i | suc x | suc y | le = s≤s (squish-monotone i x y (Nat.≤-peel le))
 
 Fin-suc : ∀ {n} → Fin (suc n) ≃ Maybe (Fin n)
 Fin-suc = Iso→Equiv (to , iso from ir il) where
