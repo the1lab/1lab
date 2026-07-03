@@ -136,6 +136,27 @@ of adjunction units and co-units.
 
 <!--
 ```agda
+  hom-iso≃adjoints
+    : (Σ[ e ∈ (∀ {x y} → C.Hom (L.₀ x) y ≃ D.Hom x (R.₀ y)) ] hom-iso-natural λ {x} {y} → Equiv.to (e {x} {y}))
+    ≃ (L ⊣ R)
+  hom-iso≃adjoints .fst (e , e-natural) =
+    hom-iso→adjoints (λ {x} {y} → e .fst) (λ {x} {y} → e .snd) e-natural
+  hom-iso≃adjoints .snd = is-iso→is-equiv λ where
+    .is-iso.from L⊣R → adjunct-hom-equiv L⊣R , L-adjunct-natural₂ L⊣R
+    .is-iso.rinv L⊣R →
+      adjoint-pathp refl refl
+        (ext λ d → D.eliml R.F-id)
+        (ext λ c → C.elimr L.F-id)
+    .is-iso.linv (e , e-nat) → Σ-prop-path! $ ext λ f →
+        R.F₁ f D.∘ Equiv.to e C.id            ≡˘⟨ D.cdr (D.idr _) ⟩
+        R.F₁ f D.∘ Equiv.to e C.id D.∘ D.id   ≡˘⟨ e-nat f D.id C.id ⟩
+        Equiv.to e (f C.∘ C.id C.∘ L.₁ D.id)  ≡⟨ ap (Equiv.to e) (C.elimr (C.elimr L.F-id)) ⟩
+        Equiv.to e f                          ∎
+```
+-->
+
+<!--
+```agda
   hom-iso-inv-natural
     : (f : ∀ {x y} → D.Hom x (R.₀ y) → C.Hom (L.₀ x) y)
     → Type _
@@ -153,6 +174,23 @@ of adjunction units and co-units.
     abstract
       nat : hom-iso-natural f.from
       nat g h x = f.injective (f.ε _ ∙ sym (natural _ _ _ ∙ ap (g C.∘_) (ap (C._∘ L.₁ h) (f.ε _))))
+
+  hom-iso-inv≃adjoints
+    : (Σ[ e ∈ (∀ {x y} → D.Hom x (R.₀ y) ≃ C.Hom (L.₀ x) y) ] hom-iso-inv-natural λ {x} {y} → Equiv.to (e {x} {y}))
+    ≃ (L ⊣ R)
+  hom-iso-inv≃adjoints .fst (e , e-natural) =
+    hom-iso-inv→adjoints (λ {x} {y} → e .fst) (λ {x} {y} → e .snd) e-natural
+  hom-iso-inv≃adjoints .snd = is-iso→is-equiv λ where
+    .is-iso.from L⊣R → (λ {x y} → adjunct-hom-equiv L⊣R e⁻¹) , R-adjunct-natural₂ L⊣R
+    .is-iso.rinv L⊣R →
+      adjoint-pathp refl refl
+        (ext λ d → D.eliml R.F-id)
+        (ext λ c → C.elimr L.F-id)
+    .is-iso.linv (e , e-nat) → Σ-prop-path! $ ext λ f →
+      Equiv.to e D.id C.∘ L.F₁ f           ≡˘⟨ C.idl _ ⟩
+      C.id C.∘ Equiv.to e D.id C.∘ L.F₁ f  ≡˘⟨ e-nat C.id f D.id ⟩
+      Equiv.to e (R.₁ C.id D.∘ D.id D.∘ f) ≡⟨ ap (Equiv.to e) (D.cancell (D.eliml R.F-id)) ⟩
+      Equiv.to e f                         ∎
 
 module _ {o ℓ o'} {C : Precategory o ℓ} {D : Precategory o' ℓ}
          {L : Functor D C} {R : Functor C D}
