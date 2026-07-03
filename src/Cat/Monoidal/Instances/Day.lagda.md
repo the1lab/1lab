@@ -240,7 +240,7 @@ b)$, $x : X(a)$, and $y : Y(b)$.
 
 ```agda
   day : {i a b : Ob} (h : Hom i (a ⊗ b)) (x : X ʻ a) (y : Y ʻ b) → Day₀ i
-  day h x y = lift (inc ((_ , _) , h , x , y))
+  day h x y = lift (begin (_ , _) (h , x , y))
 ```
 
 <!--
@@ -248,7 +248,7 @@ b)$, $x : X(a)$, and $y : Y(b)$.
   day-ap
     : {i a b : Ob} {h h' : Hom i (a ⊗ b)} {x x' : X ʻ a} {y y' : Y ʻ b}
     → h ≡ h' → x ≡ x' → y ≡ y' → day h x y ≡ day h' x' y'
-  day-ap {a = a} {b} p q r i = lift (inc ((a , b) , p i , q i , r i))
+  day-ap {a = a} {b} p q r i = lift (begin (a , b) (p i , q i , r i))
 
   day-apₘ : ∀ {i a b} {h h' : Hom i (a ⊗ b)} {x y} → h ≡ h' → day h x y ≡ day h' x y
   day-apₘ p = day-ap p refl refl
@@ -268,7 +268,7 @@ Yg(y)}$ equal to $\day{h', Xf'(x), Yg'(y)}$ whenever $(f \otimes g)
     → day fgh x y ≡ day h (X .F₁ f x) (Y .F₁ g y)
   day-glue {i} {a} {b} {a'} {b'} {f} {g} {h} {x} {y} {fgh} p =
     day fgh x y                   ≡⟨ day-ap p refl refl ⟩
-    day ((f ⊗₁ g) ∘ h) x y        ≡⟨ ap {B = λ _ → Day₀ _} lift (Coeq.glue {f = dimapl (Day-diagram i)} {g = dimapr (Day-diagram i)} ((a , b) , (a' , b') , (f , g) , h , x , y)) ⟩
+    day ((f ⊗₁ g) ∘ h) x y        ≡⟨ ap {B = λ _ → Day₀ _} lift (coend-glue (f , g) (h , x , y)) ⟩
     day h (X .F₁ f x) (Y .F₁ g y) ∎
 ```
 

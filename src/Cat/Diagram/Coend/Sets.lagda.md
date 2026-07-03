@@ -48,7 +48,7 @@ directly with `glue`{.Agda}. With that motivation out of the way, let's
 continue with the construction!
 
 ```agda
-module _ {o ℓ} {C : Precategory o ℓ} (F : Bifunctor (C ^op) C (Sets (o ⊔ ℓ))) where
+module mk {o ℓ} {C : Precategory o ℓ} (F : Bifunctor (C ^op) C (Sets (o ⊔ ℓ))) where
   open Precategory C
   open Cowedge
   open Coend
@@ -69,6 +69,44 @@ exactly the same pair of maps in the diagram above.
   dimapr (X , Y , f , Fxy) = Y , lmap f Fxy
 ```
 
+```agda
+  record Coend₀ : Type (o ⊔ ℓ) where
+    constructor lift
+    field
+      lower : Coeq dimapl dimapr
+```
+
+<!--
+```agda
+  begin : ∀ x → ⌞ F · x · x ⌟ → Coend₀
+  begin a x = lift (inc (a , x))
+
+  unquoteDecl H-Level-Coend₀ = declare-record-hlevel 2 H-Level-Coend₀ (quote Coend₀)
+
+  abstract
+    coend-glue : ∀ {x y} (f : Hom y x) (a : ⌞ F · x · y ⌟) → Path Coend₀ (begin x (rmap f a)) (begin y (lmap f a))
+    coend-glue f a = ap {B = λ _ → Coend₀} lift (Coeq.glue {f = dimapl} {g = dimapr} (_ , _ , f , a))
+
+  instance
+    Extensional-coend-map
+      : ∀ {ℓ' ℓr} {T : Type ℓ'} ⦃ _ : Extensional ((x : ⌞ C ⌟) → ⌞ F · x · x ⌟ → T) ℓr ⦄
+      → ⦃ _ : H-Level T 2 ⦄ → Extensional (Coend₀ → T) ℓr
+    Extensional-coend-map {T = T} = injection→extensional! {B = Coeq dimapl dimapr → T}
+      {f = λ f x → f (lift x)}
+      (λ p → funext (λ { (lift x) → p ·ₚ x }))
+      auto
+
+    Inductive-coend
+      : ∀ {ℓ ℓm} {P : Coend₀ → Type ℓ}
+      → ⦃ _ : Inductive ((x : Coeq dimapl dimapr) → P (lift x)) ℓm ⦄
+      → Inductive (∀ x → P x) ℓm
+    Inductive-coend {P = P} ⦃ i ⦄ = record
+      { methods = i .Inductive.methods
+      ; from = λ z x → i .Inductive.from z (x .Coend₀.lower)
+      }
+```
+-->
+
 Constructing the universal `Cowedge`{.Agda} is easy now that we've
 taken the right coequaliser.
 
@@ -76,10 +114,9 @@ taken the right coequaliser.
   Set-coend : Coend F
   Set-coend = coend where
     universal-cowedge : Cowedge F
-    universal-cowedge .nadir = el! (Coeq dimapl dimapr)
-    universal-cowedge .ψ X Fxx = inc (X , Fxx)
-    universal-cowedge .extranatural {X} {Y} f =
-     funext λ Fyx → glue (Y , X , f , Fyx)
+    universal-cowedge .nadir = el! Coend₀
+    universal-cowedge .ψ X Fxx = begin X Fxx
+    universal-cowedge .extranatural {X} {Y} f = ext λ x → coend-glue _ _
 ```
 
 To show that the `Cowedge` is universal, we can essentially just
@@ -94,7 +131,7 @@ to the family associated to the cowedge `W`.
 
     coend : Coend F
     coend .cowedge = universal-cowedge
-    coend .factor W = factoring W
+    coend .factor W (lift x) = factoring W x
     coend .commutes = refl
     coend .unique {W = W} p = ext λ X x → sym p ·ₚ x
 ```
@@ -103,6 +140,15 @@ This construction is actually functorial! Given any functor
 $\cC\op \times \cC \to \Sets$, we can naturally construct its
 Coend in $\Sets$. This ends up assembling into a functor from the
 functor category $[ \cC\op \times \cC , \Sets ]$ into $\Sets$.
+
+<!--
+```agda
+open mk hiding (H-Level-Coend₀ ; Extensional-coend-map ; Inductive-coend ; begin ; coend-glue) public
+module _ {o ℓ} {C : Precategory o ℓ} {F : Bifunctor (C ^op) C (Sets (o ⊔ ℓ))} where
+  open mk F using (H-Level-Coend₀ ; Extensional-coend-map ; Inductive-coend ; begin ; coend-glue) public
+{-# DISPLAY mk.lift (Coeq.inc (a , b)) = begin a b #-}
+```
+-->
 
 ```agda
 module _ {o ℓ} {𝒞 : Precategory o ℓ} where
