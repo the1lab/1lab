@@ -154,6 +154,27 @@ they are included for completeness. </summary>
 ```
 </details>
 
+<!--
+```agda
+Σ-ap-snd₂
+  : ∀ {ℓa ℓb ℓp ℓq}
+  → {A : Type ℓa} {B : A → Type ℓb}
+  → {P : (a : A) → B a → Type ℓp}
+  → {Q : (a : A) → B a → Type ℓq}
+  → (∀ (a : A) → (b : B a) → P a b ≃ Q a b)
+  → (Σ[ a ∈ A ] Σ[ b ∈ B a ] P a b) ≃ (Σ[ a ∈ A ] Σ[ b ∈ B a ] Q a b)
+Σ-ap-snd₂ e = Σ-ap-snd (λ a → Σ-ap-snd (e a))
+
+Σ-ap-snd₃
+  : ∀ {ℓa ℓb ℓc ℓp ℓq}
+  → {A : Type ℓa} {B : A → Type ℓb} {C : (a : A) → B a → Type ℓc}
+  → {P : (a : A) (b : B a) → C a b → Type ℓp}
+  → {Q : (a : A) (b : B a) → C a b → Type ℓq}
+  → (∀ (a : A) (b : B a) (c : C a b) → P a b c ≃ Q a b c)
+  → (Σ[ a ∈ A ] Σ[ b ∈ B a ] Σ[ c ∈ C a b ] P a b c) ≃ (Σ[ a ∈ A ] Σ[ b ∈ B a ] Σ[ c ∈ C a b ] Q a b c)
+Σ-ap-snd₃ e = Σ-ap-snd (λ a → Σ-ap-snd₂ (e a))
+```
+-->
 
 ## Paths in subtypes
 
@@ -343,5 +364,27 @@ module _ {ℓ ℓ' ℓ''} {X : Type ℓ} {Y : X → Type ℓ'} {Z : (x : X) → 
   curry≃ .fst = curry
   curry≃ .snd .is-eqv f .centre = strict-fibres uncurry f .fst
   curry≃ .snd .is-eqv f .paths  = strict-fibres uncurry f .snd
+```
+-->
+
+<!--
+```agda
+Σ-pulll
+  : ∀ {ℓa ℓb ℓc ℓx}
+  → {A : Type ℓa} {B : A → Type ℓb} {C : ∀ a → B a → Type ℓc}
+  → {X : Type ℓx}
+  → (e : (Σ[ a ∈ A ] B a) ≃ X)
+  → (Σ[ a ∈ A ] Σ[ b ∈ B a ] C a b)
+  ≃ (Σ[ x ∈ X ] C (Equiv.from e x .fst) (Equiv.from e x .snd))
+Σ-pulll e = Σ-assoc ∙e Σ-ap-fst (e e⁻¹) e⁻¹
+
+Σ-pulll3
+  : ∀ {ℓa ℓb ℓc ℓd ℓx}
+  → {A : Type ℓa} {B : A → Type ℓb} {C : ∀ a → B a → Type ℓc} {D : ∀ a b → C a b → Type ℓd}
+  → {X : Type ℓx}
+  → (e : (Σ[ a ∈ A ] Σ[ b ∈ B a ] C a b) ≃ X)
+  → (Σ[ a ∈ A ] Σ[ b ∈ B a ] Σ[ c ∈ C a b ] D a b c)
+  ≃ (Σ[ x ∈ X ] D (Equiv.from e x .fst) (Equiv.from e x .snd .fst) (Equiv.from e x .snd .snd))
+Σ-pulll3 e = Σ-ap-snd (λ _ → Σ-assoc) ∙e Σ-pulll e
 ```
 -->

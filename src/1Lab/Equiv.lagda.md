@@ -872,6 +872,17 @@ is-contr→≃⊤ : is-contr A → A ≃ ⊤
 is-contr→≃⊤ c = is-contr→≃ c ⊤-is-contr
 ```
 
+<!--
+```agda
+is-contr≃equiv-⊤ : is-contr A ≃ (A ≃ ⊤)
+is-contr≃equiv-⊤ .fst = is-contr→≃⊤
+is-contr≃equiv-⊤ .snd = is-iso→is-equiv λ where
+  .is-iso.from e → contr (Equiv.from e tt) λ x → Equiv.η e x
+  .is-iso.rinv e → Σ-pathp refl (is-equiv-is-prop _ _ _)
+  .is-iso.linv x → is-contr-is-prop _ _
+```
+-->
+
 ### Strictness of the empty type
 
 We say that an [[initial object]] is *strict* if every map into it is an
