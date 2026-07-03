@@ -32,10 +32,15 @@ open import Data.Int.Base using (Int ; _+ℤ_)
 open import Data.Bool
 
 open import Homotopy.Space.Delooping
+open import Homotopy.Spectrum
 
 open import Topoi.Base
 
 import Cat.CartesianClosed.Free.Model
+import Algebra.Ring.DualNumbers
+import Cat.Instances.Presheaf.Cohesive
+import Cat.Instances.Presheaf.Concrete
+import Cat.Instances.FormalSets
 import Cat.Morphism
 
 open λ-Signature
@@ -179,6 +184,74 @@ _ = epi→surjective
 _ = surjective→regular-epi
 _ = is-set-projective
 _ = set-surjections-split
+```
+
+## What makes a topos *gros*: cohesion, concreteness, infinitesimals
+
+The topos of smooth sets is not just any topos: it is a topos of
+*spaces*, related to the base topos of sets by Lawvere's adjoint tower
+of [[cohesion|cohesive-topos]] — connected components, discrete
+spaces, underlying points, codiscrete spaces. We construct the full
+tower $\Pi_0 \dashv \rm{Disc} \dashv \Gamma \dashv \rm{Codisc}$
+for the presheaf topos on *any* site with a terminal probe, together
+with the equivalence $\Pi_0 \circ \rm{Disc} \simeq \rm{Id}$ that
+distinguishes it from a petit topos.
+
+```agda
+_ = Cat.Instances.Presheaf.Cohesive.Γ
+_ = Cat.Instances.Presheaf.Cohesive.Disc
+_ = Cat.Instances.Presheaf.Cohesive.Codisc
+_ = Cat.Instances.Presheaf.Cohesive.Π₀
+_ = Cat.Instances.Presheaf.Cohesive.Disc⊣Γ
+_ = Cat.Instances.Presheaf.Cohesive.Γ⊣Codisc
+_ = Cat.Instances.Presheaf.Cohesive.Π₀⊣Disc
+_ = Cat.Instances.Presheaf.Cohesive.Π₀-Disc
+```
+
+The paper's (11) and (12) — diffeological spaces as the smooth sets
+determined by their points — are the [[concrete
+presheaves|concrete-presheaf]] with respect to this cohesion: those
+whose plots embed into functions on points. They form a full
+subcategory, and the classifying spaces of differential forms are the
+standard *non*-examples.
+
+```agda
+_ = Cat.Instances.Presheaf.Concrete.is-concrete
+_ = Cat.Instances.Presheaf.Concrete.Concrete
+```
+
+For the infinitesimal column of the probe table — where variational
+calculus takes place, (13)–(16) — the paper itself pivots to algebra:
+the site is a full subcategory of formal duals of $R$-algebras. This
+is fully constructive. Over any commutative ring we build the [[dual
+numbers|dual-numbers]] $R[\epsilon]$ with $\epsilon^2 = 0$, the
+walking-infinitesimal site $\{\ast, \bD\}$, and its cohesive gros
+topos of [[formal sets|formal-sets]], in which Schreiber's (16) is a
+*definition with content*: the tangent bundle is the mapping space
+$T X = \rm{Maps}(\bD, X)$, the projection is restriction along
+$\iota : \ast \to \bD$, and tangent vectors are exactly the plots
+by the infinitesimal disk.
+
+```agda
+_ = Algebra.Ring.DualNumbers.R[ε]
+_ = Algebra.Ring.DualNumbers.ε²
+_ = Cat.Instances.FormalSets.Infinitesimals
+_ = Cat.Instances.FormalSets.FrmlSet
+_ = Cat.Instances.FormalSets.𝔻
+_ = Cat.Instances.FormalSets.T
+_ = Cat.Instances.FormalSets.T-proj
+_ = Cat.Instances.FormalSets.T-at-point
+```
+
+Finally, on the last column of the table: stable homotopy theory. A
+[[prespectrum]] is a tower of ever-higher deloopings
+$E_0 \to \Omega E_1 \to \Omega^2 E_2 \to \cdots$, an
+[[Ω-spectrum|omega-spectrum]] one where each map is an equivalence —
+the paper's "Where quantum physics takes place".
+
+```agda
+_ = Prespectrum
+_ = is-Ω-spectrum
 ```
 
 ## The constructive simulator: compiling physics to categories
@@ -395,12 +468,14 @@ For honesty, the items of the paper with no 1Lab counterpart yet:
 germs of plots ((5), (6)); the identification of sheaves with the
 localisation of presheaves at local isomorphisms (7); the proof that
 the higher-inductive sheafification is left exact (connecting
-`Sh[_,_]`{.Agda} to `Topos`{.Agda}); infinitesimally thickened and
-super sites ((13)–(21)) — though nothing obstructs instantiating our
-general sites at them once formal duals of algebras are set up; the
-Dold–Kan correspondence ((29)–(31)); Eilenberg–MacLane spaces
-$\mathbf{B}^n A$ for $n \ge 2$ and stable homotopy/spectra ((33),
-(34), (40), (41)); Čech nerves and the cofibrant-resolution
-presentation of nonabelian cohomology ((38), (39)); and orbifold
-singularities. Each is a well-posed project over the infrastructure
-assembled above.
+`Sh[_,_]`{.Agda} to `Topos`{.Agda}); the general Weil-algebra site
+$\bD^m_k$ beyond the first-order disk, and *super* sites ((17)–(21)),
+which await $\mathbb{Z}/2$-graded commutative algebra; the Dold–Kan
+correspondence ((29)–(31)); Eilenberg–MacLane spaces
+$\mathbf{B}^n A$ for $n \ge 2$, hence Eilenberg–MacLane spectra;
+simplicial *presheaves* and their local homotopy theory ((35)–(37)),
+the genuinely $\infty$-categorical part of the story; Čech nerves and
+the cofibrant-resolution presentation of nonabelian cohomology ((38),
+(39)); orbifold singularities; and the site $\rm{Lin}$ of
+negative-dimensional spheres presenting the tangent topos (41). Each
+is a well-posed project over the infrastructure assembled above.
