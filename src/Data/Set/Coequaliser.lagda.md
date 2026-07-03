@@ -1,7 +1,7 @@
 <!--
 ```agda
 open import 1Lab.Reflection.Induction
-open import 1Lab.Reflection using (_v∷_ ; typeError)
+open import 1Lab.Reflection
 open import 1Lab.Prelude
 
 open import Data.List.Base
@@ -111,13 +111,47 @@ Coeq-elim-prop cprop cinc (squash x y p q i j) =
 
 <!--
 ```agda
+module
+  _ {ℓ ℓ' ℓ'' ℓm} {A : Type ℓ} {B : Type ℓ'} {P : Type ℓ''} {f g : A → B}
+    ⦃ i : Inductive (B → P) ℓm ⦄
+  where
+
+  private
+    def-glue* : Term → TC ⊤
+    def-glue* goal = unify goal (def₀ (quote hlevel!))
+
+  record Coeq-methods : Type (ℓ ⊔ ℓ' ⊔ ℓ'' ⊔ ℓm) where
+    no-eta-equality
+    field
+      inc* : i .Inductive.methods
+      @(tactic def-glue*) {glue*}
+        : PathP (λ i → A → P)
+          (i .Inductive.from inc* ∘ f)
+          (i .Inductive.from inc* ∘ g)
+      ⦃ squash* ⦄ : H-Level P 2
+
+  {-# INLINE Coeq-methods.constructor #-}
+
+  open Coeq-methods public
+
+  instance
+    Inductive-coeq-rec : Inductive (Coeq f g → P) _
+    Inductive-coeq-rec .Inductive.methods = Coeq-methods
+    Inductive-coeq-rec .Inductive.from ms = go where
+      go : Coeq f g → P
+      go (inc x)              = i .Inductive.from (ms .inc*) x
+      go (glue x i)           = ms .glue* i x
+      go (squash x y p q i j) = is-set→squarep (λ i j → hlevel {T = P} 2) (λ i → go x) (λ i → go (p i)) (λ i → go (q i)) (λ i → go y) i j
+        where instance _ = squash* ms
+    {-# OVERLAPPING Inductive-coeq-rec #-}
+
 instance
-  Inductive-Coeq
+  Inductive-coeq-elim
     : ∀ {ℓ ℓm} {f g : A → B} {P : Coeq f g → Type ℓ}
     → ⦃ _ : Inductive (∀ x → P (inc x)) ℓm ⦄
     → ⦃ _ : ∀ {x} → H-Level (P x) 1 ⦄
     → Inductive (∀ x → P x) ℓm
-  Inductive-Coeq ⦃ i ⦄ = record
+  Inductive-coeq-elim ⦃ i ⦄ = record
     { methods = i .Inductive.methods
     ; from    = λ f → Coeq-elim-prop (λ x → hlevel 1) (i .Inductive.from f)
     }

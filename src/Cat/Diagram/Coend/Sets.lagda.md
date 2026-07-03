@@ -112,12 +112,12 @@ module _ {o ℓ} {𝒞 : Precategory o ℓ} where
 
   Coends : Functor (Cat[ 𝒞 ^op , Cat[ 𝒞 , Sets (o ⊔ ℓ) ] ]) (Sets (o ⊔ ℓ))
   Coends .F₀ F = el! (Coeq (dimapl F) (dimapr F))
-  Coends .F₁ α =
-    Coeq-rec (λ ∫F → inc (∫F .fst , α .η _ .η _ (∫F .snd))) λ where
-      (X , Y , f , Fxy) →
-        (ap (λ ϕ → Coeq.inc (X , ϕ)) $ α .η _ .is-natural _ _ _ ·ₚ _) ∙∙
-        glue (X , Y , f , α .η X .η Y Fxy) ∙∙
-        (sym $ ap (λ ϕ → Coeq.inc (Y , ϕ)) $ α .is-natural _ _ _ ·ₚ _ ·ₚ _)
+  Coends .F₁ α = rec! λ where
+    .inc* i x → inc (i , α · _ · _ · x)
+    .glue* → ext λ X Y f Fxy →
+         ap (λ ϕ → Coeq.inc (X , ϕ)) (α .η _ .is-natural _ _ _ ·ₚ _)
+      ∙∙ glue (X , Y , f , α .η X .η Y Fxy)
+      ∙∙ sym (ap (λ ϕ → Coeq.inc (Y , ϕ)) (α .is-natural _ _ _ ·ₚ _ ·ₚ _))
   Coends .F-id    = ext λ _ _ → refl
   Coends .F-∘ f g = ext λ _ _ → refl
 ```
