@@ -133,6 +133,12 @@ and contravariant in the other.
       → ψ c' D.∘ F.rmap f ≡ ψ c D.∘ F.lmap f
 ```
 
+<!--
+```agda
+{-# INLINE Cowedge.constructor #-}
+```
+-->
+
 A coend, then, is a universal cowedge. In particular, we say that
 **$(w,\psi)$ is a coend for $F$** such that, given any other wedge
 $(w',\psi)$ under $F$, we can factor $w$ through $w'$ by a unique map $e
