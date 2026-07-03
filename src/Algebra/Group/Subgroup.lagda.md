@@ -78,7 +78,7 @@ rep-subgroup→group-on {G = G} H sg = to-group-on sg' where
 
 predicate→subgroup : (H : ℙ ⌞ G ⌟) → represents-subgroup G H → Subgroup G
 predicate→subgroup {G = G} H p = record { map = it ; monic = ism } where
-  it : Groups.Hom (el! (Σ _ (∣_∣ ⊙ H)) , rep-subgroup→group-on H p) G
+  it : Groups.Hom (el! (∫ₚ H) , rep-subgroup→group-on H p) G
   it .fst = fst
   it .snd .is-group-hom.pres-⋆ x y = refl
 
@@ -105,11 +105,9 @@ module _ {ℓ} where
   open Canonical-kernels (Groups ℓ) ∅ᴳ Groups-equalisers public
 
   Ker-subgroup : ∀ {A B : Group ℓ} → Groups.Hom A B → Subgroup A
-  Ker-subgroup f =
-    record { map   = kernel
-           ; monic = is-equaliser→is-monic _ has-is-kernel }
-    where
-      open Kernel (Ker f)
+  Ker-subgroup f = record where
+    open Kernel (Ker f) renaming (kernel to map)
+    monic = is-equaliser→is-monic _ has-is-kernel
 ```
 
 [zero morphism]: Cat.Diagram.Zero.html
@@ -129,13 +127,6 @@ module _ {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where
     module A = Group-on (A .snd)
     module B = Group-on (B .snd)
     module f = is-group-hom (f .snd)
-
-    Tpath : {x y : image (apply f)} → x .fst ≡ y .fst → x ≡ y
-    Tpath {x} {y} p = Σ-prop-path! p
-
-    abstract
-      Tset : is-set (image (apply f))
-      Tset = hlevel 2
 
     module Kerf = Kernel (Ker f)
 ```
@@ -164,20 +155,21 @@ reader.</summary>
       ∥-∥-map (λ { (y , p) → y A.⁻¹ , f.pres-inv ∙ ap B._⁻¹ p }) p
 
     mul : T → T → T
-    mul (x , xp) (y , yp) = x B.⋆ y ,
-      ∥-∥-elim₂ (λ _ _ → squash)
-        (λ { (x* , xp) (y* , yp)
-           → inc (x* A.⋆ y* , f.pres-⋆ _ _ ∙ ap₂ B._⋆_ xp yp) })
-        xp yp
+    mul (x , xp) (y , yp) = record where
+      fst = x B.⋆ y
+      snd = do
+        (x* , xp) ← xp
+        (y* , yp) ← yp
+        pure $ x* A.⋆ y* , f.pres-⋆ _ _ ∙ ap₂ B._⋆_ xp yp
 
     grp : make-group T
-    grp .make-group.group-is-set = Tset
+    grp .make-group.group-is-set = hlevel 2
     grp .make-group.unit = unit
     grp .make-group.mul = mul
     grp .make-group.inv = inv
-    grp .make-group.assoc = λ x y z → Tpath B.associative
-    grp .make-group.invl = λ x → Tpath B.inversel
-    grp .make-group.idl = λ x → Tpath B.idl
+    grp .make-group.assoc x y z = ext B.associative
+    grp .make-group.invl x = ext B.inversel
+    grp .make-group.idl x = ext B.idl
 ```
 
 </details>
@@ -193,7 +185,7 @@ $$
 ```agda
   A→im : Groups.Hom A A/ker[_]
   A→im .fst x = f · x , inc (x , refl)
-  A→im .snd .is-group-hom.pres-⋆ x y = Tpath (f.pres-⋆ _ _)
+  A→im .snd .is-group-hom.pres-⋆ x y = ext (f.pres-⋆ _ _)
 
   im→B : Groups.Hom A/ker[_] B
   im→B .fst (b , _) = b
@@ -207,7 +199,7 @@ $\im f$.
   Im[_] : Subgroup B
   Im[_] = record { map = im→B ; monic = im↪B } where
     im↪B : Groups.is-monic im→B
-    im↪B = Homomorphism-monic im→B Tpath
+    im↪B = Homomorphism-monic im→B ext
 ```
 
 #### The first isomorphism theorem
@@ -322,10 +314,7 @@ will compute.
 
       gh : Groups.Hom _ _
       gh .fst (x , t) = elim {e' = e'} p t
-      gh .snd .is-group-hom.pres-⋆ (x , q) (y , r) =
-        ∥-∥-elim₂
-          {P = λ q r → elim p (((x , q) Ak.⋆ (y , r)) .snd) ≡ elim p q F.⋆ elim p r}
-          (λ _ _ → F.has-is-set _ _) (λ x y → e'.pres-⋆ _ _) q r
+      gh .snd .is-group-hom.pres-⋆ = elim! λ a b p a' b' q → e'.pres-⋆ _ _
 
     coeq .factors = Grp↪Sets-is-faithful refl
 

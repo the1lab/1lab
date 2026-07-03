@@ -112,9 +112,10 @@ Coeq-elim-prop cprop cinc (squash x y p q i j) =
 <!--
 ```agda
 module
-  _ {ℓ ℓ' ℓ'' ℓm} {A : Type ℓ} {B : Type ℓ'} {P : Type ℓ''} {f g : A → B}
-    ⦃ i : Inductive (B → P) ℓm ⦄
-  where
+  _ {ℓ ℓ' ℓ'' ℓm} {A : Type ℓ} {B : Type ℓ'}
+    (f g : A → B) (P : Coeq f g → Type ℓ'')
+    ⦃ i : Inductive ((x : B) → P (inc x)) ℓm ⦄
+    where
 
   private
     def-glue* : Term → TC ⊤
@@ -125,27 +126,31 @@ module
     field
       inc* : i .Inductive.methods
       @(tactic def-glue*) {glue*}
-        : PathP (λ i → A → P)
+        : PathP (λ i → (x : A) → P (glue x i))
           (i .Inductive.from inc* ∘ f)
           (i .Inductive.from inc* ∘ g)
-      ⦃ squash* ⦄ : H-Level P 2
+      ⦃ squash* ⦄ : ∀ {x} → H-Level (P x) 2
 
   {-# INLINE Coeq-methods.constructor #-}
 
   open Coeq-methods public
 
-  instance
-    Inductive-coeq-rec : Inductive (Coeq f g → P) _
-    Inductive-coeq-rec .Inductive.methods = Coeq-methods
-    Inductive-coeq-rec .Inductive.from ms = go where
-      go : Coeq f g → P
-      go (inc x)              = i .Inductive.from (ms .inc*) x
-      go (glue x i)           = ms .glue* i x
-      go (squash x y p q i j) = is-set→squarep (λ i j → hlevel {T = P} 2) (λ i → go x) (λ i → go (p i)) (λ i → go (q i)) (λ i → go y) i j
-        where instance _ = squash* ms
-    {-# OVERLAPPING Inductive-coeq-rec #-}
-
 instance
+  Inductive-coeq-rec
+    : ∀ {ℓ ℓ' ℓ'' ℓm} {A : Type ℓ} {B : Type ℓ'} {f g : A → B} {P : Type ℓ''}
+    → ⦃ i : Inductive (B → P) ℓm ⦄ → Inductive (Coeq f g → P) _
+  Inductive-coeq-rec {f = f} {g} {P} ⦃ i ⦄ .Inductive.methods = Coeq-methods f g λ _ → P
+  Inductive-coeq-rec {f = f} {g} {P} ⦃ i ⦄ .Inductive.from ms = go where
+    go : Coeq f g → P
+    go (inc x)              = i .Inductive.from (ms .inc*) x
+    go (glue x i)           = ms .glue* i x
+    go (squash x y p q i j) =
+      let
+        instance _ = ms .squash* {x}
+      in is-set→squarep (λ i j → hlevel {T = P} 2)
+        (λ i → go x) (λ i → go (p i)) (λ i → go (q i)) (λ i → go y) i j
+  {-# OVERLAPPING Inductive-coeq-rec #-}
+
   Inductive-coeq-elim
     : ∀ {ℓ ℓm} {f g : A → B} {P : Coeq f g → Type ℓ}
     → ⦃ _ : Inductive (∀ x → P (inc x)) ℓm ⦄

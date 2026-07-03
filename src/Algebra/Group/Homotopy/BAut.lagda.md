@@ -106,16 +106,15 @@ proceed exactly by using connectedness.
 
 ```agda
   BAut-is-hlevel : ∀ n → is-hlevel T n → is-hlevel BAut (1 + n)
-  BAut-is-hlevel zero hl (x , f) (y , g) = Σ-prop-path! (sym (ua f') ∙ ua g')
-    where
-      extract : ∀ {X} → is-prop (T ≃ X)
-      extract f g = ext λ x → ap fst $
-        is-contr→is-prop ((f e⁻¹) .snd .is-eqv (hl .centre))
-          (f .fst x , is-contr→is-prop hl _ _)
-          (g .fst x , is-contr→is-prop hl _ _)
+  BAut-is-hlevel zero hl (x , f) (y , g) = Σ-prop-path! (sym (ua f') ∙ ua g') where
+    extract : ∀ {X} → is-prop (T ≃ X)
+    extract f g = ext λ x → ap fst $
+      is-contr→is-prop ((f e⁻¹) .snd .is-eqv (hl .centre))
+        (f .fst x , is-contr→is-prop hl _ _)
+        (g .fst x , is-contr→is-prop hl _ _)
 
-      f' = ∥-∥-rec extract (λ x → x) f
-      g' = ∥-∥-rec extract (λ x → x) g
+    f' = ∥-∥-rec extract (λ x → x) f
+    g' = ∥-∥-rec extract (λ x → x) g
   BAut-is-hlevel (suc n) hl x y =
     ∥-∥-elim₂ {P = λ _ _ → is-hlevel (x ≡ y) (1 + n)}
       (λ _ _ → is-hlevel-is-prop _)

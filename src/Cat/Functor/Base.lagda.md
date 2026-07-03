@@ -262,8 +262,9 @@ category $\Sets$: these are the _presheaf categories_.
 
 :::{.definition .commented-out #presheaf alias="presheaves"}
 A **category of presheaves** $\psh(\cC)$ on a [[precategory]] $\cC$ is a
-functor $\cC\op \to \Sets_\kappa$, where, for generality, we allow the
-functors to take values in $\Sets$ at any universe level $\kappa$.
+functor category $[\cC\op, \Sets_\kappa]$, where, for generality, we
+allow the functors to take values in $\Sets$ at any universe level
+$\kappa$.
 
 Most commonly, $\cC$ has morphisms in some universe level $\ell$, and
 *the* category of presheaves on $\cC$ takes values in $\Sets_\ell$.
