@@ -256,7 +256,7 @@ a right inverse.
 # Fibration structure
 
 As suggested by it's name, the simple fibration is a fibration.
-given a map $\Gamma \to Delta$ in the base, and a $(\Delta , Y)$
+given a map $\Gamma \to \Delta$ in the base, and a $(\Delta , Y)$
 upstairs, we can construct a lift by selecting $(\Gamma, Y)$ as the
 corner of the lift, and then using the second projection as the lift
 itself. Intuitively, this encodes a substitution of contexts: because

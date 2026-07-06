@@ -704,7 +704,7 @@ uses the universal property that yields a vertical morphism.
 
 Admittedly, the notion of Cartesian morphism is slightly artificial. It
 arises from studying the specific properties of the [[pullback functors]]
-$f^* : \cC/y \to \cC/x$ which exist in a category of pullbacks,
+$f^* : \cC/y \to \cC/x$ which exist in a category with pullbacks,
 hence the similarity in universal property!
 
 In fact, the quintessential example of a Cartesian fibration is the
