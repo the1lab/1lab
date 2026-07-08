@@ -290,22 +290,23 @@ in the relevant comma categories.
 ```agda
   go : Image C f
   go .bot = obj
-  go .has⊥ other = contr dh unique where
-    module o = ↓Obj other
+  go .has-is-init = hom-contr→is-initial λ o → contr (dh o) (unique o) where
+    module _ (other : ↓Obj (!Const (cut f)) (Forget-full-subcat {P = is-monic ⊙ map})) where
+      module o = ↓Obj other
 
-    the-lifting =
-      str-epi .snd _ (o.cod .snd) (o.map .map) right
-        (sym (o.map .com ∙ factors))
+      the-lifting =
+        str-epi .snd _ (o.cod .snd) (o.map .map) right
+          (sym (o.map .com ∙ factors))
 
-    dh : ↓Hom (!Const (cut f)) _ obj other
-    dh .top      = tt
-    dh .bot .map = the-lifting .centre .fst
-    dh .bot .com = the-lifting .centre .snd .snd
-    dh .com      = ext (idr _ ∙ sym (the-lifting .centre .snd .fst))
+      dh : ↓Hom (!Const (cut f)) _ obj other
+      dh .top      = tt
+      dh .bot .map = the-lifting .centre .fst
+      dh .bot .com = the-lifting .centre .snd .snd
+      dh .com      = ext (idr _ ∙ sym (the-lifting .centre .snd .fst))
 
-    unique : ∀ om → dh ≡ om
-    unique om = ↓Hom-path _ _ refl $ ext $ ap fst $ the-lifting .paths $
-      om .bot .map , sym (ap map (om .com)) ∙ idr _ , om .bot .com
+      unique : ∀ om → dh ≡ om
+      unique om = ↓Hom-path _ _ refl $ ext $ ap fst $ the-lifting .paths $
+        om .bot .map , sym (ap map (om .com)) ∙ idr _ , om .bot .com
 ```
 
 # In the lex case

@@ -8,6 +8,7 @@ open import Algebra.Group
 open import Algebra.Ring
 
 open import Cat.Displayed.Univalence.Thin
+open import Cat.Diagram.Initial
 open import Cat.Abelian.Base
 open import Cat.Abelian.Endo
 open import Cat.Prelude hiding (_+_)
@@ -125,5 +126,7 @@ former!
 
 ```agda
 ℤ-module-unique : ∀ {ℓ} (G : Abelian-group ℓ) → is-contr (Ring-action Liftℤ (G .snd))
-ℤ-module-unique G = Equiv→is-hlevel 0 (Action≃Hom Liftℤ G) (Int-is-initial _)
+ℤ-module-unique G =
+  Equiv→is-hlevel 0 (Action≃Hom Liftℤ G)
+  $ is-initial→hom-contr Int-is-initial _
 ```

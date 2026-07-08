@@ -172,7 +172,7 @@ through $k$:
       : ∀ {c} (m : Hom c b) (M-m : M .fst m) (i : Hom a c)
       → m ∘ i ≡ f
       → Hom Im c
-    universal m M i p = im .has⊥ obj .centre .bot .map where
+    universal m M i p = im .¡ {obj} .bot .map where
       obj : ↓Obj _ _
       obj .dom = tt
       obj .cod = cut m , M
@@ -182,7 +182,7 @@ through $k$:
       : ∀ {c} {m : Hom c b} {M : M .fst m} {i : Hom a c}
       → {p : m ∘ i ≡ f}
       → m ∘ universal m M i p ≡ Im→codomain
-    universal-factors {m = m} {M} {i} {p} = im .has⊥ _ .centre .bot .com
+    universal-factors {m = m} {M} {i} {p} = im .¡ .bot .com
 
     universal-commutes
       : ∀ {c} {m : Hom c b} {M : M .fst m} {i : Hom a c}

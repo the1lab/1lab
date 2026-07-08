@@ -520,11 +520,13 @@ equivalence, but it would not be very useful, either.
 ```agda
   free-object→universal-map
     : ∀ {X} → Free-object U X → Initial (X ↙ U)
-  free-object→universal-map fo = λ where
-    .I.bot → ↓obj (fo .unit)
-    .I.has⊥ x .centre  → ↓hom (D.idr _ ∙ sym (fo .commute))
-    .I.has⊥ x .paths p → ↓Hom-path _ _ refl $ sym $
-      fo .unique _ (sym (p .com) ∙ D.idr _)
+  {-# INLINE free-object→universal-map #-}
+  free-object→universal-map fo = to-initial $ record
+    { bot = ↓obj X.unit
+    ; ¡ = ↓hom (D.idr _ ∙ sym X.commute)
+    ; ¡-unique = λ f → ↓Hom-path _ _ refl $ X.unique _ (sym (f .com) ∙ D.idr _)
+    }
+    where module X = Free-object fo
 ```
 
 ### Free objects and adjoints
@@ -699,9 +701,8 @@ $A$ is an initial object in $\cC$.
     free-on-initial→initial
       : (F[⊥] : Free-object U init)
       → is-initial C (F[⊥] .free)
-    free-on-initial→initial F[⊥] x .centre = F[⊥] .fold ¡
-    free-on-initial→initial F[⊥] x .paths f =
-      sym $ F[⊥] .unique f (sym (¡-unique _))
+    free-on-initial→initial F[⊥] .is-initial.¡ = F[⊥] .fold ¡
+    free-on-initial→initial F[⊥] .is-initial.¡-unique f = F[⊥] .unique f (¡-unique _)
 ```
 
 Conversely, if $\cC$ has an initial object $\bot_{\cC}$, then $\bot_{\cC}$
@@ -874,10 +875,10 @@ module _ {o h o' h'} {C : Precategory o h} {D : Precategory o' h'} where
   universal-map→free-object : ∀ {R X} → Universal-morphism R X → Free-object R X
   universal-map→free-object x .free = _
   universal-map→free-object x .unit = x .bot .map
-  universal-map→free-object x .fold f = x .has⊥ (↓obj f) .centre .bot
-  universal-map→free-object x .commute = sym (x .has⊥ _ .centre .com) ∙ C.idr _
+  universal-map→free-object x .fold f = x .¡ {↓obj f} .bot
+  universal-map→free-object x .commute = sym (x .¡ .com) ∙ C.idr _
   universal-map→free-object x .unique g p = ap bot
-    (sym (x .has⊥ _ .paths (↓hom (sym (p ∙ sym (C.idr _))))))
+    (x .¡-unique (↓hom (sym (p ∙ sym (C.idr _)))))
 
   universal-maps→functor : ∀ {R} → (∀ X → Universal-morphism R X) → Functor C D
   universal-maps→functor u = free-objects→functor

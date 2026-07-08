@@ -75,20 +75,20 @@ Ff-unit-is-initial : is-initial (Factorisations C) Ff-unit
 </summary>
 
 ```agda
-Ff-unit-is-initial other = record where
-  module o = Factorisation other
-  centre = record
-    { map = λ (X , Y , f) → record
-      { map = o.λ→ f
-      ; sq₀ = refl
-      ; sq₁ = sym (o.factors f) ∙ introl refl
-      }
-    ; com = λ x y f → Interpolant-pathp (other .S₁ f .sq₀)
+Ff-unit-is-initial .is-initial.¡ {other} = record
+  { map = λ (X , Y , f) → record
+    { map = o.λ→ f
+    ; sq₀ = refl
+    ; sq₁ = sym (o.factors f) ∙ introl refl
     }
-  paths h = ext λ x y f →
-    o.λ→ f          ≡⟨ h .sq₀ᶠᶠ f ⟩
-    h .mapᶠᶠ f ∘ id ≡⟨ elimr refl ⟩
-    h .mapᶠᶠ f      ∎
+  ; com = λ x y f → Interpolant-pathp (other .S₁ f .sq₀)
+  }
+  where module o = Factorisation other
+Ff-unit-is-initial .is-initial.¡-unique {other} h = ext λ x y f →
+    h .mapᶠᶠ f      ≡⟨ intror refl ⟩
+    h .mapᶠᶠ f ∘ id ≡˘⟨ h .sq₀ᶠᶠ f ⟩
+    o.λ→ f          ∎
+  where module o = Factorisation other
 ```
 
 </details>

@@ -10,6 +10,7 @@ open import Cat.Diagram.Coequaliser
 open import Cat.Diagram.Biproduct
 open import Cat.Diagram.Coproduct
 open import Cat.Diagram.Terminal
+open import Cat.Diagram.Initial
 open import Cat.Diagram.Product
 open import Cat.Displayed.Total
 open import Cat.Instances.Slice
@@ -151,17 +152,21 @@ module _ {o ℓ} {C : Precategory o ℓ} (A : Ab-category C) where
   private module A = Ab-category A
 
   id-zero→zero : ∀ {X} → A.id {X} ≡ A.0m → is-zero C X
-  id-zero→zero idm .is-zero.has-is-initial B = contr A.0m λ h → sym $
-    h                                ≡⟨ A.intror refl ⟩
-    h A.∘ A.id                       ≡⟨ A.refl⟩∘⟨ idm ⟩
-    h A.∘ A.0m                       ≡⟨ A.∘-zero-r ⟩
-    A.0m                             ∎
-  id-zero→zero idm .is-zero.has-is-terminal .is-terminal.! = A.0m
-  id-zero→zero idm .is-zero.has-is-terminal .is-terminal.!-unique = λ h →
-    h                              ≡⟨ A.introl refl ⟩
-    A.id A.∘ h                     ≡⟨ idm A.⟩∘⟨refl ⟩
-    A.0m A.∘ h                     ≡⟨ A.∘-zero-l ⟩
-    A.0m                           ∎
+  {-# INLINE id-zero→zero #-}
+  id-zero→zero idm = to-is-zero $ record
+    { ! = A.0m
+    ; ¡ = A.0m
+    ; !-unique = λ h →
+      h          ≡⟨ A.introl refl ⟩
+      A.id A.∘ h ≡⟨ idm A.⟩∘⟨refl ⟩
+      A.0m A.∘ h ≡⟨ A.∘-zero-l ⟩
+      A.0m       ∎
+    ; ¡-unique = λ h →
+      h          ≡⟨ A.intror refl ⟩
+      h A.∘ A.id ≡⟨ A.refl⟩∘⟨ idm ⟩
+      h A.∘ A.0m ≡⟨ A.∘-zero-r ⟩
+      A.0m       ∎
+    }
 ```
 
 Perhaps the simplest example of an $\Ab$-category is.. any ring! In the
@@ -204,7 +209,7 @@ record is-additive {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
   module ∅ = Zero ∅
 
   0m-unique : ∀ {A B} → ∅.zero→ {A} {B} ≡ 0m
-  0m-unique = ap₂ _∘_ (∅.has⊥ _ .paths _) refl ∙ ∘-zero-l
+  0m-unique = ap₂ _∘_ (∅.¡-unique _) refl ∙ ∘-zero-l
 ```
 
 Coincidence of finite products and finite coproducts leads to an object
@@ -412,7 +417,7 @@ monomorphism].
           path : f ∘ kernel f .Kernel.kernel ≡ f ∘ 0m
           path = Ker.equal f
             ∙∙ ∅.zero-∘r _
-            ∙∙ ap₂ _∘_ (∅.has⊥ _ .paths 0m) refl
+            ∙∙ ap₂ _∘_ (sym $ ∅.¡-unique 0m) refl
             ∙∙ ∘-zero-l ∙∙ sym ∘-zero-r
 ```
 -->

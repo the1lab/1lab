@@ -165,11 +165,12 @@ A coproduct is a pushout under a span whose apex is the initial object.
     : ∀ {P X Y I} {in1 : Hom X P} {in2 : Hom Y P} {f : Hom I X} {g : Hom I Y}
     → is-initial C I → is-pushout C f in1 g in2 → is-coproduct C in1 in2
   initial-pushout→coproduct {in1 = in1} {in2} {f} {g} init po = coprod where
+      module init = is-initial init
       module Po = is-pushout po
 
       coprod : is-coproduct C in1 in2
       coprod .is-coproduct.[_,_] in1' in2' =
-        Po.universal {i₁' = in1'} {i₂' = in2'} (is-contr→is-prop (init _) _ _)
+        Po.universal (init.¡-unique₂ (in1' ∘ f) (in2' ∘ g))
       coprod .is-coproduct.[]∘ι₁ = Po.universal∘i₁
       coprod .is-coproduct.[]∘ι₂ = Po.universal∘i₂
       coprod .is-coproduct.unique p q = Po.unique p q
@@ -181,8 +182,8 @@ A coproduct is a pushout under a span whose apex is the initial object.
   with-pushouts bot po = fcc where
     module bot = Initial bot
     mkcoprod : ∀ A B → Coproduct C A B
-    mkcoprod A B = record { has-is-coproduct = initial-pushout→coproduct bot.has⊥ po' }
-      where po' = po (bot.has⊥ A .centre) (bot.has⊥ B .centre) .Pushout.has-is-po
+    mkcoprod A B = record { has-is-coproduct = initial-pushout→coproduct bot.has-is-init po' }
+      where po' = po (bot.¡) (bot.¡) .Pushout.has-is-po
 
     mkcoeq : ∀ {A B} (f g : Hom A B) → Coequaliser C f g
     mkcoeq {A = A} {B} f g = coequ where
@@ -272,9 +273,11 @@ limits]].
     : ∀ {P X Y I} {in1 : Hom X P} {in2 : Hom Y P} {f : Hom I X} {g : Hom I Y}
     → is-initial C I → is-coproduct C in1 in2 → is-pushout C f in1 g in2
   coproduct→initial-pushout i r = po where
+    module I = is-initial i
     open is-pushout
+
     po : is-pushout C _ _ _ _
-    po .square = is-contr→is-prop (i _) _ _
+    po .square = I.¡-unique₂ _ _
     po .universal _ = r .is-coproduct.[_,_] _ _
     po .universal∘i₁ = r .is-coproduct.[]∘ι₁
     po .universal∘i₂ = r .is-coproduct.[]∘ι₂
@@ -312,7 +315,7 @@ module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
       → is-coproduct C in1 in2
       → is-coproduct D (F.₁ in1) (F.₁ in2)
     pres-coproduct  init copr = initial-pushout→coproduct D (pres-⊥ init)
-      (pres-pushout {f = init _ .centre} {g = init _ .centre}
+      (pres-pushout {f = is-initial.¡ init} {g = is-initial.¡ init}
         (coproduct→initial-pushout C init copr))
     pres-epis : ∀ {A B} {f : C.Hom A B} → C.is-epic f → D.is-epic (F.₁ f)
     pres-epis {f = f} epi = is-pushout→is-epic

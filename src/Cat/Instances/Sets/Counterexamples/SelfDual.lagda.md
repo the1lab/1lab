@@ -49,7 +49,7 @@ open Sets.Inverses
 ```agda
 Sets^op-initial : Initial (Sets ℓ ^op)
 Sets^op-initial .bot = el! (Lift _ ⊤)
-Sets^op-initial .has⊥ x = hlevel 0
+Sets^op-initial .has-is-init = hom-contr→is-initial (λ _ → hlevel 0)
 ```
 <!--
 ```agda
@@ -89,7 +89,7 @@ $\Sets\op$ is univalent, so we invoke the propositionality of its initial object
 
 ```agda
     si≡⊤ : si .initial ≡ Sets^op-initial
-    si≡⊤ = ⊥-is-prop _ Sets^op-is-category _ _
+    si≡⊤ = ⊥-is-prop Sets^op-is-category _ _
 
     to-iso-⊤ : (A : Set ℓ) → (Lift ℓ ⊤ → ⌞ A ⌟) → A Sets^op.≅ el! (Lift ℓ ⊤)
     to-iso-⊤ A f = invertible→iso _ _ (subst (is-strict-initial (Sets ℓ ^op)) si≡⊤ (si .has-is-strict) A f)

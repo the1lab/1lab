@@ -102,7 +102,7 @@ applying [[Lambek's lemma]] to the resulting initial algebra.
     → is-weak-initial-fam (FAlg F) Aᵢ
     → Σ[ Fix ∈ Ob ] (F₀ Fix ≅ Fix)
   solution-set→fixpoint Aᵢ complete soln-set =
-    bot .fst , invertible→iso (bot .snd) (lambek F (bot .snd) has⊥)
+    bot .fst , invertible→iso (bot .snd) (lambek F (bot .snd) has-is-init)
     where open Initial (solution-set→initial-algebra Aᵢ complete soln-set)
 ```
 

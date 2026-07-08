@@ -171,8 +171,8 @@ category of sets of _any_ level $\ell$ admits them.
 ```agda
   Sets-initial : Initial (Sets ℓ)
   Sets-initial .bot = el! (Lift _ ⊥)
-  Sets-initial .has⊥ _ .centre ()
-  Sets-initial .has⊥ _ .paths _ = ext λ ()
+  Sets-initial .has-is-init .is-initial.¡ = λ ()
+  Sets-initial .has-is-init .is-initial.¡-unique _ = ext λ ()
 ```
 
 Coproducts are given by disjoint sums:
@@ -287,11 +287,8 @@ disjoint images: We must project out a path $i = j$ from a path $\|
 truncation --- to prove $\bot$ using the assumption that $i ≠ j$.
 
 ```agda
-    coprod .different-images-are-disjoint i j i≠j os = contr map uniq where
-      map : Σ[ x ∈ F i ] Σ[ y ∈ F j ] (coprod.ι i x ≡ coprod.ι j y) → ∣ os ∣
-      map (i , j , p) = absurd (i≠j (ap (∥-∥₀-elim (λ _ → I .is-tr) fst) p))
-
-      uniq : ∀ x → map ≡ x
-      uniq _ = funext λ where
-        (_ , _ , p) → absurd (i≠j (ap (∥-∥₀-elim (λ _ → I .is-tr) fst) p))
+    coprod .different-images-are-disjoint i j i≠j .is-initial.¡ (_ , _ , p) =
+      absurd (i≠j (ap (∥-∥₀-elim (λ _ → I .is-tr) fst) p))
+    coprod .different-images-are-disjoint i j i≠j .is-initial.¡-unique _ = ext λ _ _ p →
+      absurd (i≠j (ap (∥-∥₀-elim (λ _ → I .is-tr) fst) p))
 ```

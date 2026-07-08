@@ -2,8 +2,8 @@
 ```agda
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Instances.Shape.Parallel
-open import Cat.Instances.Shape.Initial
 open import Cat.Diagram.Limit.Equaliser
+open import Cat.Instances.Shape.Initial
 open import Cat.Diagram.Limit.Pullback
 open import Cat.Diagram.Limit.Terminal
 open import Cat.Diagram.Product.Finite

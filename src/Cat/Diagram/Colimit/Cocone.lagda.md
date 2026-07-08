@@ -155,6 +155,7 @@ category we have just constructed.
     → is-initial Cocones K
     → is-colimit F (Cocone.coapex K) (Cocone→cocone K)
   is-initial-cocone→is-colimit {K = K} init = to-is-colimitp colim refl where
+    module K = is-initial init
     open make-is-colimit
     open Cocone
     open Cocone-hom
@@ -162,10 +163,9 @@ category we have just constructed.
     colim : make-is-colimit F (Cocone.coapex K)
     colim .ψ = K .ψ
     colim .commutes = K .commutes
-    colim .universal eta p = init (cocone _ eta p) .centre .map
-    colim .factors eta p = init (cocone _ eta p) .centre .com _
-    colim .unique eta p other q =
-      ap map (sym (init (cocone _ eta p) .paths (cocone-hom other q)))
+    colim .universal eta p = K.¡ {cocone _ eta p} .map
+    colim .factors eta p = K.¡ .com _
+    colim .unique eta p other q = ap map $ K.¡-unique (cocone-hom other q)
 ```
 
 To finish concretising the correspondence, note that this process is
@@ -183,15 +183,15 @@ invertible: From a colimit, we can extract an initial cocone.
 </summary>
 
 ```agda
-  is-colimit→is-initial-cocone {x  = x} L K = init where
-    module L = is-colimit L
-    module K = Cocone K
-    open Cocone-hom
-
-    init : is-contr (Cocone-hom (cocone x L.ψ L.commutes) K)
-    init .centre .map   = L.universal K.ψ K.commutes
-    init .centre .com _ = L.factors K.ψ K.commutes
-    init .paths f =
-      Cocone-hom-path (sym (L.unique K.ψ K.commutes (f .map) (f .com)))
+  {-# INLINE is-colimit→is-initial-cocone #-}
+  is-colimit→is-initial-cocone {x  = x} L = record
+    { ¡ = λ {K} →
+      cocone-hom (L.universal (K .ψ) (K .commutes)) (λ _ → L.factors (K .ψ) (K .commutes))
+    ; ¡-unique = λ f → Cocone-hom-path (L.unique _ _ (f .map) (f .com))
+    }
+    where
+      module L = is-colimit L
+      open Cocone
+      open Cocone-hom
 ```
 </details>

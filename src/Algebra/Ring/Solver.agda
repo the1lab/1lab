@@ -19,6 +19,7 @@ open import Algebra.Group.Ab
 open import Algebra.Group
 open import Algebra.Ring
 
+open import Cat.Diagram.Initial
 open import Cat.Displayed.Total
 open import Cat.Prelude hiding (_+_ ; _*_ ; _-_)
 
@@ -38,13 +39,14 @@ open ∫Hom
 module Algebra.Ring.Solver where
 
 module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
+  open is-initial
   private
     R' : Ring _
     R' = record { fst = el _ (CRing-on.has-is-set cring) ; snd = CRing-on.has-ring-on cring }
 
     module R = Kit R'
 
-    ℤ↪R-rh = Int-is-initial R' .centre
+    ℤ↪R-rh = Int-is-initial .¡ {R'}
     module ℤ↪R = is-ring-hom (ℤ↪R-rh .snd)
 
     open CRing-on cring using (*-commutes)
@@ -56,7 +58,7 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
     : {h' : Int → R}
     → is-ring-hom (Liftℤ {ℓ} .snd) (R' .snd) (h' ⊙ lower)
     → ∀ x → embed-coe x ≡ h' x
-  embed-lemma p x = Int-is-initial R' .paths (∫hom _ p) ·ₚ lift x
+  embed-lemma p x = sym $ Int-is-initial .¡-unique (∫hom _ p) ·ₚ lift x
 
   data Poly   : Nat → Type ℓ
   data Normal : Nat → Type ℓ

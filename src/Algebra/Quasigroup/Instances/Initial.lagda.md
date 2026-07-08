@@ -51,13 +51,13 @@ of quasigroups, as there is a unique function out of the empty type.
 
 ```agda
 Empty-quasigroup-is-initial : is-initial (Quasigroups ℓ) Empty-quasigroup
-Empty-quasigroup-is-initial A .centre .fst ()
-Empty-quasigroup-is-initial A .centre .snd .is-quasigroup-hom.pres-⋆ ()
-Empty-quasigroup-is-initial A .paths f = ext λ ()
+Empty-quasigroup-is-initial .is-initial.¡ .fst ()
+Empty-quasigroup-is-initial .is-initial.¡ .snd .is-quasigroup-hom.pres-⋆ ()
+Empty-quasigroup-is-initial .is-initial.¡-unique f = ext λ ()
 
 Initial-quasigroup : Initial (Quasigroups ℓ)
 Initial-quasigroup .Initial.bot = Empty-quasigroup
-Initial-quasigroup .Initial.has⊥ = Empty-quasigroup-is-initial
+Initial-quasigroup .Initial.has-is-init = Empty-quasigroup-is-initial
 ```
 
 In fact, the empty quasigroup is a [[strict initial object]].

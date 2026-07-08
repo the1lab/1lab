@@ -152,8 +152,10 @@ also be an inverse, so $\alpha$ is invertible.
   lambek {a} α initial = inverses→invertible $
     algebra-section→inverses α unroll roll-unroll
     where
+      module α = is-initial initial
+
       unroll : FAlg.Hom (a , α) (F.₀ a , F.₁ α)
-      unroll = initial (F.₀ a , F.₁ α) .centre
+      unroll = α.¡ {F.₀ a , F.₁ α}
 
       roll : FAlg.Hom (F.₀ a , F.₁ α) (a , α)
       roll .fst = α
@@ -161,8 +163,7 @@ also be an inverse, so $\alpha$ is invertible.
 
       roll-unroll : α ∘ unroll .fst ≡ id
       roll-unroll =
-        ap fst $
-        is-contr→is-prop (initial (a , α)) (roll FAlg.∘ unroll) FAlg.id
+        ap fst $ α.¡-unique₂ (roll FAlg.∘ unroll) FAlg.id
 ```
 
 This result means that an initial $F$-algebra $(A, \alpha)$ is a fixpoint of the
@@ -231,7 +232,7 @@ where $\omega$ is the [[poset of natural numbers]], regarded as a category.
 
 ```agda
     Fⁿ[⊥]-id : ∀ n → F₁ⁿ[⊥] (≤-refl {n}) ≡ id
-    Fⁿ[⊥]-id zero = ¡-unique id
+    Fⁿ[⊥]-id zero = sym $ ¡-unique id
     Fⁿ[⊥]-id (suc n) = F.elim (Fⁿ[⊥]-id n)
 
     Fⁿ[⊥]-∘
@@ -261,7 +262,7 @@ in $n$.
       : ∀ {a} {α : Hom (F.₀ a) a} {m n}
       → (m≤n : m ≤ n)
       → Fⁿ[⊥]-fold α n ∘ F₁ⁿ[⊥] m≤n ≡ Fⁿ[⊥]-fold α m
-    Fⁿ[⊥]-fold-nat {m = 0} {n = n} m≤n = sym (¡-unique _)
+    Fⁿ[⊥]-fold-nat {m = 0} {n = n} m≤n = ¡-unique _
     Fⁿ[⊥]-fold-nat {m = suc m} {n = suc n} m≤n = F.pullr (Fⁿ[⊥]-fold-nat (≤-peel m≤n))
 ```
 
@@ -318,7 +319,7 @@ paired with the universal property of $F^{\infty}(\bot)$.
         → (f : Hom ∐Fⁿ[⊥] a)
         → f ∘ roll ≡ α ∘ F.₁ f
         → ∀ n → f ∘ ∐Fⁿ[⊥].ψ n ≡ Fⁿ[⊥]-fold α n
-      fold-step {α = α} f p zero = sym (¡-unique _)
+      fold-step {α = α} f p zero = ¡-unique _
       fold-step {α = α} f p (suc n) =
          f ∘ ∐Fⁿ[⊥].ψ (suc n)               ≡˘⟨ ap (f ∘_) (F[∐Fⁿ[⊥]].factors _ _) ⟩
          f ∘ roll ∘ F.F₁ (∐Fⁿ[⊥].ψ n)       ≡⟨ pulll p ⟩
@@ -329,8 +330,8 @@ paired with the universal property of $F^{\infty}(\bot)$.
         : ∀ {a} {α : Hom (F.₀ a) a}
         → (f : Hom ∐Fⁿ[⊥] a)
         → f ∘ roll ≡ α ∘ F.₁ f
-        → fold α ≡ f
-      fold-unique f p = sym $ ∐Fⁿ[⊥].unique _ _ _ (fold-step f p)
+        → f ≡ fold α
+      fold-unique f p = ∐Fⁿ[⊥].unique _ _ _ (fold-step f p)
 ```
 
 If we put all the pieces together, we observe that $(F^{\infty}(\bot), \mathrm{roll})$
@@ -340,9 +341,9 @@ is an initial $F$-algebra.
       ∐Fⁿ[⊥]-initial : Initial FAlg
       ∐Fⁿ[⊥]-initial .Initial.bot .fst = ∐Fⁿ[⊥]
       ∐Fⁿ[⊥]-initial .Initial.bot .snd = roll
-      ∐Fⁿ[⊥]-initial .Initial.has⊥ (a , α) .centre .fst = fold α
-      ∐Fⁿ[⊥]-initial .Initial.has⊥ (a , α) .centre .snd = fold-roll α
-      ∐Fⁿ[⊥]-initial .Initial.has⊥ (a , α) .paths f =
+      ∐Fⁿ[⊥]-initial .Initial.has-is-init .is-initial.¡ {a , α} .fst = fold α
+      ∐Fⁿ[⊥]-initial .Initial.has-is-init .is-initial.¡ {a , α} .snd = fold-roll α
+      ∐Fⁿ[⊥]-initial .Initial.has-is-init .is-initial.¡-unique f =
         ∫Hom-path F-Algebras (fold-unique (f .fst) (f .snd)) prop!
 ```
 

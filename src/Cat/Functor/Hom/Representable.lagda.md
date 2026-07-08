@@ -333,53 +333,51 @@ corepresentation→initial-element
 <summary>The proofs are again entirely analogous to the representable case.</summary>
 
 ```agda
+{-# INLINE initial-element→corepresentation #-}
 initial-element→corepresentation {F} init = f-corep where
   module F = Functor F
   open Initial init
   open Co.Element-hom
   nat : F => Hom-from C (bot .fst)
-  nat .η ob section = has⊥ (Co.elem ob section) .centre .hom
-  nat .is-natural x y f = funext λ sect → ap hom $ has⊥ _ .paths $ Co.elem-hom _ $
-    F.₁ (f C.∘ has⊥ _ .centre .hom) (bot .snd)   ≡⟨ happly (F.F-∘ _ _) _ ⟩
-    F.₁ f (F.₁ (has⊥ _ .centre .hom) (bot .snd)) ≡⟨ ap (F.₁ f) (has⊥ _ .centre .commute) ⟩
-    F.₁ f sect                                   ∎
+  nat .η ob section = ¡ {Co.elem ob section} .hom
+  nat .is-natural x y f = funext λ sect →
+    ap hom $ sym $ ¡-unique $ Co.elem-hom _ $
+    F.₁ (f C.∘ ¡ .hom) (bot .snd)   ≡⟨ happly (F.F-∘ _ _) _ ⟩
+    F.₁ f (F.₁ (¡ .hom) (bot .snd)) ≡⟨ ap (F.₁ f) (¡ .commute) ⟩
+    F.₁ f sect                      ∎
 
   inv : ∀ x → Sets.is-invertible (nat .η x)
   inv x = Sets.make-invertible
     (λ f → F.₁ f (bot .snd))
-    (funext λ x → ap hom $ has⊥ _ .paths (Co.elem-hom x refl))
-    (funext λ x → has⊥ _ .centre .commute)
+    (funext λ x → ap hom $ sym $ ¡-unique (Co.elem-hom x refl))
+    (funext λ x → ¡ .commute)
 
   f-corep : Corepresentation F
   f-corep .corep = bot .fst
   f-corep .corepresents = [C,Sets].invertible→iso nat $
     invertible→invertibleⁿ nat inv
 
-corepresentation→initial-element {F} F-corep = init where
-  module F = Functor F
-  module R = corep F-corep
-  open Initial
-  open Co.Element-hom
-
-  init : Initial (Co.∫ F)
-  init .bot .fst = F-corep .corep
-  init .bot .snd = R.from .η _ C.id
-  init .has⊥ (Co.elem o s) .centre .hom = R.to .η _ s
-  init .has⊥ (Co.elem o s) .centre .commute =
-    F.₁ (R.to .η o s) (R.from .η _ C.id) ≡˘⟨ R.from .is-natural _ _ _ $ₚ _ ⟩
-    R.from .η _ ⌜ R.to .η o s C.∘ C.id ⌝ ≡⟨ ap! (C.idr _) ⟩
-    R.from .η _ (R.to .η o s)            ≡⟨ unext R.invr o s ⟩
-    s                                    ∎
-  init .has⊥ (Co.elem o s) .paths h = ext $
-    R.to .η o ⌜ s ⌝                  ≡˘⟨ ap¡ comm ⟩
-    R.to .η o (R.from .η _ (h .hom)) ≡⟨ unext R.invl o _ ⟩
-    h .hom                           ∎
-    where
-      comm =
-        R.from .η _ ⌜ h .hom ⌝          ≡˘⟨ ap¡ (C.idr _) ⟩
-        R.from .η _ (h .hom C.∘ C.id)   ≡⟨ R.from .is-natural _ _ _ $ₚ _ ⟩
-        F.₁ (h .hom) (R.from .η _ C.id) ≡⟨ h .commute ⟩
-        s                               ∎
+corepresentation→initial-element {F} F-corep = record
+  { bot = F-corep .corep , R.from .η (F-corep .corep) C.id
+  ; has-is-init = record
+    { ¡ = λ {x} → Co.elem-hom (R.to .η (x .fst) (x .snd)) $
+      F.₁ (R.to .η _ (x .snd)) (R.from .η _ C.id) ≡˘⟨ R.from .is-natural _ _ _ $ₚ _ ⟩
+      R.from .η _ ⌜ R.to .η _ (x .snd) C.∘ C.id ⌝ ≡⟨ ap! (C.idr _) ⟩
+      R.from .η _ (R.to .η _ (x .snd))            ≡⟨ unext R.invr (x .fst) (x .snd) ⟩
+      x .snd                                      ∎
+    ; ¡-unique = λ {x} h → ext $
+      h .hom                                                     ≡˘⟨ unext R.invl _ _ ⟩
+      R.to .η _ (R.from .η _ (h .hom))                           ≡˘⟨ ap (R.to .η _ ⊙ R.from .η _) (C.idr _) ⟩
+      R.to .η (x .fst) (R.from .η (x .fst) (h .hom C.∘ C.id))    ≡⟨ ap (R.to .η _) (R.from .is-natural _ _ _ ·ₚ C.id) ⟩
+      R.to .η _ (F.₁ (h .hom) (R.from .η (F-corep .corep) C.id)) ≡⟨ ap (R.to .η _) (h .commute) ⟩
+      R.to .η _ (x .snd) ∎
+    }
+  }
+  where
+    module F = Functor F
+    module R = corep F-corep
+    open Initial
+    open Co.Element-hom
 ```
 </details>
 

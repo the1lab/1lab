@@ -143,7 +143,7 @@ object]] in $\Pos$.
 ```agda
 Posets-initial : ∀ {o ℓ} → Initial (Posets o ℓ)
 Posets-initial .bot = 𝟘ᵖ
-Posets-initial .has⊥ P .centre .hom    ()
-Posets-initial .has⊥ P .centre .pres-≤ ()
-Posets-initial .has⊥ P .paths f = ext λ ()
+Posets-initial .has-is-init .is-initial.¡ .hom ()
+Posets-initial .has-is-init .is-initial.¡ .pres-≤ ()
+Posets-initial .has-is-init .is-initial.¡-unique _ = ext λ ()
 ```

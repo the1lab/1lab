@@ -209,15 +209,11 @@ the code below demonstrates.
 
     im : Initial _
     im .bot = itself
-    im .has⊥ other = contr hom unique where
-      hom : ↓Hom _ _ itself other
-      hom .top = tt
-      hom .bot = other .map
-      hom .com = ext refl
-
-      unique : ∀ x → hom ≡ x
-      unique x = ↓Hom-path _ _ refl
-        (ext (intror refl ∙ ap map (x .com) ∙ elimr refl))
+    im .has-is-init .is-initial.¡ {o} .top = tt
+    im .has-is-init .is-initial.¡ {o} .bot = o .map
+    im .has-is-init .is-initial.¡ {o} .com = ext refl
+    im .has-is-init .is-initial.¡-unique {o} h =
+      ↓Hom-path _ _ refl (ext (intror refl ∙ ap map (sym (h .com)) ∙ elimr refl))
 ```
 
 Hence the characterisation of regular monomorphisms given in the

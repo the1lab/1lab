@@ -294,11 +294,13 @@ is-initial→is-disjoint-coproduct
   → is-initial C ∅
   → is-disjoint-coproduct F i
 is-initial→is-disjoint-coproduct {F = F} {i = i} init = is-disjoint where
+  open is-initial init
   open is-indexed-coproduct
+
   is-coprod : is-indexed-coproduct F i
-  is-coprod .match _ = init _ .centre
+  is-coprod .match _ = ¡
   is-coprod .commute {i = i} = absurd i
-  is-coprod .unique {h = h} f p i = init _ .paths h (~ i)
+  is-coprod .unique {h = h} f p = ¡-unique h
 
   open is-disjoint-coproduct
   is-disjoint : is-disjoint-coproduct F i

@@ -27,11 +27,13 @@ coincide. When this occurs, we call the object a **zero object**.
 
 ```agda
   record is-zero (ob : Ob) : Type (o ⊔ h) where
+    no-eta-equality
     field
       has-is-initial  : is-initial C ob
       has-is-terminal : is-terminal C ob
 
   record Zero : Type (o ⊔ h) where
+    no-eta-equality
     field
       ∅       : Ob
       has-is-zero : is-zero ∅
@@ -42,7 +44,7 @@ coincide. When this occurs, we call the object a **zero object**.
     terminal = record { top = ∅ ; has-is-term = has-is-terminal }
 
     initial : Initial C
-    initial = record { bot = ∅ ; has⊥ = has-is-initial }
+    initial = record { bot = ∅ ; has-is-init = has-is-initial }
 
     open Terminal terminal public hiding (top)
     open Initial initial public hiding (bot)
@@ -59,7 +61,7 @@ $0 = ¡ \circ ! : x \to y$ is called the **zero morphism**.
     zero→ = ¡ ∘ !
 
     zero-∘l : ∀ {x y z} → (f : Hom y z) → f ∘ zero→ {x} {y} ≡ zero→
-    zero-∘l f = pulll (sym (¡-unique (f ∘ ¡)))
+    zero-∘l f = pulll (¡-unique (f ∘ ¡))
 
     zero-∘r : ∀ {x y z} → (f : Hom x y) → zero→ {y} {z} ∘ f ≡ zero→
     zero-∘r f = pullr (!-unique (! ∘ f))
@@ -101,6 +103,9 @@ earlier acts as the designated basepoint for each of the hom sets.
 
 <!--
 ```agda
+{-# INLINE is-zero.constructor #-}
+{-# INLINE Zero.constructor #-}
+
 module _ {o h} {C : Precategory o h} where
   open Cat.Reasoning C
   private unquoteDecl is-zero-eqv = declare-record-iso is-zero-eqv (quote is-zero)
@@ -122,5 +127,26 @@ module _ {o h} {C : Precategory o h} where
       embedding→extensional
         (Iso→Embedding zero-eqv ∙emb (fst , Subset-proj-embedding (λ _ → hlevel 1)))
         sa
+
+  record make-is-zero (∅ : Ob) : Type (o ⊔ h) where
+    field
+      ! : ∀ {x} → Hom x ∅
+      ¡ : ∀ {x} → Hom ∅ x
+      !-unique : ∀ {x} (h : Hom x ∅) → h ≡ !
+      ¡-unique : ∀ {x} (h : Hom ∅ x) → h ≡ ¡
+
+  to-is-zero : ∀ {∅} → make-is-zero ∅ → is-zero C ∅
+  {-# INLINE to-is-zero #-}
+  to-is-zero mk = record
+    { has-is-initial = record
+      { ¡ = ¡
+      ; ¡-unique = ¡-unique
+      }
+    ; has-is-terminal = record
+      { ! = !
+      ; !-unique = !-unique
+      }
+    }
+    where open make-is-zero mk
 ```
 -->

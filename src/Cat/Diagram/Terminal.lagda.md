@@ -77,6 +77,16 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     : Terminal C ≃ (Σ[ apex ∈ Ob ] is-terminal C apex)
   Terminal≃is-terminal = Iso→Equiv terminal-Σ-iso
 
+  instance
+    Extensional-Terminal
+      : ∀ {ℓr}
+      → ⦃ sa : Extensional Ob ℓr ⦄
+      → Extensional (Terminal C) ℓr
+    Extensional-Terminal ⦃ sa ⦄ =
+      embedding→extensional
+        (Equiv→Embedding Terminal≃is-terminal ∙emb (fst , Subset-proj-embedding (λ _ → hlevel 1)))
+        sa
+
   -- Flattened record to make constructing terminal objects using
   -- 'record where' and 'record { Module }' easier.
   record make-terminal : Type (o ⊔ ℓ) where
@@ -96,7 +106,6 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     }
     where open make-terminal mk
 
-unquoteDecl Terminal-path = declare-record-path Terminal-path (quote Terminal)
 ```
 -->
 
@@ -201,7 +210,7 @@ terminal objects:
 
 ```agda
   ⊤-is-prop : is-category C → is-prop (Terminal C)
-  ⊤-is-prop ccat x1 x2 = Terminal-path (ccat .to-path (⊤-unique x1 x2))
+  ⊤-is-prop ccat x1 x2 = ext (ccat .to-path (⊤-unique x1 x2))
 
   is-terminal-iso : ∀ {A B} → A ≅ B → is-terminal C A → is-terminal C B
   is-terminal-iso {B = B} isom A-term = B-term where
@@ -240,21 +249,3 @@ to the unique functor $\cC \to \top$ if and only if $x$ is terminal.
       (Σ-contr-snd (λ _ → hlevel 0) e⁻¹)
       (R-adjunct-is-equiv adj .is-eqv _)
 ```
-
-<!--
-```agda
-module _ {o h} {C : Precategory o h} where
-  open Cat.Reasoning C
-  private unquoteDecl eqv = declare-record-iso eqv (quote Terminal)
-
-  instance
-    Extensional-Terminal
-      : ∀ {ℓr}
-      → ⦃ sa : Extensional Ob ℓr ⦄
-      → Extensional (Terminal C) ℓr
-    Extensional-Terminal ⦃ sa ⦄ =
-      embedding→extensional
-        (Iso→Embedding eqv ∙emb (fst , Subset-proj-embedding (λ _ → hlevel 1)))
-        sa
-```
--->

@@ -3,9 +3,9 @@
 open import Cat.Diagram.Colimit.Coequaliser
 open import Cat.Diagram.Colimit.Coproduct
 open import Cat.Instances.Shape.Terminal
-open import Cat.Instances.Shape.Initial
 open import Cat.Diagram.Colimit.Initial
 open import Cat.Diagram.Limit.Equaliser
+open import Cat.Instances.Shape.Initial
 open import Cat.Diagram.Limit.Terminal
 open import Cat.Diagram.Limit.Product
 open import Cat.Diagram.Colimit.Base

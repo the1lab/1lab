@@ -146,38 +146,59 @@ $C\op$. We prove these correspondences here:
 
   is-coterminal→is-initial
     : ∀ {A} → is-terminal (C ^op) A → is-initial C A
-  is-coterminal→is-initial term = Equiv.to is-terminal-univ term
+  {-# INLINE is-coterminal→is-initial #-}
+  is-coterminal→is-initial term = record
+    { ¡ = term.!
+    ; ¡-unique = term.!-unique
+    }
+    where module term = is-terminal term
 
   is-terminal→is-coinitial
     : ∀ {A} → is-terminal C A → is-initial (C ^op) A
-  is-terminal→is-coinitial term = Equiv.to is-terminal-univ term
+  {-# INLINE is-terminal→is-coinitial #-}
+  is-terminal→is-coinitial term = record
+    { ¡ = term.!
+    ; ¡-unique = term.!-unique
+    }
+    where module term = is-terminal term
 
   is-initial→is-coterminal
     : ∀ {A} → is-initial C A → is-terminal (C ^op) A
   {-# INLINE is-initial→is-coterminal #-}
-  is-initial→is-coterminal = hom-contr→is-terminal
+  is-initial→is-coterminal init = record
+    { ! = init.¡
+    ; !-unique = init.¡-unique
+    }
+    where module init = is-initial init
 
   is-coinitial→is-terminal
     : ∀ {A} → is-initial (C ^op) A → is-terminal C A
   {-# INLINE is-coinitial→is-terminal #-}
-  is-coinitial→is-terminal = hom-contr→is-terminal
+  is-coinitial→is-terminal init = record
+    { ! = init.¡
+    ; !-unique = init.¡-unique
+    }
+    where module init = is-initial init
 
   Coterminal→Initial : Terminal (C ^op) → Initial C
+  {-# INLINE Coterminal→Initial #-}
   Coterminal→Initial term .bot = term .top
-  Coterminal→Initial term .has⊥ = is-coterminal→is-initial (term .has-is-term)
+  Coterminal→Initial term .has-is-init = is-coterminal→is-initial (term .has-is-term)
 
   Terminal→Coinitial : Terminal C → Initial (C ^op)
+  {-# INLINE Terminal→Coinitial #-}
   Terminal→Coinitial term .bot = term .top
-  Terminal→Coinitial term .has⊥ = is-terminal→is-coinitial (term .has-is-term)
+  Terminal→Coinitial term .has-is-init = is-terminal→is-coinitial (term .has-is-term)
 
   Initial→Coterminal : Initial C → Terminal (C ^op)
+  {-# INLINE Initial→Coterminal #-}
   Initial→Coterminal init .top = init .bot
-  Initial→Coterminal init .has-is-term = is-initial→is-coterminal (init .has⊥)
+  Initial→Coterminal init .has-is-term = is-initial→is-coterminal (init .has-is-init)
 
   Coinitial→terminal : Initial (C ^op) → Terminal C
   {-# INLINE Coinitial→terminal #-}
   Coinitial→terminal init .top = init .bot
-  Coinitial→terminal init .has-is-term = is-coinitial→is-terminal (init .has⊥)
+  Coinitial→terminal init .has-is-term = is-coinitial→is-terminal (init .has-is-init)
 ```
 
 ## Pullback/pushout

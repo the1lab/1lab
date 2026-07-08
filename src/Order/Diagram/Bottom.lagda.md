@@ -96,9 +96,12 @@ hom-sets with hom-props!
 
 ```agda
 is-bottom→initial : ∀ {x} → is-bottom x → is-initial (poset→category P) x
-is-bottom→initial is-bot x .centre = is-bot x
-is-bottom→initial is-bot x .paths _ = ≤-thin _ _
+{-# INLINE is-bottom→initial #-}
+is-bottom→initial x-bot = record
+  { ¡ = λ {x} → x-bot x
+  ; ¡-unique = λ {x} h → ≤-thin h (x-bot x)
+  }
 
 initial→is-bottom : ∀ {x} → is-initial (poset→category P) x → is-bottom x
-initial→is-bottom initial x = initial x .centre
+initial→is-bottom initial x = is-initial.¡ initial {x}
 ```

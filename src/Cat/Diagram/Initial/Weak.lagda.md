@@ -76,7 +76,8 @@ the joint equaliser $i : L \to X$ of all arrows $X \to X$ is an initial object.
     → is-joint-equaliser C {I = Hom X X} (λ x → x) l
     → has-equalisers C
     → is-initial C L
-  is-weak-initial→equaliser X {L} {i} is-wi lim eqs y = contr cen (p' _) where
+  {-# INLINE is-weak-initial→equaliser #-}
+  is-weak-initial→equaliser X {L} {i} is-wi lim eqs = L-initial where
     open is-joint-equaliser lim
 ```
 
@@ -86,7 +87,7 @@ arrows $f, g : L \to Y$, consider their equaliser $j : E \to L$. First,
 we have some arrow $k : X \to E$.
 
 ```agda
-    p' : is-prop (Hom L y)
+    p' : ∀ {y} → is-prop (Hom L y)
     p' f g = ∥-∥-out! do
       let
         module fg = Equaliser (eqs f g)
@@ -124,8 +125,12 @@ since $j$ equalises $f$ and $g$ by construction, we have $f = g$!
 
       pure (s f g fg.equal)
 
-    cen : Hom L y
-    cen = ∥-∥-out p' ((_∘ i) <$> is-wi y)
+    cen : ∀ {y} → Hom L y
+    cen {y} = ∥-∥-out p' ((_∘ i) <$> is-wi y)
+
+    L-initial : is-initial C L
+    {-# INLINE L-initial #-}
+    L-initial = hom-contr→is-initial λ y → is-prop∙→is-contr p' cen
 ```
 
 Putting this together, we can show that, if a [[complete category]] has
@@ -138,7 +143,7 @@ a small weakly initial family, then it has an initial object.
     → is-weak-initial-fam F
     → Initial C
   is-complete-weak-initial→initial {κ = κ} {I} F compl wif =
-    record { has⊥ = equal-is-initial } where
+    record { has-is-init = equal-is-initial } where
 ```
 
 <details>

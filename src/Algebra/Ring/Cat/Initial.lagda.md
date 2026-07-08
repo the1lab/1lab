@@ -69,8 +69,9 @@ prove...], so here it is:
 
 ```agda
 Int-is-initial : is-initial (Rings ℓ) Liftℤ
-Int-is-initial R = contr z→r λ x → ext (lemma x) where
-  module R = Kit R
+Int-is-initial = hom-contr→is-initial λ R → contr (z→r R) λ h → ext (lemma R h) where
+  module _ (R : Ring ℓ) where
+    module R = Kit R
 ```
 
 Note that we treat 1 with care: we could have this map 1 to `1r + 0r`,
@@ -79,10 +80,10 @@ embedding. This will result in a bit more work right now, but is work
 worth doing.
 
 ```agda
-  e : Nat → ⌞ R ⌟
-  e zero          = R.0r
-  e (suc zero)    = R.1r
-  e (suc (suc x)) = R.1r R.+ e (suc x)
+    e : Nat → ⌞ R ⌟
+    e zero          = R.0r
+    e (suc zero)    = R.1r
+    e (suc (suc x)) = R.1r R.+ e (suc x)
 ```
 
 Zero gets sent to zero, and "adding one" gets sent to adding one. Is
@@ -92,32 +93,32 @@ naturals to sums in $R$, and products of naturals to products in $R$.
 We'll need this later.
 
 ```agda
-  e-suc : ∀ n → e (suc n) ≡ R.1r R.+ e n
-  e-add : ∀ m n → e (m Nat.+ n) ≡ e m R.+ e n
-  e-mul : ∀ m n → e (m Nat.* n) ≡ e m R.* e n
+    e-suc : ∀ n → e (suc n) ≡ R.1r R.+ e n
+    e-add : ∀ m n → e (m Nat.+ n) ≡ e m R.+ e n
+    e-mul : ∀ m n → e (m Nat.* n) ≡ e m R.* e n
 ```
 
 <!--
 ```agda
-  e-suc zero = sym R.+-idr
-  e-suc (suc n) = refl
+    e-suc zero = sym R.+-idr
+    e-suc (suc n) = refl
 
-  e-add zero n = sym R.+-idl
-  e-add (suc m) n =
-    e (suc m Nat.+ n)      ≡⟨ e-suc (m Nat.+ n) ⟩
-    R.1r R.+ e (m Nat.+ n) ≡⟨ ap (R.1r R.+_) (e-add m n) ⟩
-    R.1r R.+ (e m R.+ e n) ≡⟨ R.+-associative ⟩
-    (R.1r R.+ e m) R.+ e n ≡˘⟨ ap (R._+ e n) (e-suc m) ⟩
-    e (suc m) R.+ e n ∎
+    e-add zero n = sym R.+-idl
+    e-add (suc m) n =
+      e (suc m Nat.+ n)      ≡⟨ e-suc (m Nat.+ n) ⟩
+      R.1r R.+ e (m Nat.+ n) ≡⟨ ap (R.1r R.+_) (e-add m n) ⟩
+      R.1r R.+ (e m R.+ e n) ≡⟨ R.+-associative ⟩
+      (R.1r R.+ e m) R.+ e n ≡˘⟨ ap (R._+ e n) (e-suc m) ⟩
+      e (suc m) R.+ e n ∎
 
-  e-mul zero n = sym R.*-zerol
-  e-mul (suc m) n =
-    e (suc m Nat.* n)            ≡⟨ e-add n (m Nat.* n) ⟩
-    e n R.+ e (m Nat.* n)        ≡⟨ ap (e n R.+_) (e-mul m n) ⟩
-    e n R.+ e m R.* e n          ≡˘⟨ ap (R._+ (e m R.* e n)) R.*-idl ⟩
-    R.1r R.* e n R.+ e m R.* e n ≡˘⟨ R.*-distribr ⟩
-    (R.1r R.+ e m) R.* e n       ≡˘⟨ ap (R._* e n) (e-suc m) ⟩
-    (e (suc m) R.* e n) ∎
+    e-mul zero n = sym R.*-zerol
+    e-mul (suc m) n =
+      e (suc m Nat.* n)            ≡⟨ e-add n (m Nat.* n) ⟩
+      e n R.+ e (m Nat.* n)        ≡⟨ ap (e n R.+_) (e-mul m n) ⟩
+      e n R.+ e m R.* e n          ≡˘⟨ ap (R._+ (e m R.* e n)) R.*-idl ⟩
+      R.1r R.* e n R.+ e m R.* e n ≡˘⟨ R.*-distribr ⟩
+      (R.1r R.+ e m) R.* e n       ≡˘⟨ ap (R._* e n) (e-suc m) ⟩
+      (e (suc m) R.* e n) ∎
 ```
 -->
 
@@ -129,13 +130,13 @@ integers, i.e. we need $e(m) - e(n) = e(1 + m) - e(1 + n)$. This is
 annoying to show, but not _too_ annoying:
 
 ```agda
-  e-tr : ∀ m n → e m R.- e n ≡ e (suc m) R.- e (suc n)
-  e-tr m n = sym $
-    (e (suc m) R.- e (suc n))                   ≡⟨ ap₂ R._-_ (e-suc m) (e-suc n) ⟩
-    (R.1r R.+ e m) R.- (R.1r R.+ e n)           ≡⟨ ap₂ R._+_ refl (R.a.inv-comm ∙ R.+-commutes) ∙ R.+-associative ⟩
-    R.1r R.+ e m R.+ (R.- R.1r) R.+ (R.- e n)   ≡⟨ ap₂ R._+_ (R.pullr R.+-commutes ∙ R.pulll refl) refl ⟩
-    R.1r R.+ (R.- R.1r) R.+ e m R.+ (R.- e n)   ≡⟨ ap₂ R._+_ (R.eliml R.+-invr) refl ⟩
-    e m R.- e n                                 ∎
+    e-tr : ∀ m n → e m R.- e n ≡ e (suc m) R.- e (suc n)
+    e-tr m n = sym $
+      (e (suc m) R.- e (suc n))                   ≡⟨ ap₂ R._-_ (e-suc m) (e-suc n) ⟩
+      (R.1r R.+ e m) R.- (R.1r R.+ e n)           ≡⟨ ap₂ R._+_ refl (R.a.inv-comm ∙ R.+-commutes) ∙ R.+-associative ⟩
+      R.1r R.+ e m R.+ (R.- R.1r) R.+ (R.- e n)   ≡⟨ ap₂ R._+_ (R.pullr R.+-commutes ∙ R.pulll refl) refl ⟩
+      R.1r R.+ (R.- R.1r) R.+ e m R.+ (R.- e n)   ≡⟨ ap₂ R._+_ (R.eliml R.+-invr) refl ⟩
+      e m R.- e n                                 ∎
 ```
 
 We can now build the embedding $\ZZ \mono R$. It remains to show that
@@ -144,58 +145,58 @@ algebra, so I won't comment on it too much: it can be worked out on
 paper, following the ring laws.
 
 ```agda
-  ℤ↪R : Int → ⌞ R ⌟
-  ℤ↪R (pos x) = e x
-  ℤ↪R (negsuc x) = R.- (e (suc x))
+    ℤ↪R : Int → ⌞ R ⌟
+    ℤ↪R (pos x) = e x
+    ℤ↪R (negsuc x) = R.- (e (suc x))
 
-  open is-ring-hom
+    open is-ring-hom
 
-  z-nat-diff : ∀ x y → ℤ↪R (x ℕ- y) ≡ e x R.- e y
-  z-nat-diff x zero = R.intror R.inv-unit
-  z-nat-diff zero (suc y) = R.introl refl
-  z-nat-diff (suc x) (suc y) = z-nat-diff x y ∙ e-tr x y
+    z-nat-diff : ∀ x y → ℤ↪R (x ℕ- y) ≡ e x R.- e y
+    z-nat-diff x zero = R.intror R.inv-unit
+    z-nat-diff zero (suc y) = R.introl refl
+    z-nat-diff (suc x) (suc y) = z-nat-diff x y ∙ e-tr x y
 
-  z-add : ∀ x y → ℤ↪R (x +ℤ y) ≡ ℤ↪R x R.+ ℤ↪R y
-  z-add (pos x) (pos y) = e-add x y
-  z-add (pos x) (negsuc y) = z-nat-diff x (suc y)
-  z-add (negsuc x) (pos y) = z-nat-diff y (suc x) ∙ R.+-commutes
-  z-add (negsuc x) (negsuc y) =
-    R.- (e 1 R.+ e (suc x Nat.+ y))         ≡⟨ ap R.-_ (ap₂ R._+_ refl (e-add (suc x) y) ∙ R.extendl R.+-commutes) ⟩
-    R.- (e (suc x) R.+ (e 1 R.+ e y))       ≡⟨ R.a.inv-comm ⟩
-    (R.- (e 1 R.+ e y)) R.+ (R.- e (suc x)) ≡⟨ R.+-commutes ⟩
-    (R.- e (suc x)) R.+ (R.- (e 1 R.+ e y)) ≡⟨ ap₂ R._+_ refl (ap R.-_ (sym (e-add 1 y))) ⟩
-    (R.- e (suc x)) R.+ (R.- e (1 Nat.+ y)) ∎
+    z-add : ∀ x y → ℤ↪R (x +ℤ y) ≡ ℤ↪R x R.+ ℤ↪R y
+    z-add (pos x) (pos y) = e-add x y
+    z-add (pos x) (negsuc y) = z-nat-diff x (suc y)
+    z-add (negsuc x) (pos y) = z-nat-diff y (suc x) ∙ R.+-commutes
+    z-add (negsuc x) (negsuc y) =
+      R.- (e 1 R.+ e (suc x Nat.+ y))         ≡⟨ ap R.-_ (ap₂ R._+_ refl (e-add (suc x) y) ∙ R.extendl R.+-commutes) ⟩
+      R.- (e (suc x) R.+ (e 1 R.+ e y))       ≡⟨ R.a.inv-comm ⟩
+      (R.- (e 1 R.+ e y)) R.+ (R.- e (suc x)) ≡⟨ R.+-commutes ⟩
+      (R.- e (suc x)) R.+ (R.- (e 1 R.+ e y)) ≡⟨ ap₂ R._+_ refl (ap R.-_ (sym (e-add 1 y))) ⟩
+      (R.- e (suc x)) R.+ (R.- e (1 Nat.+ y)) ∎
 
-  z-mul : ∀ x y → ℤ↪R (x *ℤ y) ≡ ℤ↪R x R.* ℤ↪R y
-  z-mul (pos x) (pos y) =
-    ℤ↪R (assign pos (x Nat.* y)) ≡⟨ ap ℤ↪R (assign-pos (x Nat.* y)) ⟩
-    e (x Nat.* y)                ≡⟨ e-mul x y ⟩
-    (e x R.* e y)                ∎
-  z-mul (posz) (negsuc y) = sym R.*-zerol
-  z-mul (possuc x) (negsuc y) =
-    R.- e (suc x Nat.* suc y)     ≡⟨ ap R.-_ (e-mul (suc x) (suc y)) ⟩
-    R.- (e (suc x) R.* e (suc y)) ≡˘⟨ R.*-negater ⟩
-    e (suc x) R.* (R.- e (suc y)) ∎
-  z-mul (negsuc x) (posz) =
-    ℤ↪R (assign neg (x Nat.* 0)) ≡⟨ ap ℤ↪R (ap (assign neg) (Nat.*-zeror x)) ⟩
-    ℤ↪R 0                        ≡⟨ sym R.*-zeror ⟩
-    ℤ↪R (negsuc x) R.* R.0r      ∎
-  z-mul (negsuc x) (possuc y) =
-    R.- e (suc x Nat.* suc y)     ≡⟨ ap R.-_ (e-mul (suc x) (suc y)) ⟩
-    R.- (e (suc x) R.* e (suc y)) ≡⟨ sym R.*-negatel ⟩
-    (R.- e (suc x)) R.* e (suc y) ∎
-  z-mul (negsuc x) (negsuc y) =
-    e (suc x Nat.* suc y)               ≡⟨ e-mul (suc x) (suc y) ⟩
-    e (suc x) R.* e (suc y)             ≡˘⟨ R.inv-inv ⟩
-    R.- (R.- (e (suc x) R.* e (suc y))) ≡˘⟨ ap R.-_ R.*-negater ⟩
-    R.- (e (suc x) R.* ℤ↪R (negsuc y))  ≡˘⟨ R.*-negatel ⟩
-    ℤ↪R (negsuc x) R.* ℤ↪R (negsuc y)   ∎
+    z-mul : ∀ x y → ℤ↪R (x *ℤ y) ≡ ℤ↪R x R.* ℤ↪R y
+    z-mul (pos x) (pos y) =
+      ℤ↪R (assign pos (x Nat.* y)) ≡⟨ ap ℤ↪R (assign-pos (x Nat.* y)) ⟩
+      e (x Nat.* y)                ≡⟨ e-mul x y ⟩
+      (e x R.* e y)                ∎
+    z-mul (posz) (negsuc y) = sym R.*-zerol
+    z-mul (possuc x) (negsuc y) =
+      R.- e (suc x Nat.* suc y)     ≡⟨ ap R.-_ (e-mul (suc x) (suc y)) ⟩
+      R.- (e (suc x) R.* e (suc y)) ≡˘⟨ R.*-negater ⟩
+      e (suc x) R.* (R.- e (suc y)) ∎
+    z-mul (negsuc x) (posz) =
+      ℤ↪R (assign neg (x Nat.* 0)) ≡⟨ ap ℤ↪R (ap (assign neg) (Nat.*-zeror x)) ⟩
+      ℤ↪R 0                        ≡⟨ sym R.*-zeror ⟩
+      ℤ↪R (negsuc x) R.* R.0r      ∎
+    z-mul (negsuc x) (possuc y) =
+      R.- e (suc x Nat.* suc y)     ≡⟨ ap R.-_ (e-mul (suc x) (suc y)) ⟩
+      R.- (e (suc x) R.* e (suc y)) ≡⟨ sym R.*-negatel ⟩
+      (R.- e (suc x)) R.* e (suc y) ∎
+    z-mul (negsuc x) (negsuc y) =
+      e (suc x Nat.* suc y)               ≡⟨ e-mul (suc x) (suc y) ⟩
+      e (suc x) R.* e (suc y)             ≡˘⟨ R.inv-inv ⟩
+      R.- (R.- (e (suc x) R.* e (suc y))) ≡˘⟨ ap R.-_ R.*-negater ⟩
+      R.- (e (suc x) R.* ℤ↪R (negsuc y))  ≡˘⟨ R.*-negatel ⟩
+      ℤ↪R (negsuc x) R.* ℤ↪R (negsuc y)   ∎
 
-  z→r : Rings.Hom Liftℤ R
-  z→r .fst (lift x) = ℤ↪R x
-  z→r .snd .pres-id = refl
-  z→r .snd .pres-+ (lift x) (lift y) = z-add x y
-  z→r .snd .pres-* (lift x) (lift y) = z-mul x y
+    z→r : Rings.Hom Liftℤ R
+    z→r .fst (lift x) = ℤ↪R x
+    z→r .snd .pres-id = refl
+    z→r .snd .pres-+ (lift x) (lift y) = z-add x y
+    z→r .snd .pres-* (lift x) (lift y) = z-mul x y
 ```
 
 The last thing we must show is that this is the _unique_ ring
@@ -215,14 +216,14 @@ and that last expression is pretty exactly what our canonical map
 evaluates to on $n$. So we're done!
 
 ```agda
-  module _ (f : Rings.Hom Liftℤ R) where
-    private module f = is-ring-hom (f .snd)
+    module _ (f : Rings.Hom Liftℤ R) where
+      private module f = is-ring-hom (f .snd)
 
-    f-pos : ∀ x → e x ≡ f · lift (pos x)
-    f-pos zero = sym f.pres-0
-    f-pos (suc x) = e-suc x ∙ sym (f.pres-+ (lift 1) (lift (pos x)) ∙ ap₂ R._+_ f.pres-id (sym (f-pos x)))
+      f-pos : ∀ x → e x ≡ f · lift (pos x)
+      f-pos zero = sym f.pres-0
+      f-pos (suc x) = e-suc x ∙ sym (f.pres-+ (lift 1) (lift (pos x)) ∙ ap₂ R._+_ f.pres-id (sym (f-pos x)))
 
-    lemma : ∀ i → z→r · lift i ≡ f · lift i
-    lemma (pos x) = f-pos x
-    lemma (negsuc x) = sym (f.pres-neg {lift (possuc x)} ∙ ap R.-_ (sym (f-pos (suc x))))
+      lemma : ∀ i → z→r · lift i ≡ f · lift i
+      lemma (pos x) = f-pos x
+      lemma (negsuc x) = sym (f.pres-neg {lift (possuc x)} ∙ ap R.-_ (sym (f-pos (suc x))))
 ```

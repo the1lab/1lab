@@ -55,12 +55,19 @@ private
 ⊥PSh .F-id = ext λ ()
 ⊥PSh .F-∘ _ _ = ext λ ()
 
+empty→is-initial-PSh
+  : ∀ (F : ⌞ PSh κ C ⌟)
+  → (∀ x → ¬ (F ʻ x))
+  → is-initial (PSh κ C) F
+{-# INLINE empty→is-initial-PSh #-}
+empty→is-initial-PSh F ¬Fx = record
+  { ¡ = NT (λ x Fx → absurd (¬Fx x Fx)) λ x y f → ext (λ Fx → absurd (¬Fx x Fx))
+  ; ¡-unique = λ h → ext (λ x Fx → absurd (¬Fx x Fx))
+  }
+
 PSh-initial : Initial (PSh κ C)
-PSh-initial = record { has⊥ = uniq } where
-  uniq : is-initial (PSh κ C) ⊥PSh
-  uniq x .centre .η _ ()
-  uniq x .centre .is-natural _ _ _ = ext λ ()
-  uniq x .paths f = ext λ _ ()
+PSh-initial .Initial.bot = ⊥PSh
+PSh-initial .Initial.has-is-init = empty→is-initial-PSh ⊥PSh λ _ ()
 
 _⊎PSh_ : (A B : PSh.Ob) → PSh.Ob
 (A ⊎PSh B) .F₀ i = el! (∣ A .F₀ i ∣ ⊎ ∣ B .F₀ i ∣)

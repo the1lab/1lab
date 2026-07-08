@@ -61,14 +61,13 @@ Zero-group = to-group zg where
   zg .make-group.idl x = refl
 
 Zero-group-is-initial : is-initial (Groups ℓ) Zero-group
-Zero-group-is-initial (_ , G) .centre = ∫hom (λ x → G.unit) gh where
+Zero-group-is-initial .is-initial.¡ {_ , G} = ∫hom (λ x → G.unit) gh where
   module G = Group-on G
   gh : is-group-hom _ _ (λ x → G.unit)
   gh .pres-⋆ x y =
     G.unit            ≡˘⟨ G.idl ⟩
     G.unit G.⋆ G.unit ∎
-Zero-group-is-initial (_ , G) .paths x =
-  ext λ _ → sym (is-group-hom.pres-id (x .snd))
+Zero-group-is-initial .is-initial.¡-unique f = ext λ _ → is-group-hom.pres-id (f .snd)
 
 Zero-group-is-terminal : is-terminal (Groups ℓ) Zero-group
 Zero-group-is-terminal .is-terminal.! = ∫hom (λ _ → lift tt) (record { pres-⋆ = λ _ _ → refl })

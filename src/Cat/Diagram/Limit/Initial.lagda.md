@@ -43,9 +43,8 @@ module _ {o ℓ} {C : Precategory o ℓ} (L : Limit (Id {C = C})) where
 
   Id-limit→Initial : Initial C
   Id-limit→Initial .bot = L.apex
-  Id-limit→Initial .has⊥ x = λ where
-    .centre → L.ψ x
-    .paths h → sym (intror rem₁ ∙ L.commutes h)
+  Id-limit→Initial .has-is-init .is-initial.¡ {x} = L.ψ x
+  Id-limit→Initial .has-is-init .is-initial.¡-unique h = intror rem₁ ∙ L.commutes h
 ```
 
 <!--
