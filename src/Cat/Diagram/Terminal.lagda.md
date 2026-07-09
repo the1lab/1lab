@@ -150,12 +150,14 @@ We can further strengthen this implication to an if-and-only-if.
 <details>
 <summary>This holds essentially by definition, so we elide the details.
 </summary>
+
 ```agda
   is-terminal→hom-contr term x = contr t.! λ h → sym (t.!-unique h) where
     module t = is-terminal term
 
   is-terminal-univ {t = t} = prop-ext! is-terminal→hom-contr hom-contr→is-terminal
 ```
+
 </details>
 
 We can also state this universal property in terms of [[equivalences]]:
