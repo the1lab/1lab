@@ -182,23 +182,31 @@ $C\op$. We prove these correspondences here:
 
   Coterminal→Initial : Terminal (C ^op) → Initial C
   {-# INLINE Coterminal→Initial #-}
-  Coterminal→Initial term .bot = term .top
-  Coterminal→Initial term .has-is-init = is-coterminal→is-initial (term .has-is-term)
+  Coterminal→Initial term = record
+    { bot = term .top
+    ; has-is-init = is-coterminal→is-initial (term .has-is-term)
+    }
 
   Terminal→Coinitial : Terminal C → Initial (C ^op)
   {-# INLINE Terminal→Coinitial #-}
-  Terminal→Coinitial term .bot = term .top
-  Terminal→Coinitial term .has-is-init = is-terminal→is-coinitial (term .has-is-term)
+  Terminal→Coinitial term = record
+    { bot = term .top
+    ; has-is-init = is-terminal→is-coinitial (term .has-is-term)
+    }
 
   Initial→Coterminal : Initial C → Terminal (C ^op)
   {-# INLINE Initial→Coterminal #-}
-  Initial→Coterminal init .top = init .bot
-  Initial→Coterminal init .has-is-term = is-initial→is-coterminal (init .has-is-init)
+  Initial→Coterminal init = record
+    { top = init .bot
+    ; has-is-term = is-initial→is-coterminal (init .has-is-init)
+    }
 
   Coinitial→terminal : Initial (C ^op) → Terminal C
   {-# INLINE Coinitial→terminal #-}
-  Coinitial→terminal init .top = init .bot
-  Coinitial→terminal init .has-is-term = is-coinitial→is-terminal (init .has-is-init)
+  Coinitial→terminal init = record
+    { top = init .bot
+    ; has-is-term = is-coinitial→is-terminal (init .has-is-init)
+    }
 ```
 
 ## Pullback/pushout
