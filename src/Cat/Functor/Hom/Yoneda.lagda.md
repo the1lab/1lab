@@ -76,6 +76,32 @@ expressions which are easy to cancel using naturality and functoriality:
 
 <!--
 ```agda
+module _ {o ℓ} {C : Precategory o ℓ} (A : Functor C (Sets ℓ)) where
+  private module A = PSh A using (expand ; elim)
+  open Precategory C
+
+  yocov : ∀ {U} → A ʻ U → Hom-from C U => A
+  yocov a .η x h = A ⟪ h ⟫ a
+  yocov a .is-natural x y h = ext λ h → A.expand refl
+
+  unyocov : ∀ {U} → Hom-from C U => A → A ʻ U
+  unyocov h = h .η _ id
+
+  yocov-is-equiv : ∀ {U} → is-equiv (yocov {U})
+  yocov-is-equiv = is-iso→is-equiv λ where
+    .is-iso.from → unyocov
+    .is-iso.rinv x → ext λ i h →
+      yocov (unyocov x) .η i h ≡˘⟨ x .is-natural _ _ _ · _ ⟩
+      x .η i (h ∘ id)          ≡⟨ ap (x .η i) (idr h) ⟩
+      x .η i h                 ∎
+    .is-iso.linv x →
+      A ⟪ id ⟫ x ≡⟨ A.elim refl ⟩
+      x          ∎
+```
+-->
+
+<!--
+```agda
 module _ {o ℓ} {C : Precategory o ℓ} {A : Functor (C ^op) (Sets ℓ)} where
   private module A = PSh A
   open Precategory C

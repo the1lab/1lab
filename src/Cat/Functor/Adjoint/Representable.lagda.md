@@ -18,6 +18,7 @@ open import Cat.Instances.Sets
 open import Cat.Functor.Hom
 open import Cat.Prelude
 
+import Cat.Functor.Reasoning.Presheaf
 import Cat.Reasoning
 
 open Corepresentation
@@ -48,41 +49,33 @@ The forward direction follows directly from the natural isomorphism $\hom_\cC(Ld
 module _ {o'} {D : Precategory o' ℓ}
   {L : Functor D C} {R : Functor C D} (L⊣R : L ⊣ R)
   where
+  private
+    module L = Functor L
+    module R = Functor R
+  open _⊣_ L⊣R
 ```
 -->
 
 ```agda
-  right-adjoint→objectwise-rep
-    : ∀ d → Corepresentation (Hom-from D d F∘ R)
-  right-adjoint→objectwise-rep d .corep = L .F₀ d
-  right-adjoint→objectwise-rep d .corepresents =
-    adjunct-hom-iso-from L⊣R d ni⁻¹
+  right-adjoint→is-objectwise-rep
+    : ∀ d → is-corepresentation (Hom-from D d F∘ R) (L.₀ d) (η d)
+  {-# INLINE right-adjoint→is-objectwise-rep #-}
+  right-adjoint→is-objectwise-rep d =
+    yo-is-equiv→is-corepresentation λ c →
+    L-adjunct-is-equiv L⊣R
 
-  left-adjoint→objectwise-rep
-    : ∀ c → Corepresentation (Hom-into C c F∘ Functor.op L)
-  left-adjoint→objectwise-rep c .corep = R .F₀ c
-  left-adjoint→objectwise-rep c .corepresents =
-    path→iso (sym (Hom-from-op _))
-    ∘ni adjunct-hom-iso-into L⊣R c
+  left-adjoint→is-objectwise-rep
+    : ∀ c → is-corepresentation (Hom-into C c F∘ L.op) (R.₀ c) (ε c)
+  {-# INLINE left-adjoint→is-objectwise-rep #-}
+  left-adjoint→is-objectwise-rep c =
+    yo-is-equiv→is-corepresentation λ d →
+    R-adjunct-is-equiv L⊣R
 ```
 
 The other direction should be more surprising: if we only have a family of objects
 $Ld$ representing the functors $\hom_\cD(d, R-)$, why should we expect them to
 assemble into a *functor* $L : \cD \to \cC$?
 
-We answer the question indirectly^[for a more direct construction based on the Yoneda
-embedding, see the [nLab](https://ncatlab.org/nlab/show/adjoint+functor#AdjointFunctorFromObjectwiseRepresentingObject)]:
-what is a sufficient condition for $R$ to have a left adjoint?
-Well, by our characterisation in terms of [[free objects]], it should be
-enough to have [[initial objects]] for each [[comma category]] $d \swarrow R$.
-But we have also `established`{.Agda ident=corepresentation→initial-element}
-that a (covariant) functor into $\Sets$ is representable if and only if its
-[[category of elements|covariant category of elements]] has an initial object.
-
-Now we simply observe that the comma category $d \swarrow R$ and the category of
-elements of $\hom_\cD(d, R-)$ are exactly the same: both are made out of pairs of
-an object $c : \cC$ and a map $d \to Rc$, with the morphisms between them obtained
-in the obvious way from morphisms in $\cC$.
 
 <!--
 ```agda
@@ -93,51 +86,33 @@ module _ {o'} {D : Precategory o' ℓ}
 
   private
     module D = Cat.Reasoning D
+    module corep d = Corepresentation (corep d)
 ```
 -->
 
+First, observe that the data of a corepresenting object for $\cD(d, R(-))$ is
+exactly the data of a [[free object]] for $R$.
+
 ```agda
-  private
-    ↙≡∫ : ∀ d → d ↙ R ≡ ∫ (Hom-from D d F∘ R)
+  objectwise-rep→free-objects : ∀ d → Free-object R d
+  objectwise-rep→free-objects d = record
+    { unit = corep.section d
+    ; fold = corep.universal d
+    ; commute = λ {c} {f} → corep.factors d f
+    ; unique = λ {c} {f} → corep.unique d f
+    }
 ```
 
-<details>
-<summary>The proof is by obnoxious data repackaging, so we hide it away.</summary>
+Moreover, if we have free objects for every $d : \cD$, then we can assemble them
+into a left adjoint.
 
 ```agda
-    ↙≡∫ d = Precategory-path F F-is-precat-iso where
-      open is-precat-iso
-
-      F : Functor (d ↙ R) (∫ (Hom-from D d F∘ R))
-      F .F₀ m = elem (m .↓Obj.cod) (m .↓Obj.map)
-      F .F₁ f = elem-hom (f .↓Hom.bot) (sym (f .↓Hom.com) ∙ D.idr _)
-      F .F-id = ext refl
-      F .F-∘ f g = ext refl
-
-      F-is-precat-iso : is-precat-iso F
-      F-is-precat-iso .has-is-iso = is-iso→is-equiv λ where
-        .is-iso.from e → ↓obj (e .snd)
-        .is-iso.rinv e → refl
-        .is-iso.linv e → ↓Obj-path _ _ refl refl refl
-      F-is-precat-iso .has-is-ff = is-iso→is-equiv λ where
-        .is-iso.from h → ↓hom (D.idr _ ∙ sym (h .Element-hom.commute))
-        .is-iso.rinv h → ext refl
-        .is-iso.linv h → ↓Hom-path _ _ refl refl
-```
-</details>
-
-```agda
-  objectwise-rep→universal-maps : ∀ d → Universal-morphism R d
-  objectwise-rep→universal-maps d = subst Initial (sym (↙≡∫ d))
-    (corepresentation→initial-element (corep d))
-
   objectwise-rep→functor : Functor D C
-  objectwise-rep→functor =
-    universal-maps→functor objectwise-rep→universal-maps
+  objectwise-rep→functor = free-objects→functor objectwise-rep→free-objects
 
   objectwise-rep→left-adjoint : objectwise-rep→functor ⊣ R
   objectwise-rep→left-adjoint =
-    universal-maps→left-adjoint objectwise-rep→universal-maps
+    free-objects→left-adjoint objectwise-rep→free-objects
 ```
 
 ## Right adjoints into Sets are representable
@@ -154,17 +129,18 @@ $\hom_\cC(L\{*\}, c) \cong (\{*\} \to Rc) \cong Rc$.
 module _
   {R : Functor C (Sets ℓ)} {L : Functor (Sets ℓ) C} (L⊣R : L ⊣ R)
   where
+  open _⊣_ L⊣R
 ```
 -->
 
 ```agda
   open Terminal (Sets-terminal {ℓ})
 
-  right-adjoint→corepresentable : Corepresentation R
-  right-adjoint→corepresentable .corep = L .F₀ top
-  right-adjoint→corepresentable .corepresents =
-    adjunct-hom-iso-from L⊣R top ni⁻¹
-    ∘ni iso→isoⁿ (λ _ → equiv→iso (Π-⊤-eqv e⁻¹)) (λ _ → refl)
+  right-adjoint→is-corepresentation : is-corepresentation R (L .F₀ top) (η top (lift tt))
+  {-# INLINE right-adjoint→is-corepresentation #-}
+  right-adjoint→is-corepresentation =
+    yo-is-equiv→is-corepresentation λ c →
+    ∘-is-equiv (Π-⊤-eqv .snd) (L-adjunct-is-equiv L⊣R)
 ```
 
 Going the other way, if we assume that $\cC$ is [[copowered]] over $\Sets_\ell$
@@ -184,13 +160,19 @@ module _
 
 ```agda
   private
+    module R = Cat.Functor.Reasoning.Presheaf R
+    module corep = Corepresentation R-corep
     open Copowers (λ _ → copowered)
+
 
     Hom[X,R-]-rep : ∀ X → Corepresentation (Hom-from (Sets ℓ) X F∘ R)
     Hom[X,R-]-rep X .corep = X ⊗ R-corep .corep
-    Hom[X,R-]-rep X .corepresents =
-      copower-hom-iso ni⁻¹
-      ∘ni F∘-iso-r (R-corep .corepresents)
+    Hom[X,R-]-rep X .section x = R.₁ (⊗!.ι ∣ X ∣ corep.corep x) corep.section
+    Hom[X,R-]-rep X .has-is-corep = yo-is-equiv→is-corepresentation λ Y →
+      subst-is-equiv (ext (λ f x → R.collapse refl))
+      $ ∘-is-equiv
+        (Π-ap-cod-is-equiv (λ x → is-corepresentation→yo-is-equiv corep.has-is-corep Y))
+        (⊗!.hom-iso ∣ X ∣ corep.corep .snd)
 
   corepresentable→functor : Functor (Sets ℓ) C
   corepresentable→functor = objectwise-rep→functor Hom[X,R-]-rep

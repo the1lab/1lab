@@ -172,12 +172,10 @@ into an object, it's representable!
     : ∀ {m} → (mon : C-Monoid m)
     → Representation (Mon↪Sets F∘ Mon→PshMon mon)
   Mon→PshMon-rep {m = m} mon .rep = m
-  Mon→PshMon-rep {m = m} mon .represents = to-natural-iso record where
-    eta     _ f = f
-    inv     _ f = f
-    eta∘inv _ = refl
-    inv∘eta _ = refl
-    natural _ _ _ = refl
+  Mon→PshMon-rep {m = m} mon .section = id
+  Mon→PshMon-rep {m = m} mon .has-is-rep =
+    yo-is-equiv→is-representation λ x → id-postcomp-is-equiv
+
 ```
 
 Now, suppose we have a pair of monoid objects, $M$ and $N$, together
@@ -392,15 +390,15 @@ object $M : \cC$.
     PMon x = ∣ P .F₀ x .fst ∣
 
     module PMon {x} = Monoid-on (P .F₀ x .snd)
-    module repr = Isoⁿ (P-rep .represents)
+    module repr = Representation P-rep
 
     open PMon hiding (idl; idr; associative)
 
     gen : ∀ {x} → PMon x → Hom x m
-    gen {x} px = repr.to .η x px
+    gen {x} px = repr.universal px
 
     elt : ∀ {x} → Hom x m → PMon x
-    elt {x} f = repr.from .η x f
+    elt {x} f = P .F₁ f .fst repr.section
 ```
 -->
 
@@ -424,23 +422,23 @@ the monoid structure $P(x)$ to a monoid structure on $x \to M$.
 ```agda
     η*-idl : ∀ {x} → (f : Hom x m) → μ* (η* x) f ≡ f
     η*-idl {x} f =
-      gen (⌜ elt (gen identity) ⌝ ⋆ elt f) ≡⟨ ap! (unext repr.invr _ _) ⟩
+      gen (⌜ elt (gen identity) ⌝ ⋆ elt f) ≡⟨ ap! (repr.factors identity) ⟩
       gen (identity ⋆ elt f)               ≡⟨ ap gen PMon.idl ⟩
-      gen (elt f)                          ≡⟨ unext repr.invl _ _ ⟩
+      gen (elt f)                          ≡⟨ repr.universal-η f ⟩
       f                                    ∎
 
     η*-idr : ∀ {x} → (f : Hom x m) → μ* f (η* x) ≡ f
     η*-idr {x} f =
-      gen (elt f ⋆ ⌜ elt (gen identity) ⌝) ≡⟨ ap! (unext repr.invr _ _) ⟩
+      gen (elt f ⋆ ⌜ elt (gen identity) ⌝) ≡⟨ ap! (repr.factors identity) ⟩
       gen (elt f ⋆ identity)               ≡⟨ ap gen PMon.idr ⟩
-      gen (elt f)                          ≡⟨ unext repr.invl _ _ ⟩
+      gen (elt f)                          ≡⟨ repr.universal-η f ⟩
       f                                    ∎
 
     μ*-assoc : ∀ {x} → (f g h : Hom x m) → μ* f (μ* g h) ≡ μ* (μ* f g) h
     μ*-assoc {x} f g h =
-      gen (elt f ⋆ ⌜ elt (gen (elt g ⋆ elt h)) ⌝) ≡⟨ ap! (unext repr.invr _ _) ⟩
+      gen (elt f ⋆ ⌜ elt (gen (elt g ⋆ elt h)) ⌝) ≡⟨ ap! (repr.factors (elt g ⋆ elt h)) ⟩
       gen (elt f ⋆ (elt g ⋆ elt h))               ≡⟨ ap gen PMon.associative ⟩
-      gen (⌜ elt f ⋆ elt g ⌝ ⋆ elt h)             ≡⟨ ap! (sym $ unext repr.invr _ _) ⟩
+      gen (⌜ elt f ⋆ elt g ⌝ ⋆ elt h)             ≡⟨ ap! (sym $ repr.factors (elt f ⋆ elt g)) ⟩
       gen (elt (gen (elt f ⋆ elt g)) ⋆ elt h)     ∎
 ```
 </details>
@@ -467,7 +465,7 @@ substitution.
       : ∀ {w x} (f : Hom w x)
       → η* x ∘ f ≡ η* w
     η*-nat {w} {x} f =
-      (η* x) ∘ f                  ≡˘⟨ repr.to .is-natural _ _ _ $ₚ _ ⟩
+      η* x ∘ f                    ≡⟨ repr.universal-natural identity f ⟩
       gen (P .F₁ f .fst identity) ≡⟨ ap gen (P .F₁ f .snd .pres-id) ⟩
       η* w ∎
 
@@ -475,9 +473,9 @@ substitution.
       : ∀ {w x} (f g : Hom x m) (h : Hom w x)
       → μ* f g ∘ h ≡ μ* (f ∘ h) (g ∘ h)
     μ*-nat f g h =
-      μ* f g ∘ h                                            ≡˘⟨ repr.to .is-natural _ _ _ $ₚ _ ⟩
+      μ* f g ∘ h                                            ≡⟨ repr.universal-natural _ _ ⟩
       gen (P .F₁ h .fst ((elt f) ⋆ (elt g)))                ≡⟨ ap gen (P .F₁ h .snd .pres-⋆ _ _) ⟩
-      gen ((P .F₁ h .fst (elt f)) ⋆ (P .F₁ h .fst (elt g))) ≡˘⟨ ap gen (ap₂ _⋆_ (repr.from .is-natural _ _ _ $ₚ _) (repr.from .is-natural _ _ _ $ₚ _)) ⟩
+      gen ((P .F₁ h .fst (elt f)) ⋆ (P .F₁ h .fst (elt g))) ≡˘⟨ ap gen (ap₂ _⋆_ (P .F-∘ _ _ ·ₚ _) (P .F-∘ _ _ ·ₚ _)) ⟩
       μ* (f ∘ h) (g ∘ h)                                    ∎
 ```
 
@@ -502,29 +500,31 @@ expand this `<details>` element.</summary>
 
 ```agda
     ni : make-natural-iso (Mon→PshMon (RepPshMon→Mon P pm)) P
-    ni .eta x .fst = repr.from .η x
-    ni .inv x .fst = repr.to .η x
+    ni .eta x .fst = elt
+    -- repr.from .η x
+    ni .inv x .fst = gen
+    -- repr.to .η x
 
     ni .eta x .snd .pres-id =
       elt (η* top ∘ !)           ≡⟨ ap elt (η*-nat !) ⟩
-      elt (η* x)                 ≡⟨ unext repr.invr _ _ ⟩
+      elt (η* x)                 ≡⟨ repr.factors identity ⟩
       identity                   ∎
     ni .eta x .snd .pres-⋆ f g =
       elt (μ* π₁ π₂ ∘ ⟨ f , g ⟩)                 ≡⟨ ap elt (μ*-nat _ _ _) ⟩
       elt (μ* (π₁ ∘ ⟨ f , g ⟩) (π₂ ∘ ⟨ f , g ⟩)) ≡⟨ ap elt (ap₂ μ* π₁∘⟨⟩ π₂∘⟨⟩) ⟩
-      elt (μ* f g)                               ≡⟨ unext repr.invr _ _ ⟩
+      elt (μ* f g)                               ≡⟨ repr.factors (elt f ⋆ elt g) ⟩
       (elt f ⋆ elt g)                            ∎
 
     ni .inv x .snd .pres-id = sym (η*-nat _)
     ni .inv x .snd .pres-⋆ f g =
-      gen (f ⋆ g)                                          ≡˘⟨ ap gen (ap₂ _⋆_ (unext repr.invr _ _) (unext repr.invr _ _)) ⟩
+      gen (f ⋆ g)                                          ≡˘⟨ ap gen (ap₂ _⋆_ (repr.factors f) (repr.factors g)) ⟩
       μ* (gen f) (gen g)                                   ≡˘⟨ ap₂ μ* π₁∘⟨⟩ π₂∘⟨⟩ ⟩
       μ* (π₁ ∘ ⟨ gen f , gen g ⟩) (π₂ ∘ ⟨ gen f , gen g ⟩) ≡˘⟨ μ*-nat _ _ _ ⟩
       μ* π₁ π₂ ∘ ⟨ gen f , gen g ⟩                         ∎
 
-    ni .eta∘inv x = ext (unext repr.invr x)
-    ni .inv∘eta x = ext (unext repr.invl x)
-    ni .natural x y f = ext (sym (repr.from .is-natural _ _ _) $ₚ_)
+    ni .eta∘inv x = ext repr.factors
+    ni .inv∘eta x = ext repr.universal-η
+    ni .natural x y f = ext λ f → sym (P .F-∘ _ _ ·ₚ _)
 ```
 </details>
 
