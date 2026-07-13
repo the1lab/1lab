@@ -1220,3 +1220,108 @@ invertible-postcomp-equiv {f = f} f-inv = is-iso→is-equiv $
     (λ h → assoc _ _ _ ∙∙ ap (_∘ h) f-inv.invr ∙∙ idl h)
   where module f-inv = is-invertible f-inv
 ```
+
+<!--
+```agda
+-- We provide specialised forms of 'invertible-precomp-equiv'
+-- and 'invertible-postcomp-equiv' for identity maps whose inverses
+-- do not pre/postcompose with the identity map.
+id-postcomp-is-equiv
+  : ∀ {a b} → is-equiv (λ (f : Hom a b) → id ∘ f)
+id-postcomp-is-equiv = left-inverse→equiv idl id-equiv
+
+id-precomp-is-equiv
+  : ∀ {a b} → is-equiv (λ (f : Hom a b) → f ∘ id)
+id-precomp-is-equiv = left-inverse→equiv idr id-equiv
+```
+-->
+
+Moreover, a map is invertible if and only if pre or post
+composition is an equivalence.
+
+```agda
+precomp-equiv→invertible
+  : ∀ {a b} {f : Hom a b}
+  → (∀ c → is-equiv {A = Hom b c} (_∘ f))
+  → is-invertible f
+
+postcomp-equiv→invertible
+  : ∀ {b c} {f : Hom b c}
+  → (∀ a → is-equiv {A = Hom a b} (f ∘_))
+  → is-invertible f
+```
+
+We will focus our attention on pre-composition, as the argument for
+post-composition is formally dual. Suppose that $- \circ f : \cC(b,c) \to \cC(a,c)$
+is an equivalence for all $c : \cC$, and denote the inverse map
+$e_{c} : \cC(a,c) \to \cC(b,c)$. If we apply $e_{a}$ to the identity map
+$\id : \cC(a,a)$, we obtain a map $e_{a}(\id) : \cC(b, a)$, which looks
+a lot like an inverse to $f$! Moreover, $e_{a}(\id) \circ f = \id$ is
+immediate, as $e$ and $- \circ f$ are inverses.
+
+```agda
+precomp-equiv→invertible {f = f} e =
+  make-invertible (e.from id) linv rinv
+  where
+    module e {c} = Equiv (_ , e c)
+
+    rinv : e.from id ∘ f ≡ id
+    rinv = e.ε id
+```
+
+All that remains is to show that $f \circ e_{a}(\id) = \id$. This
+doesn't follow immediate from the fact that $e$ is an inverse, as our
+goal involves *post*-composition, not pre-composition. However, $- \circ f$
+must be injective, as it is an equivalence. This lets us reduce our
+goal to showing that $(f \circ e(\id)) \circ f = \id \circ f$, which
+then follows from some simple algebra.
+
+```agda
+    linv : f ∘ e.from id ≡ id
+    linv = e.injective $
+      (f ∘ e.from id) ∘ f ≡˘⟨ assoc _ _ _ ⟩
+      f ∘ (e.from id ∘ f) ≡⟨ ap (f ∘_) rinv ⟩
+      f ∘ id              ≡⟨ idr f ∙ sym (idl f) ⟩
+      id ∘ f              ∎
+```
+
+<details>
+<summary>As noted earlier, the argument for post-composition is
+essentially identical, so we omit the details.
+</summary>
+
+```agda
+postcomp-equiv→invertible {f = f} e =
+  make-invertible (e.from id) linv rinv
+  where
+    module e {a} = Equiv (_ , e a)
+
+    linv : f ∘ e.from id ≡ id
+    linv = e.ε id
+
+    rinv : e.from id ∘ f ≡ id
+    rinv = e.injective $
+      f ∘ (e.from id ∘ f) ≡⟨ assoc _ _ _ ⟩
+      (f ∘ e.from id) ∘ f ≡⟨ ap (_∘ f) linv ⟩
+      id ∘ f              ≡⟨ idl f ∙ sym (idr f) ⟩
+      f ∘ id              ∎
+```
+</details>
+
+<!--
+```agda
+pre-factor-contr→invertible
+  : ∀ {a b} {g : Hom a b}
+  → (∀ {c} → (h : Hom a c) → is-contr (Σ[ f ∈ Hom b c ] f ∘ g ≡ h))
+  → is-invertible g
+pre-factor-contr→invertible factor-contr =
+  precomp-equiv→invertible λ c → record { is-eqv = factor-contr }
+
+post-factor-contr→invertible
+  : ∀ {b c} {f : Hom b c}
+  → (∀ {a} → (h : Hom a c) → is-contr (Σ[ g ∈ Hom a b ] f ∘ g ≡ h))
+  → is-invertible f
+post-factor-contr→invertible factor-contr =
+  postcomp-equiv→invertible λ c → record { is-eqv = factor-contr }
+```
+-->
