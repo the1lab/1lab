@@ -121,7 +121,7 @@ exercise in moving data around.
 module _
   {o ℓ o' ℓ'}
   {C : Precategory o ℓ} {C' : Precategory o ℓ} {D : Precategory o' ℓ'}
-  {p : Functor C C'} {F : Functor C D}
+  {p : Functor C C'} {F : Functor C D} {L : Functor C' D} {ψ : F => L F∘ p}
   where
   private
     module C = Cat.Reasoning C
@@ -131,32 +131,29 @@ module _
     module [C,D] = Cat.Reasoning Cat[ C , D ]
     open Functor
     open _=>_
-    open Lan
-    open is-lan
-    open Corepresentation
     open Isoⁿ
 ```
 -->
 
 ```agda
-  lan→represents : Lan p F → Corepresentation (Hom-from Cat[ C , D ] F F∘ precompose p)
-  lan→represents lan .corep = lan .Ext
-  lan→represents lan .corepresents =
-    (is-invertibleⁿ→isoⁿ (is-lan→represents (lan .has-lan))) ni⁻¹
+  is-lan→is-corepresentation
+    : is-lan p F L ψ
+    → is-corepresentation (Hom-from Cat[ C , D ] F F∘ precompose p) L ψ
+  {-# INLINE is-lan→is-corepresentation #-}
+  is-lan→is-corepresentation lan = record
+    { universal = lan.σ
+    ; factors = λ α → lan.σ-comm
+    ; unique = λ α ξ p → lan.σ-uniq (sym p)
+    }
+    where module lan = is-lan lan
 
-  represents→lan : Corepresentation (Hom-from Cat[ C , D ] F F∘ precompose p) → Lan p F
-  represents→lan has-corep .Ext = has-corep .corep
-  represents→lan has-corep .eta = has-corep .corepresents .from .η _ idnt
-  represents→lan has-corep .has-lan =
-    represents→is-lan (Corep.to has-corep idnt) $
-    to-is-invertibleⁿ (has-corep .corepresents .to)
-      (λ M → funext λ α →
-        (Corep.from has-corep α ◂ p) ∘nt Corep.to has-corep idnt ≡˘⟨ has-corep .corepresents .from .is-natural _ _ _ $ₚ idnt ⟩
-        Corep.to has-corep (Corep.from has-corep α ∘nt idnt)     ≡⟨ ap (Corep.to has-corep) ([C',D].idr _) ⟩
-        Corep.to has-corep (Corep.from has-corep α)              ≡⟨ Corep.ε has-corep α ⟩
-        α ∎)
-      (λ M → funext λ α →
-        Corep.from has-corep ((α ◂ p) ∘nt Corep.to has-corep idnt) ≡⟨ has-corep .corepresents .to .is-natural _ _ _ $ₚ _ ⟩
-        α ∘nt Corep.from has-corep (Corep.to has-corep idnt)       ≡⟨ [C',D].elimr (Corep.η has-corep idnt) ⟩
-        α ∎)
+  is-corepresentation→is-lan
+    : is-corepresentation (Hom-from Cat[ C , D ] F F∘ precompose p) L ψ
+    → is-lan p F L ψ
+  is-corepresentation→is-lan corep = record
+    { σ = corep.universal
+    ; σ-comm = λ {M} {α} → corep.factors α
+    ; σ-uniq = λ {M} {α} {σ'} p → corep.unique α σ' (sym p)
+    }
+    where module corep = is-corepresentation corep
 ```

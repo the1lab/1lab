@@ -785,6 +785,66 @@ is an equivalence for all $x : \cC$.
 
 <!--
 ```agda
+module _ {o ℓ} {C : Precategory o ℓ} {F : Functor C (Sets ℓ)} where
+  private
+    module C = Cat.Reasoning C
+    module C^ = Cat.Reasoning (Cat[ C , Sets ℓ ])
+    module F = Functor F
+    open _=>_
+
+  yo-invertible→is-corepresentation
+    : ∀ {corep} {section}
+    → is-invertibleⁿ (yocov F section)
+    → is-corepresentation F corep section
+  {-# INLINE yo-invertible→is-corepresentation #-}
+  yo-invertible→is-corepresentation {corep} {section} yo-inv =
+    yo-is-equiv→is-corepresentation λ x →
+      is-invertible→is-equiv
+      $ is-invertibleⁿ→is-invertible yo-inv x
+
+  -- We don't use duality to prove this, as then we'd need to deal with
+  -- converting 'Hom-from C corep' into 'Hom-into (C ^op) corep' and so on.
+  isoⁿ→corepresentation
+    : ∀ {corep}
+    → Hom-from C corep ≅ⁿ F
+    → Corepresentation F
+  {-# INLINE isoⁿ→corepresentation #-}
+  isoⁿ→corepresentation {corep} α = record
+    { corep = corep
+    ; section = α.to corep C.id
+    ; has-is-corep =
+      yo-is-equiv→is-corepresentation λ x →
+        right-inverse→equiv (rinv x) (α.inverse x .snd)
+    }
+    where
+      module α x = Equiv (natural-iso→equiv α x)
+
+      abstract
+        rinv : ∀ x f → α.from x (F ⟪ f ⟫ α.to corep C.id) ≡ f
+        rinv x f =
+          α.from x (F ⟪ f ⟫ α.to corep C.id) ≡⟨ C^.from α .is-natural _ _ _ ·ₚ _ ⟩
+          f C.∘ α.from corep (α.to corep C.id) ≡⟨ C.elimr (α.η corep C.id) ⟩
+          f                                ∎
+
+  is-corepresentation→yo-invertible
+    : ∀ {corep} {section}
+    → is-corepresentation F corep section
+    → is-invertibleⁿ (yocov F section)
+  is-corepresentation→yo-invertible {corep} {section} is-corep =
+    invertible→invertibleⁿ (yocov F section) λ x →
+      is-equiv→is-invertible (is-corepresentation→yo-is-equiv is-corep x)
+
+  corepresentation→isoⁿ
+    : (R : Corepresentation F)
+    → Hom-from C (Corepresentation.corep R) ≅ⁿ F
+  corepresentation→isoⁿ R =
+    is-invertibleⁿ→isoⁿ
+    $ is-corepresentation→yo-invertible (Corepresentation.has-is-corep R)
+```
+-->
+
+<!--
+```agda
 module _ {o ℓ} {C : Precategory o ℓ} where
   private
     module C = Cat.Reasoning C
@@ -947,7 +1007,8 @@ corepresentable if and only if its [[covariant category of elements]] has an
 <!--
 ```agda
 module _ {o ℓ} {C : Precategory o ℓ} where
-  module C = Cat.Reasoning C
+  private
+    module C = Cat.Reasoning C
   open Functor
   open _=>_
 ```

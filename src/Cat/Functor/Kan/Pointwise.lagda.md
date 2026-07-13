@@ -128,7 +128,7 @@ As noted earlier, limits and colimits are pointwise Kan extensions.
     : {eta : Dia => Const x}
     → (colim : is-colimit Dia x eta)
     → is-pointwise-lan colim
-  colimit→pointwise colim x = よ-reverses-colimits x colim
+  colimit→pointwise colim x = Hom-into-reverses-colimits x colim
 ```
 
 ## Computing pointwise extensions
@@ -254,7 +254,7 @@ what we wanted: a map $G(c) \to F'(F(c))$.
 ```
 
 For the other obligation, suppose we're given some $M : \cC' \to \cD$
-and natural transformation $\alpha : G \to MF$. How do we extend it to a
+and natural transformation $\alpha : G \to MF$. How do we ν it to a
 transformation $F' \to M$? By "matching" on the colimit, with a slight
 adjustment to $\alpha$:
 
@@ -421,7 +421,7 @@ words, the extension we constructed is pointwise.
   cocomplete→pointwise-lan colim d =
     preserves-colimits→preserves-pointwise-lan
       colim (opFʳ (Hom-into D d))
-      (よ-reverses-colimits d)
+      (Hom-into-reverses-colimits d)
 ```
 
 ## All pointwise extensions are computed via (co)limits
@@ -439,8 +439,8 @@ pointwise!
 <!--
 ```agda
 module _
-  {o ℓ}
-  {C : Precategory ℓ ℓ} {C' : Precategory ℓ ℓ} {D : Precategory o ℓ}
+  {o o' ℓ}
+  {C : Precategory ℓ ℓ} {C' : Precategory o' ℓ} {D : Precategory o ℓ}
   {p : Functor C C'} {F : Functor C D} {L : Functor C' D} {eta : F => L F∘ p}
   (lan : is-lan p F L eta) (pointwise : is-pointwise-lan lan)
   where
@@ -664,7 +664,9 @@ the Kan extension along $F : \cC \to \cC'$ is represented by $F(c)$.
 module _
   {o κ}
   {C : Precategory κ κ} {C' : Precategory o κ}
-  (F : Functor C C') (G : Functor C (Sets κ))
+  {F : Functor C C'} {G : Functor C (Sets κ)} {L : Functor C' (Sets κ)}
+  {ψ : G => L F∘ F}
+  (L-lan : is-lan F G L ψ)
   where
   open Precategory C'
   open Functor
@@ -675,29 +677,97 @@ module _
   private
     module C  = Precategory C
     module C' = Cat.Reasoning C'
+    module F = Func F
+    module G = Functor G
+    module L where
+      open Func L public
+      open is-lan L-lan public
+
 ```
 -->
 
 ```agda
-  module _ (cr : Corepresentation G) where
-    open Corepresentation cr
-    Sets-lan-ext-corep
-      : Corepresentation (cocomplete→lan F G (Sets-is-cocomplete {o = κ}) .Ext)
-    Sets-lan-ext-corep .Corepresentation.corep        = F .F₀ corep
-    Sets-lan-ext-corep .Corepresentation.corepresents = to-natural-iso ni where
-      ni : make-natural-iso _ _
-      ni .make-natural-iso.eta A = Coeq-rec
-        (λ (au , e) → au .map ∘ F .F₁ (corep.to .η _ e))
-        λ ((au , e) , (au' , e') , (h , p)) →
-          au .map ∘ F .F₁ (corep.to .η _ e)                  ≡⟨ C'.pushl (sym (com h ∙ idl _)) ⟩
-          au' .map ∘ F .F₁ (top h) ∘ F .F₁ (corep.to .η _ e) ≡⟨ C'.refl⟩∘⟨ Func.collapse F (sym (corep.to .is-natural _ _ _) $ₚ e ∙ ap (corep.to .η _) p) ⟩
-          au' .map ∘ F .F₁ (corep.to .η _ e')                ∎
-      ni .make-natural-iso.inv A x   = inc (↓obj x , corep.from .η _ C.id)
-      ni .make-natural-iso.eta∘inv A = ext λ _ → Func.elimr F (corep.invl ηₚ _ $ₚ _)
-      ni .make-natural-iso.inv∘eta A = ext λ au e → quot $
-        ↓hom (sym (idl _))
-        , sym (corep.from .is-natural _ _ _ $ₚ C.id)
-        ∙∙ ap (corep.from .η _) (C.idr _)
-        ∙∙ corep.invr ηₚ _ $ₚ e
-      ni .make-natural-iso.natural _ _ _ = ext λ _ _ → C'.assoc _ _ _
+  Sets-lan-ext-is-corepresentation
+    : ∀ {corep} {section}
+    → is-pointwise-lan L-lan
+    → is-corepresentation G corep section
+    → is-corepresentation L (F.₀ corep) (ψ .η corep section)
+```
+
+Unfortunately, the proof is a bit gnarly. To start, we observe that the
+pointwise extension $L$ must be computed via colimits.
+
+```agda
+  {-# INLINE Sets-lan-ext-is-corepresentation #-}
+  Sets-lan-ext-is-corepresentation {corep} {section} L-pointwise is-corep = record
+    { universal = universal
+    ; factors = factors
+    ; unique = unique
+    }
+    where
+      module corep = is-corepresentation is-corep
+      module colim c' = is-colimit (pointwise-lan→has-comma-colimits L-lan L-pointwise c')
+```
+
+This means that if we have a section $l : L(x)$, we can use the universal
+property of colimits to construct a map out of $L(x)$ into the set
+$\cC'(F(r), x)$, where $r$ is our representing object.
+
+```agda
+      universal : ∀ {x} → L ʻ x → C'.Hom (F.₀ corep) x
+      universal {x} l =
+        colim.universal x {el! (C'.Hom (F.₀ corep) x)}
+          (λ f s → f .map C'.∘ F.₁ (corep.universal s))
+          (λ h → ext (comm h))
+          l
+        where abstract
+          comm
+            : ∀ {f g : ↓Obj F (!Const x)} (h : ↓Hom F (!Const x) f g)
+            → (s : G ʻ (f .dom))
+            → g .map C'.∘ F.F₁ (corep.universal (G.₁ (h .top) s)) ≡ map f C'.∘ F.₁ (corep.universal s)
+          comm {f} {g} h s =
+            g .map C'.∘ F.F₁ (corep.universal (G.₁ (top h) s))   ≡⟨ C'.cdr (F.expand (corep.unique _ _ (corep.universal-∘ _ _))) ⟩
+            map g C'.∘ F.F₁ (top h) C'.∘ F.₁ (corep.universal s) ≡⟨ C'.extendl (h .com) ∙ C'.idl _ ⟩
+            map f C'.∘ F.₁ (corep.universal s)                   ∎
+```
+
+Because $L$ is computed pointwise via colimits, the functorial action of
+$L$ is also computed via universal properties. This lets us reduce checking
+that every section of $L$ is a restriction of the universal section $\psi\, r\, s$
+to sections in the image of the comma diagram, which in turn follows from
+some algebraic shuffling.
+
+```agda
+      factors : ∀ {x} → (l : L ʻ x) → L ⟪ universal l ⟫ (ψ .η corep section) ≡ l
+      factors {x} l =
+        colim.unique₂ x {L.₀ x} (colim.ψ x) (colim.commutes x)
+          (λ f → ext (factor-inner f))
+          (λ _ → refl) ·ₚ l
+        where
+         factor-inner
+           : (f : ↓Obj F (!Const x)) (s : G ʻ (f .dom))
+           → L ⟪ universal (L ⟪ f .map ⟫ ψ .η (dom f) s) ⟫ ψ .η corep section
+           ≡ L ⟪ f .map ⟫ ψ .η (dom f) s
+         factor-inner f s =
+            L ⟪ ⌜ universal (L ⟪ f .map ⟫ ψ .η (f .dom) s) ⌝ ⟫ ψ .η corep section ≡⟨ ap! (colim.factors _ {f} _ _ ·ₚ s) ⟩
+            L ⟪ f .map C'.∘ F.₁ (corep.universal s) ⟫ ψ .η corep section          ≡⟨ L.F-∘ _ _ ·ₚ _ ⟩
+            L ⟪ f .map ⟫ (L ⟪ F.₁ (corep.universal s) ⟫ ψ .η corep section)       ≡˘⟨ ap (L ⟪ f .map ⟫_) (ψ .is-natural _ _ _ ·ₚ _) ⟩
+            L ⟪ f .map ⟫ ψ .η (dom f) ⌜ G ⟪ corep.universal s ⟫ section ⌝         ≡⟨ ap! (corep.factors s) ⟩
+            L ⟪ f .map ⟫ ψ .η (dom f) s                                           ∎
+```
+
+Finally, some more algebra reveals that the universal map is unique,
+completing the proof.
+
+```agda
+      unique
+        : ∀ {x} (l : L ʻ x)
+        → (other : C'.Hom (F.F₀ corep) x)
+        → L ⟪ other ⟫ ψ .η corep section ≡ l
+        → universal l ≡ other
+      unique l other p =
+        universal l                                ≡⟨ ap universal (sym p) ⟩
+        universal (L ⟪ other ⟫ ψ .η corep section) ≡⟨ colim.factors _ {↓obj other} _ _ ·ₚ section ⟩
+        other C'.∘ F.F₁ (corep.universal section)  ≡⟨ F.elimr (corep.unique-endo _ (corep.factors section)) ⟩
+        other ∎
 ```

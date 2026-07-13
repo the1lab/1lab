@@ -553,8 +553,8 @@ _ = with-pullbacks
 ```agda
 _ = preserves-limit
 _ = is-lex.pres-monos
-_ = corepresentable-preserves-limits
-_ = representable-reverses-colimits
+_ = is-corepresentation→preserves-limits
+_ = is-representation→reverses-colimits
 _ = reflects-limit
 _ = conservative-reflects-limits
 ```
@@ -774,7 +774,7 @@ _ = adjoint→is-absolute-lan
 
 <!--
 ```agda
-_ = right-adjoint→objectwise-rep
+_ = right-adjoint→is-objectwise-rep
 _ = corepresentable→left-adjoint
 _ = Karoubi-is-completion
 ```
