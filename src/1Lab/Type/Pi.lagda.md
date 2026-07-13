@@ -69,6 +69,12 @@ codomain of a dependent function by an equivalence across universe levels:
 
 <!--
 ```agda
+Π-ap-cod-is-equiv
+  : ∀ {f : (x : A) → P x → Q x}
+  → (∀ x → is-equiv (f x))
+  → is-equiv (λ (h : (x : A) → P x) (x : A) → f x (h x))
+Π-ap-cod-is-equiv {f = f} f-eqv = Π-ap-cod (λ x → f x , f-eqv x) .snd
+
 Π-ap-cod₂
   : ∀ {ℓa ℓb ℓp ℓq}
   → {A : Type ℓa} {B : A → Type ℓb}
