@@ -31,6 +31,10 @@ module Cat.Functor.Profunctor where
 
 <!--
 ```agda
+-- necessary for the Bifunctor display form to trigger for profunctors
+-- without that module being in scope.
+open Cat.Functor.Bifunctor using (Bifunctor) public
+
 private variable
   o ℓ o' ℓ' : Level
   C D E : Precategory o ℓ
@@ -38,15 +42,25 @@ private variable
 -->
 
 A **profunctor** $P : \cC \rel \cD$ is a [[bifunctor]]
-$P : \cD\op \times \cC \to \Sets$.
+$P : \cD\op \times \cC \to \Sets$.[^direction]
 As with [[presheaves]], we define `Profunctor`{.Agda} parametrically
 over the universe level in which the functors are valued. Much like a
 presheaf on $\cC$ can be thought of as a *predicate* on $\cC$, a
 profunctor $\cC \rel \cD$ can be thought of as a *relation* between
 $\cC$ and $\cD$.
 
+[^direction]:
+    We write $P : \cC \rel \cD$, with the contravariant variable $\cD$
+    on the right, to indicate that $P$ is equipped with a right action
+    of $\cD$.
+
+    This convention is also informed by wanting that functors $F : \cC
+    \to \cD$ to [induce] profunctors $\cC \rel \cD$.
+
+[induce]: Cat.Functor.Profunctor.Representation.html#induced-profunctor
+
 ```agda
-Profunctor : (C : Precategory o ℓ) (D : Precategory o' ℓ') (ℓ : Level) → Type _
+Profunctor : (C : Precategory o ℓ) (D : Precategory o' ℓ') (κ : Level) → Type _
 Profunctor C D ℓ = Bifunctor (D ^op) C (Sets ℓ)
 ```
 
