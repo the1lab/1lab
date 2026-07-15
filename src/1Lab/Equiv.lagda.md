@@ -339,7 +339,11 @@ $f\inv(fx) = x$.
 ```agda
 equiv→unit
   : ∀ {f : A → B} (eqv : is-equiv f) x → equiv→inverse eqv (f x) ≡ x
-equiv→unit {f = f} eqv x i = eqv .is-eqv (f x) .paths (x , refl) i .fst
+equiv→unit {f = f} eqv x = (λ i → eqv .is-eqv (f x) .paths fib i .fst)
+  module equiv→unit where
+    fib : fibre f (f x)
+    fib .fst = x
+    fib .snd = refl
 ```
 
 Contractibility gives us, in addition to a path between the *points*
@@ -744,10 +748,11 @@ to equivalences and isomorphisms.
 
 ```agda
 module Equiv {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A ≃ B) where
-  to   = f .fst
-  from = equiv→inverse (f .snd)
+  open Σ f renaming (fst to to) using () public
+  module _ (b : B) where
+    open Σ (f .snd .is-eqv b .centre) renaming (fst to from ; snd to ε) using () public
+
   η    = equiv→unit (f .snd)
-  ε    = equiv→counit (f .snd)
   zig  = equiv→zig (f .snd)
   zag  = equiv→zag (f .snd)
 
@@ -790,6 +795,40 @@ module Iso {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ((f , f-iso) : Iso A B) whe
 
 <!--
 ```agda
+-- display forms for recovering the helper definitions from the Equiv
+-- module. these are attached to 'snd' and they work on normal forms.
+{-# DISPLAY snd f .is-eqv y .centre .fst = Equiv.from f y #-}
+{-# DISPLAY snd f .is-eqv y .centre .snd = Equiv.ε    f y #-}
+
+-- these display forms are actually *not* redundant with the one
+-- generated from defining Equiv.from using the module system.
+--
+-- this is because the auto-generated one is raised by the size of the
+-- telescope to module Equiv, but there are no pattern bindings for
+-- these variables (and they aren't present in the normal form anyway),
+-- so that display form can not match. conversely, the hand-rolled
+-- DISPLAY pragmas can match as long as the *equivalence* is neutral.
+--
+-- however, if the module Equiv is instantiated, then we get another
+-- generated display form to recover 'from', and this display form can
+-- apply in contexts descended from that where the copy was made.
+--
+-- basically, the DISPLAY pragmas work if you have f : A ≃ B; defining
+-- 'to' and 'from' through the module system works if you have
+-- e : is-equiv _, module m = Equiv (_ , e).
+
+-- we can maatch on equiv→unit.fib since it is defined by copatterns (we
+-- can not match on a *pair* with refl second component) to recover
+-- Equiv.η.
+-- to hide equiv→unit.fib slightly we rewrite it back to a pair. since
+-- equiv→unit.fib holds onto the levels and types here we can be good
+-- citizens and do a bit of parameter reconstruction.
+{-# DISPLAY
+  snd f .is-eqv _ .paths (equiv→unit.fib {ℓa} {A} {ℓb} {B}_ x) i .fst =
+    Equiv.η {ℓa} {ℓb} {A} {B} f x i
+  #-}
+{-# DISPLAY equiv→unit.fib {_} {_} {ℓb} {B} {f = f} _ x = x , refl {ℓb} {B} {f x}  #-}
+
 injectiveP
   : ∀ {ℓ ℓ'} {A : I → Type ℓ} {B : I → Type ℓ'} (f : ∀ i → Iso (A i) (B i)) {x y}
   → PathP (λ i → B i) (f i0 .fst x) (f i1 .fst y)
