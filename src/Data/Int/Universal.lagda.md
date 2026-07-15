@@ -124,7 +124,7 @@ difference of naturals $x - y$, then we can compute the power $f^n : X
     private
       lemma : ∀ m n x
         → (n-power n e⁻¹) .fst (n-power m .fst x)
-        ≡ (n-power n e⁻¹) .fst (Equiv.from (l) (l .fst (n-power m .fst x)))
+        ≡ (n-power n e⁻¹) .fst (Equiv.from l (l .fst (n-power m .fst x)))
       lemma m n x = ap ((n-power n e⁻¹) .fst) (sym (Equiv.η l _))
 
     go : HIT.Int → X ≃ X
