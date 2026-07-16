@@ -6,7 +6,6 @@ open import Algebra.Monoid
 open import Algebra.Magma
 
 open import Cat.Monoidal.Instances.Cartesian
-open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Hom.Representable
 open import Cat.Functor.FullSubcategory
 open import Cat.Diagram.Product.Solver
@@ -14,6 +13,7 @@ open import Cat.Functor.Equivalence
 open import Cat.Functor.Properties
 open import Cat.Instances.Functor
 open import Cat.Displayed.Total
+open import Cat.Displayed.Thin
 open import Cat.Instances.Sets
 open import Cat.Functor.Base
 open import Cat.Functor.Hom

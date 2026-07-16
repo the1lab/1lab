@@ -6,8 +6,8 @@ open import Algebra.Monoid.Instances.Transformation
 open import Algebra.Monoid.Category
 open import Algebra.Monoid
 
-open import Cat.Displayed.Univalence.Thin
 open import Cat.Displayed.Total
+open import Cat.Displayed.Thin
 
 open import Data.Vec.Properties
 open import Data.Product.NAry

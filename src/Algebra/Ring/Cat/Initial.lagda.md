@@ -4,8 +4,8 @@ open import Algebra.Group.Ab
 open import Algebra.Group
 open import Algebra.Ring
 
-open import Cat.Displayed.Univalence.Thin
 open import Cat.Diagram.Initial
+open import Cat.Displayed.Thin
 open import Cat.Prelude hiding (_+_ ; _*_)
 
 open import Data.Int.Properties

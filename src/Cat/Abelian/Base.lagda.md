@@ -13,6 +13,7 @@ open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Displayed.Total
 open import Cat.Instances.Slice
+open import Cat.Displayed.Thin
 open import Cat.Diagram.Zero
 open import Cat.Prelude hiding (_+_ ; _*_ ; _-_)
 

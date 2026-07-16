@@ -1,6 +1,5 @@
 <!--
 ```agda
-open import Cat.Displayed.Univalence.Thin
 open import Cat.Instances.OFE.Complete
 open import Cat.Displayed.Total
 open import Cat.Instances.OFE
@@ -34,6 +33,7 @@ B$ are equivalent to contractive maps $A \to B$.
 <!--
 ```agda
 open OFE-Notation
+open ∫Hom
 
 module _ {ℓ ℓ'} {A : Type ℓ} (P : OFE-on ℓ' A) where
   private

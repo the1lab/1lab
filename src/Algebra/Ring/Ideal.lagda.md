@@ -7,8 +7,7 @@ open import Algebra.Group.Ab
 open import Algebra.Group
 open import Algebra.Ring
 
-open import Cat.Displayed.Univalence.Thin
-open import Cat.Displayed.Total
+open import Cat.Displayed.Thin
 open import Cat.Prelude
 
 open import Data.Power
@@ -119,7 +118,7 @@ $\mathfrak{a}$ is a sub-$R$-module of $R$:
     → ideal→module 𝔞 idl R-Mod.↪ representable-module R
   ideal→submodule {𝔞 = 𝔞} idl = record
     { mor   = ∫hom fst (record { linear = λ _ _ _ → refl })
-    ; monic = λ {c = c} g h x → Structured-hom-path (R-Mod-structure R) $
+    ; monic = λ {c = c} g h x → Structured-hom-path (R-Mod-structure R _) $
       embedding→monic (Subset-proj-embedding λ _ → 𝔞 _ .is-tr) (g .fst) (h .fst) (ap fst x)
     }
 ```

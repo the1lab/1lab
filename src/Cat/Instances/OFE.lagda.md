@@ -2,7 +2,7 @@
 ```agda
 open import 1Lab.Reflection hiding (absurd)
 
-open import Cat.Displayed.Univalence.Thin
+open import Cat.Displayed.Thin
 open import Cat.Prelude
 
 open import Data.Nat.Properties
@@ -194,25 +194,29 @@ unquoteDecl
   H-Level-is-non-expansive = declare-record-hlevel 1 H-Level-is-non-expansive (quote is-non-expansive)
 
 open is-non-expansive
+open Thin-structure
 
 OFE-structure : ∀ {ℓ ℓ'} → Thin-structure (ℓ ⊔ ℓ') (OFE-on {ℓ} ℓ')
 ∣ OFE-structure .is-hom f O P ∣ = is-non-expansive f O P
 OFE-structure .is-hom f O P .is-tr = hlevel 1
 OFE-structure .id-is-hom .pres-≈ w = w
 OFE-structure .∘-is-hom f g α β .pres-≈ w = α .pres-≈ (β .pres-≈ w)
-OFE-structure .id-hom-unique {s = s} {t = t} α β = q where
-  module s = OFE-on s
-  module t = OFE-on t
 
-  p : ∀ x y n → (s.within x n y) ≃ (t.within x n y)
-  p x y n = prop-ext (s.has-is-prop _ _ _) (t.has-is-prop _ _ _)
-    (α .pres-≈) (β .pres-≈)
+instance
+  OFEs-univalent : ∀ {ℓ ℓ'} → is-univalent-structure (OFE-structure {ℓ} {ℓ'})
+  OFEs-univalent .is-univalent-structure.id-hom-unique {s = s} {t} α β = q where
+    module s = OFE-on s
+    module t = OFE-on t
 
-  q : s ≡ t
-  q i .OFE-on.within x n y = ua (p x y n) i
-  q i .OFE-on.has-is-ofe = is-prop→pathp
-    (λ i → hlevel {T = is-ofe (λ x n y → ua (p x y n) i)} 1)
-    s.has-is-ofe t.has-is-ofe i
+    p : ∀ x y n → (s.within x n y) ≃ (t.within x n y)
+    p x y n = prop-ext (s.has-is-prop _ _ _) (t.has-is-prop _ _ _)
+      (α .pres-≈) (β .pres-≈)
+
+    q : s ≡ t
+    q i .OFE-on.within x n y = ua (p x y n) i
+    q i .OFE-on.has-is-ofe = is-prop→pathp
+      (λ i → hlevel {T = is-ofe (λ x n y → ua (p x y n) i)} 1)
+      s.has-is-ofe t.has-is-ofe i
 
 OFEs : ∀ ℓ ℓ' → Precategory (lsuc (ℓ ⊔ ℓ')) (ℓ ⊔ ℓ')
 OFEs ℓ ℓ' = Structured-objects (OFE-structure {ℓ} {ℓ'})

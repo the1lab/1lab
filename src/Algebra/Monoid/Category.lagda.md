@@ -4,11 +4,12 @@ open import Algebra.Semigroup
 open import Algebra.Monoid
 open import Algebra.Magma
 
-open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.Equivalence
 open import Cat.Functor.Properties
+open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
+open import Cat.Displayed.Thin
 open import Cat.Prelude
 
 open import Data.List
@@ -23,6 +24,7 @@ module Algebra.Monoid.Category where
 
 <!--
 ```agda
+open Thin-structure
 open Precategory
 open is-semigroup
 open is-monoid
@@ -30,6 +32,7 @@ open is-magma
 open Monoid-hom
 open Monoid-on
 open Functor
+open ∫Hom
 open _=>_
 open _⊣_
 
@@ -84,18 +87,21 @@ Monoid-structure ℓ .∘-is-hom f g p1 p2 .pres-id =
 Monoid-structure ℓ .∘-is-hom f g p1 p2 .pres-⋆ x y =
   ap f (p2 .pres-⋆ _ _) ∙ p1 .pres-⋆ _ _
 
-Monoid-structure ℓ .id-hom-unique mh _ i .identity = mh .pres-id i
-Monoid-structure ℓ .id-hom-unique mh _ i ._⋆_ x y = mh .pres-⋆ x y i
-Monoid-structure ℓ .id-hom-unique {s = s} {t = t} mh _ i .has-is-monoid =
-  is-prop→pathp
-    (λ i → hlevel {T = is-monoid (mh .pres-id i) (λ x y → mh .pres-⋆ x y i)} 1)
-    (s .has-is-monoid)
-    (t .has-is-monoid)
-    i
+instance
+  Monoids-univalent : ∀ {ℓ} → is-univalent-structure (Monoid-structure ℓ)
+  Monoids-univalent .is-univalent-structure.id-hom-unique {s = s} {t} mh _ = m where
+    m : s ≡ t
+    m i .identity = mh .pres-id i
+    m i ._⋆_ x y = mh .pres-⋆ x y i
+    m i .has-is-monoid = is-prop→pathp
+      (λ i → hlevel {T = is-monoid (mh .pres-id i) (λ x y → mh .pres-⋆ x y i)} 1)
+      (s .has-is-monoid)
+      (t .has-is-monoid)
+      i
 
 instance
-  Monoid-equational : ∀ {ℓ} → is-equational (Monoid-structure ℓ)
-  Monoid-equational {ℓ = ℓ} .is-equational.invert-id-hom {s = s} {t = t} f' = f'⁻¹ where
+  Monoids-equational : ∀ {ℓ} → is-equational-structure (Monoid-structure ℓ)
+  Monoids-equational .is-equational-structure.invert-id-hom {s = s} {t = t} f' = f'⁻¹ where
     f'⁻¹ : Monoid-hom t s λ x → x
     f'⁻¹ .pres-id = sym (f' .pres-id)
     f'⁻¹ .pres-⋆ x y = sym (f' .pres-⋆ x y)
@@ -104,7 +110,7 @@ Monoids : ∀ ℓ → Precategory (lsuc ℓ) ℓ
 Monoids ℓ = Structured-objects (Monoid-structure ℓ)
 
 Monoids-is-category : ∀ {ℓ} → is-category (Monoids ℓ)
-Monoids-is-category = Structured-objects-is-category (Monoid-structure _)
+Monoids-is-category = Structured-objects-is-category
 ```
 
 By standard nonsense, then, the category of monoids admits a [[faithful

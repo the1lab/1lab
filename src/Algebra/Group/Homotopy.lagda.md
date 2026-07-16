@@ -10,6 +10,8 @@ open import Algebra.Monoid
 open import Algebra.Group
 open import Algebra.Magma
 
+open import Cat.Displayed.Thin
+
 open import Data.Set.Truncation
 
 open import Homotopy.Conjugation

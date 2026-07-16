@@ -6,13 +6,13 @@ open import Algebra.Group.Ab.Hom
 open import Algebra.Group.Ab
 open import Algebra.Group
 
-open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Functor.Naturality
 open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
+open import Cat.Displayed.Thin
 open import Cat.Monoidal.Base
 open import Cat.Functor.Base
 open import Cat.Bi.Base
