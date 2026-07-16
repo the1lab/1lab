@@ -16,8 +16,8 @@ let
 
   src = pkgs.fetchgit {
     url             = "https://codeberg.org/1lab/mikan.git";
-    rev             = "a2b0cfeb0babc37f573ac78be6449d5ce6a47fdc";
-    sha256          = "sha256-8HtElGCKpPUO55kOsiD5G/JWy3+NU1Z/TF26szrwORA=";
+    rev             = "208ac8ca35ddfd971412438da6fcb29aa54e9b4b";
+    sha256          = "sha256-uFhZiTYpLYBtCOfrO18mRbXNFazegFjk/L8gBOzXwZs=";
     fetchSubmodules = false;
   };
 
