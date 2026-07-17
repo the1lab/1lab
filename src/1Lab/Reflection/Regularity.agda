@@ -1,4 +1,4 @@
-{-# OPTIONS --allow-unsolved-metas -vtactic:10 #-}
+{-# OPTIONS --allow-unsolved-metas #-}
 open import 1Lab.Reflection.HLevel
 open import 1Lab.Reflection.Subst
 open import 1Lab.Reflection

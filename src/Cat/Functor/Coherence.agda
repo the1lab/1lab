@@ -43,7 +43,7 @@ instance
 private
   get-dual : Term → TC Name
   get-dual T = resetting do
-    (mv , _) ← new-meta' (def (quote Dualises) [ argN T ])
+    meta mv _ ← new-meta' (def (quote Dualises) [ argN T ])
     (qn ∷ []) ← get-instances mv
       where _ → typeError [ "Don't know how to dualise type " , termErr T ]
     unquoteTC =<< normalise (def (quote dualiser) [ argN qn ])

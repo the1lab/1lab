@@ -733,7 +733,7 @@ abstract
     → f' .from' ≡[ inverse-unique₀ f g r ] g' .from'
   inverse-unique₀' f' g' r' = begin[]
     f' .from'                           ≡[]˘⟨ apd (λ _ → f' .from' ∘'_) (g' .invl') ∙[] idr' _ ⟩
-    f' .from' ∘'  g' .to' ∘' g' .from'  ≡[]⟨ assoc' (f' .from') (g' .to') (g' .from') ⟩
+    f' .from' ∘' g' .to' ∘' g' .from'   ≡[]⟨ assoc' (f' .from') (g' .to') (g' .from') ⟩
     (f' .from' ∘' g' .to') ∘' g' .from' ≡[]⟨ (apd (λ _ → _∘' g' .from') (apd (λ _ → f' .from' ∘'_) (symP r') ∙[] f' .invr')) ∙[] idl' _ ⟩
     g' .from'                           ∎[]
 ```
