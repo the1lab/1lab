@@ -69,14 +69,15 @@ Terminal-cone→Pullback
   → Pullback Cat (F .F₁ {cs-a} {cs-c} _) (F .F₁ {cs-b} {cs-c} _)
 Terminal-cone→Pullback {F = F} lim = pb where
   module lim = Terminal lim
+
   pb : Pullback Cat _ _
   pb .apex = lim.top .apex
   pb .p₁ = lim.top .ψ cs-a
   pb .p₂ = lim.top .ψ cs-b
   pb .has-is-pb .square = lim.top .commutes _ ∙ sym (lim.top .commutes {cs-b} {cs-c} _)
-  pb .has-is-pb .universal x = lim.has⊤ (Square→Cone _ _ x) .centre .map
-  pb .has-is-pb .p₁∘universal {p = p} = lim.has⊤ (Square→Cone _ _ p) .centre .com cs-a
-  pb .has-is-pb .p₂∘universal {p = p} = lim.has⊤ (Square→Cone _ _ p) .centre .com cs-b
+  pb .has-is-pb .universal x = lim.! {Square→Cone _ _ x} .map
+  pb .has-is-pb .p₁∘universal = lim.! .com cs-a
+  pb .has-is-pb .p₂∘universal = lim.! .com cs-b
   pb .has-is-pb .unique {p₁' = p₁'} {p₂'} {p} {lim'} a b =
     ap map (lim.has⊤ (Square→Cone _ _ p) .paths other)
     where

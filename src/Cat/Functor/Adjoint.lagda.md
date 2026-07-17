@@ -880,17 +880,19 @@ module _ {o h o' h'} {C : Precategory o h} {D : Precategory o' h'} where
   Universal-morphism R X = Initial (X ↙ R)
 
   open Free-object
-  open Initial
   open ↓Obj
   open ↓Hom
 
   universal-map→free-object : ∀ {R X} → Universal-morphism R X → Free-object R X
-  universal-map→free-object x .free = _
-  universal-map→free-object x .unit = x .bot .map
-  universal-map→free-object x .fold f = x .has⊥ (↓obj f) .centre .bot
-  universal-map→free-object x .commute = sym (x .has⊥ _ .centre .com) ∙ C.idr _
-  universal-map→free-object x .unique g p = ap bot
-    (x .has⊥ _ .paths (↓hom (sym (p ∙ sym (C.idr _)))))
+  universal-map→free-object x = record where
+    module x = Initial x
+    free    = _
+
+    unit   = x.bot .map
+    fold f = x.¡ {↓obj f} .bot
+
+    commute    = sym (x.¡ .com) ∙ C.idr _
+    unique g p = ap bot $ x.¡-unique (↓hom (sym (p ∙ sym (C.idr _))))
 
   universal-maps→functor : ∀ {R} → (∀ X → Universal-morphism R X) → Functor C D
   universal-maps→functor u = free-objects→functor

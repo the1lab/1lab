@@ -203,7 +203,7 @@ record is-additive {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
   module ∅ = Zero ∅
 
   0m-unique : ∀ {A B} → ∅.zero→ {A} {B} ≡ 0m
-  0m-unique = ap₂ _∘_ (∅.has⊥ _ .paths _) refl ∙ ∘-zero-l
+  0m-unique = ap₂ _∘_ (∅.¡-unique _) refl ∙ ∘-zero-l
 ```
 
 Coincidence of finite products and finite coproducts leads to an object
@@ -410,7 +410,7 @@ monomorphism].
           path : f ∘ kernel f .Kernel.kernel ≡ f ∘ 0m
           path = Ker.equal f
             ∙∙ ∅.zero-∘r _
-            ∙∙ ap₂ _∘_ (∅.has⊥ _ .paths 0m) refl
+            ∙∙ ap₂ _∘_ (∅.¡-unique 0m) refl
             ∙∙ ∘-zero-l ∙∙ sym ∘-zero-r
 ```
 -->
@@ -431,7 +431,7 @@ the canonical subobject inclusion $\ker(f) \to B$.
           path : ∅.zero→ ∘ proj' ≡ Coker.coeq f ∘ proj'
           path = Coker.unique₂ (Ker.kernel f)
             {e' = 0m} (∘-zero-r ∙ sym ∘-zero-l)
-            (pushl (∅.zero-∘r _) ∙ pulll ( ap₂ _∘_ refl (∅.has⊤ _ .paths 0m)
+            (pushl (∅.zero-∘r _) ∙ pulll ( ap₂ _∘_ refl (∅.!-unique 0m)
                                                ∙ ∘-zero-r)
                  ∙ ∘-zero-l)
             (pullr (Coker.factors (Ker.kernel f)) ∙ sym (Coker.coequal _)
