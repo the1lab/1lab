@@ -42,14 +42,14 @@ and $g$.
 ```agda
   record is-coequaliser {E} (f g : Hom A B) (coeq : Hom B E) : Type (o ⊔ ℓ) where
     field
-      coequal    : coeq ∘ f ≡ coeq ∘ g
-      universal  : ∀ {F} {e' : Hom B F} (p : e' ∘ f ≡ e' ∘ g) → Hom E F
-      factors    : ∀ {F} {e' : Hom B F} {p : e' ∘ f ≡ e' ∘ g}
-                 → universal p ∘ coeq ≡ e'
-
-      unique     : ∀ {F} {e' : Hom B F} {p : e' ∘ f ≡ e' ∘ g} {colim : Hom E F}
-                 → colim ∘ coeq ≡ e'
-                 → colim ≡ universal p
+      coequal   : coeq ∘ f ≡ coeq ∘ g
+      universal : ∀ {F} {e' : Hom B F} (p : e' ∘ f ≡ e' ∘ g) → Hom E F
+      factors
+        : ∀ {F} {e' : Hom B F} {p : e' ∘ f ≡ e' ∘ g}
+        → universal p ∘ coeq ≡ e'
+      unique
+        : ∀ {F} {e' : Hom B F} {p : e' ∘ f ≡ e' ∘ g} {colim : Hom E F}
+        → colim ∘ coeq ≡ e' → universal p ≡ colim
 
     unique₂
       : ∀ {F} {e' : Hom B F}  {o1 o2 : Hom E F}
@@ -57,9 +57,9 @@ and $g$.
       → o1 ∘ coeq ≡ e'
       → o2 ∘ coeq ≡ e'
       → o1 ≡ o2
-    unique₂ p q r = unique {p = p} q ∙ sym (unique r)
+    unique₂ p q r = sym (unique {p = p} q) ∙ unique r
 
-    id-coequalise : id ≡ universal coequal
+    id-coequalise : universal coequal ≡ id
     id-coequalise = unique (idl _)
 ```
 
@@ -97,9 +97,9 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     → is-coequaliser C f g coequ
     → is-epic coequ
   is-coequaliser→is-epic {f = f} {g = g} equ equalises h i p =
-    h                            ≡⟨ unique p ⟩
-    universal (extendr coequal) ≡˘⟨ unique refl ⟩
-    i                            ∎
+    h                           ≡˘⟨ unique p ⟩
+    universal (extendr coequal) ≡⟨ unique refl ⟩
+    i                           ∎
     where open is-coequaliser equalises
 
   coequaliser-unique

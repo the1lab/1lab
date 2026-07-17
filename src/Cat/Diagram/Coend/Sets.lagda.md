@@ -96,7 +96,7 @@ to the family associated to the cowedge `W`.
     coend .cowedge = universal-cowedge
     coend .factor W = factoring W
     coend .commutes = refl
-    coend .unique {W = W} p = ext λ X x → p ·ₚ x
+    coend .unique {W = W} p = ext λ X x → sym p ·ₚ x
 ```
 
 This construction is actually functorial! Given any functor

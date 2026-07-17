@@ -177,7 +177,7 @@ from the algebra laws.
     (e' .fst C.∘ T.M₁ A.ν) C.∘ unit.η  _    ≡˘⟨ ap fst p C.⟩∘⟨refl ⟩
     (e' .fst C.∘ T.mult .η _) C.∘ unit.η  _ ≡⟨ C.cancelr T.μ-unitl ⟩
     e' .fst                                 ∎
-  algebra-is-coequaliser .unique {F = F} {e'} {p} {colim} q = ext $ sym $
+  algebra-is-coequaliser .unique {F = F} {e'} {p} {colim} q = ext $
     e' .fst C.∘ unit.η A              ≡⟨ ap fst (sym q) C.⟩∘⟨refl ⟩
     (colim .fst C.∘ A.ν) C.∘ unit.η A ≡⟨ C.cancelr A.ν-unit ⟩
     colim .fst                        ∎
@@ -234,8 +234,8 @@ far $\cD$ is from being the category of $T$-algebras.
           has-coeq Y .coeq D.∘ F.₁ (Y .snd .ν) D.∘ F.₁ (T.M₁ (alg-map .fst)) ≡⟨ D.extendl (has-coeq Y .coequal) ⟩
           has-coeq Y .coeq D.∘ ε _ D.∘ F.₁ (T.M₁ (alg-map .fst))             ≡⟨ D.pushr (counit.is-natural _ _ _) ⟩
           (has-coeq Y .coeq D.∘ F.₁ (alg-map .fst)) D.∘ ε _                  ∎
-  Comparison-EM⁻¹ .F-id {X} = sym $ has-coeq X .unique (D.idl _ ∙ D.intror F.F-id)
-  Comparison-EM⁻¹ .F-∘ {X} f g = sym $ has-coeq X .unique $
+  Comparison-EM⁻¹ .F-id {X} = has-coeq X .unique (D.idl _ ∙ D.intror F.F-id)
+  Comparison-EM⁻¹ .F-∘ {X} f g = has-coeq X .unique $
        D.pullr (has-coeq X .factors)
     ∙∙ D.pulll (has-coeq _ .factors)
     ∙∙ F.pullr refl
@@ -275,21 +275,19 @@ readers.
     G.₁ (has-coeq x .universal _ D.∘ has-coeq x .coeq) C.∘ T.unit .η (x .fst) ≡⟨ C.pushl (G.F-∘ _ _) ⟩
     G.₁ (has-coeq x .universal _) C.∘ G.₁ (has-coeq x .coeq) C.∘ T.unit.η _   ∎
   Comparison-EM⁻¹⊣Comparison-EM .counit .is-natural x y f =
-      has-coeq (F₀ (Comparison-EM F⊣G) x) .unique
+      sym (has-coeq (F₀ (Comparison-EM F⊣G) x) .unique
         {p = ap₂ D._∘_ (F⊣G .counit.is-natural _ _ _) refl
           ∙∙ D.pullr (F⊣G .counit.is-natural _ _ _)
           ∙∙ D.pulll (sym (F⊣G .counit.is-natural _ _ _))}
-        (D.pullr (has-coeq _ .factors) ∙ D.pulll (has-coeq _ .factors))
-    ∙ sym (has-coeq _ .unique (D.pullr (has-coeq _ .factors) ∙ sym (F⊣G .counit.is-natural _ _ _)))
-  Comparison-EM⁻¹⊣Comparison-EM .zig =
-    unique₂ (has-coeq _)
-      (has-coeq _ .coequal)
-      (D.pullr (has-coeq _ .factors)
-      ∙ D.pulll (has-coeq _ .factors)
-      ∙ ap₂ D._∘_ refl (F.F-∘ _ _)
-      ∙ D.pulll (F⊣G .counit.is-natural _ _ _)
-      ∙ D.cancelr (F⊣G .zig))
-      (D.idl _)
+        (D.pullr (has-coeq _ .factors) ∙ D.pulll (has-coeq _ .factors)))
+    ∙ has-coeq _ .unique (D.pullr (has-coeq _ .factors) ∙ sym (F⊣G .counit.is-natural _ _ _))
+  Comparison-EM⁻¹⊣Comparison-EM .zig = unique₂ (has-coeq _) (has-coeq _ .coequal)
+    ( D.pullr (has-coeq _ .factors)
+    ∙ D.pulll (has-coeq _ .factors)
+    ∙ ap₂ D._∘_ refl (F.F-∘ _ _)
+    ∙ D.pulll (F⊣G .counit.is-natural _ _ _)
+    ∙ D.cancelr (F⊣G .zig))
+    (D.idl _)
   Comparison-EM⁻¹⊣Comparison-EM .zag = ext $
     G.pulll (has-coeq _ .factors) ∙ F⊣G .zag
 ```

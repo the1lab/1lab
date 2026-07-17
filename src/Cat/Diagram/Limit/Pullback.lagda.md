@@ -58,7 +58,9 @@ Pullback→Terminal-cone {f = f} {g} pb = lim where
   lim .has⊤ cone .centre .com cs-a = pb.p₁∘universal
   lim .has⊤ cone .centre .com cs-b = pb.p₂∘universal
   lim .has⊤ cone .centre .com cs-c = pullr pb.p₁∘universal ∙ cone .commutes (lift tt)
-  lim .has⊤ cone .paths otherhom = Cone-hom-path _ (sym (pb.unique (otherhom .com _) (otherhom .com _)))
+  lim .has⊤ cone .paths otherhom = Cone-hom-path _ $ pb.unique
+    (otherhom .com _)
+    (otherhom .com _)
 
 Terminal-cone→Pullback
   : ∀ {x y}
@@ -76,7 +78,7 @@ Terminal-cone→Pullback {F = F} lim = pb where
   pb .has-is-pb .p₁∘universal {p = p} = lim.has⊤ (Square→Cone _ _ p) .centre .com cs-a
   pb .has-is-pb .p₂∘universal {p = p} = lim.has⊤ (Square→Cone _ _ p) .centre .com cs-b
   pb .has-is-pb .unique {p₁' = p₁'} {p₂'} {p} {lim'} a b =
-    sym (ap map (lim.has⊤ (Square→Cone _ _ p) .paths other))
+    ap map (lim.has⊤ (Square→Cone _ _ p) .paths other)
     where
       other : Cone-hom _ _ _
       other .map = _

@@ -66,17 +66,17 @@ of identifications required to make the aforementioned square commute.
         universal∘i₁ : {p : i₁' ∘ f ≡ i₂' ∘ g} → universal p ∘ i₁ ≡ i₁'
         universal∘i₂ : {p : i₁' ∘ f ≡ i₂' ∘ g} → universal p ∘ i₂ ≡ i₂'
 
-        unique : {p : i₁' ∘ f ≡ i₂' ∘ g} {colim' : Hom P Q}
-               → colim' ∘ i₁ ≡ i₁'
-               → colim' ∘ i₂ ≡ i₂'
-               → colim' ≡ universal p
+        unique
+          : {p : i₁' ∘ f ≡ i₂' ∘ g} {colim' : Hom P Q}
+          → colim' ∘ i₁ ≡ i₁' → colim' ∘ i₂ ≡ i₂'
+          → universal p ≡ colim'
 
       unique₂
         : {p : i₁' ∘ f ≡ i₂' ∘ g} {colim' colim'' : Hom P Q}
         → colim' ∘ i₁ ≡ i₁' → colim' ∘ i₂ ≡ i₂'
         → colim'' ∘ i₁ ≡ i₁' → colim'' ∘ i₂ ≡ i₂'
         → colim' ≡ colim''
-      unique₂ {p = o} p q r s = unique {p = o} p q ∙ sym (unique r s)
+      unique₂ {p = o} p q r s = sym (unique {p = o} p q) ∙ unique r s
 ```
 
 We provide a convenient packaging of the pushout and the injection

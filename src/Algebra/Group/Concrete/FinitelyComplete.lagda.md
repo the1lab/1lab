@@ -63,7 +63,7 @@ ConcreteGroups-products X Y = prod where
   prod .has-is-product .π₁∘⟨⟩ = funext∙ (λ _ → refl) (∙-idr _)
   prod .has-is-product .π₂∘⟨⟩ = funext∙ (λ _ → refl) (∙-idr _)
   prod .has-is-product .unique {Q} {f} {g} {u} p1 p2 =
-    funext∙ (λ x → p1 ·ₚ x ,ₚ p2 ·ₚ x) (fix ◁ square)
+    sym $ funext∙ (λ x → p1 ·ₚ x ,ₚ p2 ·ₚ x) (fix ◁ square)
     where
       square : Square
         (p1 ·ₚ pt Q ,ₚ p2 ·ₚ pt Q) ((fst∙ ∘∙ u) .snd ,ₚ (snd∙ ∘∙ u) .snd)

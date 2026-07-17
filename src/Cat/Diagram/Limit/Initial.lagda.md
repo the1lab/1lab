@@ -65,5 +65,5 @@ module _ {o ℓ} {C : Precategory o ℓ} (L : Initial C) where
     mk .commutes f = L.¡-unique₂ _ _
     mk .universal eps x = eps L.bot
     mk .factors eps p = p _
-    mk .unique eps p other x = introl (L.¡-unique₂ _ _) ∙ x L.bot
+    mk .unique eps p other x = sym (x L.bot) ∙ eliml (L.¡-unique₂ _ _)
 ```

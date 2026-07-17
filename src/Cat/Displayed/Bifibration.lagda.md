@@ -206,7 +206,7 @@ equivalence.
           ∙[] symP (assoc' _ _ _)
           ∙[] cocart.commutesv x' _)
           refl)
-        (λ v → symP $ cocart.uniquep x' _ _ _ _ $
+        (λ v → cocart.uniquep x' _ _ _ _ $
           assoc' _ _ _
           ∙[] Fib.pushlf (symP $ π*.commutesp id-comm _))
 ```

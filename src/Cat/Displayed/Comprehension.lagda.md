@@ -217,7 +217,7 @@ obtain the identity morphism.
   sub-id = ap map F-id'
 
   sub-id' : ∀ {Γ x} → (id ⨾ˢ' id') ≡[ sub-id {Γ} {x} ] id'
-  sub-id' = symP $ π*.uniquep _ (symP sub-id) (sub-proj id') id' $
+  sub-id' = π*.uniquep _ (symP sub-id) (sub-proj id') id' $
     idr' _ ∙[] symP (idl' _)
 ```
 
@@ -235,8 +235,8 @@ same as composing the two extensions.
     : ∀ {Γ Δ Ψ x y z}
     → {σ : Hom Δ Ψ} {δ : Hom Γ Δ} {f : Hom[ σ ] y z} {g : Hom[ δ ] x y}
     → ((σ ∘ δ) ⨾ˢ' (f ∘' g)) ≡[ sub-∘ ] (σ ⨾ˢ' f) ∘' (δ ⨾ˢ' g)
-  sub-∘' = symP $ π*.uniquep _ (symP sub-∘) (sub-proj _) _ $
-    pulll[] _ (sub-proj' _)
+  sub-∘' = π*.uniquep _ (symP sub-∘) (sub-proj _) _ $
+        pulll[] _ (sub-proj' _)
     ∙[] extendr[] _ (sub-proj' _)
 ```
 
@@ -309,17 +309,15 @@ $\pi$.
 
     cart : is-cartesian E (δᶜ {Γ} {x}) δᶜ'
     cart .universal m h' = hom[ cancell proj-dup ] (π* _ _ ∘' h')
-    cart .commutes m h' = cast[] $
-      unwrapr _
+    cart .commutes m h' = cast[] $ unwrapr _
       ∙[] π*.uniquep₂ _ (ap₂ _∘_ refl (cancell proj-dup)) refl _ _
         (cancell[] _ proj-dup')
         refl
-    cart .unique m' p =
-      π*.uniquep₂ refl refl _ _ _
-        refl
-        (unwrapr _
+    cart .unique m' p = π*.uniquep₂ _ refl refl _ _
+      (unwrapr _
         ∙[] ap₂ _∘'_ refl (ap₂ _∘'_ refl (sym p))
         ∙[] λ i → π* _ _ ∘' cancell[] _  proj-dup' {f' = m'} i)
+      refl
 ```
 
 We can also characterize how duplication interacts with extension.

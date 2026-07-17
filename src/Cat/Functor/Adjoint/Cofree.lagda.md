@@ -53,7 +53,7 @@ module _ (F : Functor C D) where
       unique
         : ∀ {Y} {f : D.Hom (F₀ Y) X} (g : C.Hom Y cofree)
         → counit D.∘ F₁ g ≡ f
-        → g ≡ unfold f
+        → unfold f ≡ g
 ```
 
 <!--

@@ -188,8 +188,10 @@ isomorphic.
     Slice-product-functor .inv x .com = idr _ ∙ sym (pullbacks _ _ .square)
     Slice-product-functor .eta∘inv x     = ext $ idl _
     Slice-product-functor .inv∘eta x     = ext $ idl _
-    Slice-product-functor .natural x y f = ext $ id-comm ∙ ap (id ∘_) (pullbacks _ _ .unique
-      (pullbacks _ _ .p₁∘universal) (pullbacks _ _ .p₂∘universal ∙ idl _))
+    Slice-product-functor .natural x y f = ext $ id-comm ∙ ap (id ∘_) (sym $
+      pullbacks _ _ .unique
+        (pullbacks _ _ .p₁∘universal)
+        (pullbacks _ _ .p₂∘universal ∙ idl _))
 ```
 
 If we then have a functor $\Pi_f$ fitting into an adjoint triple

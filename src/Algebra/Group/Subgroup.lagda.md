@@ -330,7 +330,8 @@ will compute.
     coeq .factors = Grp↪Sets-is-faithful refl
 
     coeq .unique {F} {p = p} {colim = colim} prf = ext λ x y p →
-      ap· colim (Σ-prop-path! (sym p)) ∙ happly (ap fst prf) y
+        sym (ap fst prf) ·ₚ y
+      ∙ ap· colim (Σ-prop-path! p)
 ```
 
 ## Representing kernels

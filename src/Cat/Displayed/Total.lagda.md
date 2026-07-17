@@ -319,9 +319,9 @@ $g'$ are cartesian to construct the relevant paths.
     pb .p₂∘universal = ap fst $ total-pb .p₂∘universal
     pb .unique {p = p} q r = ap fst $ total-pb .unique
       (∫Hom-path q (p₁'.commutesp q _))
-      (∫Hom-path r (g'.uniquep _ _ (sym $ p) _
-        (pulll[] _ (symP $ ap snd (total-pb .square))
-        ∙[] pullr[] _ (p₁'.commutesp q _))))
+      (∫Hom-path r (symP (g'.uniquep _ _ (sym p) _
+        (   pulll[] _ (symP $ ap snd (total-pb .square))
+        ∙[] pullr[] _ (p₁'.commutesp q _)))))
 ```
 
 <!--

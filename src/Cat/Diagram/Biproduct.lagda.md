@@ -272,7 +272,7 @@ coproducts coincide.
         ((cancelr πι₂ ⟩∘⟨refl) ∙ πι₂)
       ∙ sym (pulll π₂∘⟨⟩))
 
-    coswap≡swap = ⟨⟩-unique
+    coswap≡swap = sym $ ⟨⟩-unique
       (Biprod.[]-unique₂
         (pullr []∘ι₁ ∙ π₁-ι₂) (pullr []∘ι₂ ∙ πι₁)
         π₂-ι₁ πι₂)

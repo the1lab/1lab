@@ -186,9 +186,8 @@ of maps into a limit.
         y                                 ≡˘⟨ (g ∘i homi (p₁ ∘ fₓ)) .has-tgt ⟩
         tgt ∘ (g ∘i homi (p₁ ∘ fₓ)) .ihom ≡˘⟨ ap (tgt ∘_) p₁∘universal ⟩
         tgt ∘ p₁ ∘ universal _            ∎
-    outf .P-id fₓ =
-      sym $ unique (sym (ap ihom (idli _))) (sym (!-unique _))
-    outf .P-∘ fₓ g h = unique
+    outf .P-id fₓ = unique (sym (ap ihom (idli _))) (sym (!-unique _))
+    outf .P-∘ fₓ g h = sym $ unique
       (p₁∘universal
       ∙ ap ihom (sym $ associ _ _ _)
       ∙ ∘i-ihom
@@ -197,7 +196,7 @@ of maps into a limit.
           refl refl (sym p₁∘universal))
       p₂∘universal
     outf .P₀-nat fₓ σ = sym (assoc _ _ _) ∙ ap (tgt ∘_) (sym (assoc _ _ _))
-    outf .P₁-nat fₓ g σ = unique
+    outf .P₁-nat fₓ g σ = sym $ unique
       (pulll p₁∘universal
         ∙ ap ihom (∘i-nat g (homi (p₁ ∘ fₓ)) σ)
         ∙ ∘i-ihom
@@ -240,10 +239,10 @@ covariant construction, performed above.
       src-coh =
         sym (ap (src ∘_) p₁∘universal
         ∙ (homi (p₁ ∘ fₓ) ∘i op-ihom g) .has-src)
-    outf .P-id fₓ = sym $ unique
+    outf .P-id fₓ = unique
       (sym (ap ihom (ap₂ _∘i_ refl op-ihom-involutive ∙ idri _)))
       (sym (!-unique _))
-    outf .P-∘ fₓ g h = unique
+    outf .P-∘ fₓ g h = sym $ unique
       (p₁∘universal
         ∙ ap ihom (ap₂ _∘i_ refl op-ihom-involutive ∙ associ _ _ _)
         ∙ ∘i-ihom refl
@@ -251,18 +250,15 @@ covariant construction, performed above.
             (sym (ap (tgt ∘_) p₁∘universal ∙ (homi (p₁ ∘ fₓ) ∘i op-ihom h) .has-tgt))
             (sym p₁∘universal) refl)
       p₂∘universal
-    outf .P₀-nat fₓ σ =
-      sym (assoc _ _ _)
-      ∙ ap (src ∘_) (sym (assoc _ _ _))
-    outf .P₁-nat fₓ g σ =
-      unique
-        (pulll p₁∘universal
-        ∙ ap ihom (∘i-nat _ _ _)
-        ∙ ∘i-ihom refl
-             (sym (assoc _ _ _) ∙ ap (src ∘_) (sym (assoc _ _ _)))
-             (sym (assoc _ _ _) ∙ ap (tgt ∘_) (sym (assoc _ _ _)))
-             (sym (assoc _ _ _)) refl)
-        (sym (!-unique _))
+    outf .P₀-nat fₓ σ = sym (assoc _ _ _) ∙ ap (src ∘_) (sym (assoc _ _ _))
+    outf .P₁-nat fₓ g σ = sym $ unique
+      (pulll p₁∘universal
+      ∙ ap ihom (∘i-nat _ _ _)
+      ∙ ∘i-ihom refl
+            (sym (assoc _ _ _) ∙ ap (src ∘_) (sym (assoc _ _ _)))
+            (sym (assoc _ _ _) ∙ ap (tgt ∘_) (sym (assoc _ _ _)))
+            (sym (assoc _ _ _)) refl)
+      (sym (!-unique _))
 ```
 </details>
 

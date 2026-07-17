@@ -152,15 +152,13 @@ internal-iso→cartesian {Γ} {Δ} {u} {x} {y} f f-inv = cart where
   cart : is-cartesian _ _ _
   cart .universal {u' = u'} m h' =
     invi [ m ] ∘i adjusti refl (assoc y u m) h'
-  cart .commutes {u' = u'} m h' =
-    Internal-hom-path $
+  cart .commutes {u' = u'} m h' = Internal-hom-path $
     (f [ m ] ∘i invi [ m ] ∘i _) .ihom      ≡⟨ ap ihom (pullli (sym (∘i-nat f invi m))) ⟩
     (⌜ f ∘i invi ⌝ [ m ] ∘i _) .ihom        ≡⟨ ap! f-inv.invli ⟩
     (⌜ idi _ [ m ] ⌝ ∘i _) .ihom            ≡⟨ ap! (idi-nat m) ⟩
     (idi _ ∘i _) .ihom                      ≡⟨ ap ihom (idli _) ⟩
     h' .ihom                                ∎
-  cart .unique {u' = u'} {m = m} {h' = h'} m' p =
-    Internal-hom-path $
+  cart .unique {u' = u'} {m = m} {h' = h'} m' p = sym $ Internal-hom-path $
     m' .ihom                                ≡⟨ ap ihom (introli (Internal-hom-path (ap ihom (idi-nat m)))) ⟩
     (⌜ idi _ [ m ] ⌝ ∘i m') .ihom           ≡⟨ ap! (ap (λ e → e [ m ]) (sym (f-inv.invri)) ∙ ∘i-nat _ _ _) ⟩
     ((invi [ m ] ∘i f [ m ]) ∘i m') .ihom   ≡⟨ ap ihom (pullri (Internal-hom-path (ap ihom p))) ⟩
@@ -192,12 +190,11 @@ cartesian→internal-iso {Γ} {Δ} {u} {x} {y} f f-cart = f-inv where
       (f [ id ] ∘i universal id (idi _)) .ihom ≡⟨ ap ihom (commutes id (idi _)) ⟩
       idi (y ∘ ⌜ u ∘ id ⌝) .ihom               ≡⟨ ap! (idr _) ⟩
       idi (y ∘ u) .ihom ∎
-  f-inv .inversesi .invri =
-    Internal-hom-path $
-      (f-inv .invi ∘i f) .ihom               ≡⟨ ∘i-ihom refl refl (sym (idr _)) refl refl ⟩
-      (adjusti _ _ (f-inv .invi) ∘i f) .ihom ≡⟨ ap ihom (unique (adjusti refl (sym (idr _)) (f-inv .invi) ∘i f) f∘f⁻¹∘f≡f*) ⟩
-      universal id (adjusti _ _ f) .ihom     ≡˘⟨ ap ihom (unique (adjusti refl (sym (idr _)) (idi _)) f∘id≡f*) ⟩
-      idi x .ihom ∎
+  f-inv .inversesi .invri = Internal-hom-path $
+    (f-inv .invi ∘i f) .ihom               ≡⟨ ∘i-ihom refl refl (sym (idr _)) refl refl ⟩
+    (adjusti _ _ (f-inv .invi) ∘i f) .ihom ≡˘⟨ ap ihom (unique (adjusti refl (sym (idr _)) (f-inv .invi) ∘i f) f∘f⁻¹∘f≡f*) ⟩
+    universal id (adjusti _ _ f) .ihom     ≡⟨ ap ihom (unique (adjusti refl (sym (idr _)) (idi _)) f∘id≡f*) ⟩
+    idi x .ihom ∎
 ```
 <details>
 <summary>The right inverse case needs some nightmare re-adjustments.
@@ -242,17 +239,16 @@ Externalisation-fibration u y = u-lift where
   u-lift .lifting = idi _
   u-lift .cartesian .is-cartesian.universal m h' =
     adjusti refl (assoc _ _ _) h'
-  u-lift .cartesian .is-cartesian.commutes m h' =
-    Internal-hom-path $
-      (⌜ idi _ [ m ] ⌝ ∘i _) .ihom ≡⟨ ap! (idi-nat m) ⟩
-      (idi _ ∘i _) .ihom           ≡⟨ ap ihom (idli _) ⟩
-      h' .ihom ∎
+  u-lift .cartesian .is-cartesian.commutes m h' = Internal-hom-path $
+    (⌜ idi _ [ m ] ⌝ ∘i _) .ihom ≡⟨ ap! (idi-nat m) ⟩
+    (idi _ ∘i _) .ihom           ≡⟨ ap ihom (idli _) ⟩
+    h' .ihom ∎
   u-lift .cartesian .is-cartesian.unique {m = m} {h' = h'} m' p =
-    Internal-hom-path $
-      m' .ihom                  ≡˘⟨ ap ihom (idli _) ⟩
-      (⌜ idi _ ⌝ ∘i m') .ihom   ≡⟨ ap! (sym (idi-nat m)) ⟩
-      (idi _ [ m ] ∘i m') .ihom ≡⟨ ap ihom p ⟩
-      h' .ihom                  ∎
+    sym $ Internal-hom-path $
+    m' .ihom                  ≡˘⟨ ap ihom (idli _) ⟩
+    (⌜ idi _ ⌝ ∘i m') .ihom   ≡⟨ ap! (sym (idi-nat m)) ⟩
+    (idi _ [ m ] ∘i m') .ihom ≡⟨ ap ihom p ⟩
+    h' .ihom                  ∎
 ```
 
 ## Generic objects
@@ -289,17 +285,13 @@ some tedious calculations.
 ```agda
   small .has-generic-ob .classify-cartesian x' .universal m h' =
     adjusti refl (idl _) h'
-  small .has-generic-ob .classify-cartesian x' .commutes m h' =
-    Internal-hom-path $
-      ∘i-ihom refl
-        (sym (idl _))
-        (sym (assoc _ _ _))
-        (ap ihom (idi-nat _) ∙ ap (λ ϕ → idi ϕ .ihom) (sym (idl _)))
-        refl
-      ∙ ap ihom (idli h')
+  small .has-generic-ob .classify-cartesian x' .commutes m h' = Internal-hom-path $
+    ∘i-ihom refl (sym (idl _)) (sym (assoc _ _ _))
+      (ap ihom (idi-nat _) ∙ ap (λ ϕ → idi ϕ .ihom) (sym (idl _))) refl
+    ∙ ap ihom (idli h')
   small .has-generic-ob .classify-cartesian x' .unique {m = m} m' p =
-    Internal-hom-path $
-      sym (ap ihom (idli m'))
+    sym $ Internal-hom-path $
+          sym (ap ihom (idli m'))
       ∙∙ ∘i-ihom refl refl (ap (_∘ m) (sym (idl _))) (sym (ap ihom (idi-nat m))) refl
       ∙∙ ap ihom p
 ```

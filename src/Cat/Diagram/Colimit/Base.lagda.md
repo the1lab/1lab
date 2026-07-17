@@ -136,7 +136,7 @@ morphism:
         → (p : ∀ {x y} (f : J.Hom x y) → eta y C.∘ F₁ f ≡ eta x)
         → (other : C.Hom coapex x)
         → (∀ j → other C.∘ ψ j ≡ eta j)
-        → other ≡ universal eta p
+        → universal eta p ≡ other
 ```
 
 <!--
@@ -148,7 +148,7 @@ morphism:
       → ∀ {o1} → (∀ j → o1 C.∘ ψ j ≡ eta j)
       → ∀ {o2} → (∀ j → o2 C.∘ ψ j ≡ eta j)
       → o1 ≡ o2
-    unique₂ eta p q r = unique eta p _ q ∙ sym (unique eta p _ r)
+    unique₂ eta p q r = sym (unique eta p _ q) ∙ unique eta p _ r
 ```
 -->
 
@@ -186,7 +186,7 @@ the rest of the data.
     colim .σ {M = M} α .is-natural _ _ _ = C.idr _ ∙ C.introl (M .F-id)
     colim .σ-comm {α = α} = ext λ j → factors (α .η) _
     colim .σ-uniq {α = α} {σ' = σ'} p = ext λ _ →
-      sym $ unique (α .η) _ (σ' .η _) (λ j → sym (p ηₚ j))
+      unique (α .η) _ (σ' .η _) (λ j → sym (p ηₚ j))
 ```
 
 <!--
@@ -260,7 +260,7 @@ function which **un**makes a colimit.
     mc .universal = hom
     mc .factors e p = σ-comm {α = eta-nt e p} ηₚ _
     mc .unique {x = x} eta p other q =
-      sym $ σ-uniq {σ' = other-nt} (ext λ j → sym (q j)) ηₚ tt
+      σ-uniq {σ' = other-nt} (ext λ j → sym (q j)) ηₚ tt
       where
         other-nt : F => !Const x
         other-nt .η _ = other
@@ -664,9 +664,10 @@ as the data for a colimit.
       colim .universal e comm C.∘ (coequ .coeq C.∘ Obs .ι j) ≡⟨ C.pulll (coequ .factors) ⟩
       Obs .match e C.∘ Obs .ι j                              ≡⟨ Obs .commute ⟩
       e j                                                    ∎
-    colim .unique e comm u' fac = coequ .unique $ Obs .unique _
-      λ i → sym (C.assoc _ _ _) ∙ fac i
+    colim .unique e comm u' fac = coequ .unique $ sym $ Obs .unique _ λ i →
+      sym (C.assoc _ _ _) ∙ fac i
 ```
+
 </details>
 
 This implies that a category with coequalisers and large enough indexed coproducts has
@@ -739,7 +740,8 @@ module preserves-colimit
     → {eta' : (j : J.Ob) → C.Hom (Dia.F₀ j) x}
     → {p : ∀ {i j} (f : J.Hom i j) → eta' j C.∘ Dia.F₁ f ≡ eta' i}
     → (colim : is-lan !F Dia K eta)
-    → F.F₁ (is-colimit.universal colim eta' p) ≡ is-colimit.universal (preserves colim) (λ j → F.F₁ (eta' j)) (λ f → F.collapse (p f))
+    → is-colimit.universal (preserves colim) (λ j → F.F₁ (eta' j)) (λ f → F.collapse (p f))
+    ≡ F.F₁ (is-colimit.universal colim eta' p)
   universal colim =
     is-colimit.unique (preserves colim) _ _ _
       (λ j → F.collapse (is-colimit.factors colim _ _))

@@ -32,11 +32,13 @@ record is-joint-equaliser {ℓ'} {I : Type ℓ'} {E x y} (F : I → Hom x y) (eq
   field
     equal     : ∀ {i j} → F i ∘ equ ≡ F j ∘ equ
     universal : ∀ {E'} {e' : Hom E' x} (eq : ∀ i j → F i ∘ e' ≡ F j ∘ e') → Hom E' E
-    factors   : ∀ {E'} {e' : Hom E' x} {eq : ∀ i j → F i ∘ e' ≡ F j ∘ e'} → equ ∘ universal eq ≡ e'
+    factors
+      : ∀ {E'} {e' : Hom E' x} {eq : ∀ i j → F i ∘ e' ≡ F j ∘ e'}
+      → equ ∘ universal eq ≡ e'
     unique
       : ∀ {E'} {e' : Hom E' x} {eq : ∀ i j → F i ∘ e' ≡ F j ∘ e'} {o : Hom E' E}
       → equ ∘ o ≡ e'
-      → o ≡ universal eq
+      → universal eq ≡ o
 ```
 
 <!--
@@ -47,7 +49,7 @@ record is-joint-equaliser {ℓ'} {I : Type ℓ'} {E x y} (F : I → Hom x y) (eq
     → equ ∘ o1 ≡ e'
     → equ ∘ o2 ≡ e'
     → o1 ≡ o2
-  unique₂ eq p q = unique {eq = eq} p ∙ sym (unique q)
+  unique₂ eq p q = sym (unique {eq = eq} p) ∙ unique q
 ```
 -->
 

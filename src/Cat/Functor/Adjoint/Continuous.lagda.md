@@ -99,9 +99,9 @@ if we do it by hand.
     c-prod .π₂∘⟨⟩ =
       R.pulll (d-prod .π₂∘⟨⟩) ∙ L-R-adjunct L⊣R _
     c-prod .unique {other = other} p q =
-      sym (L-R-adjunct L⊣R other)
-      ∙ ap (L-adjunct L⊣R)
-           (d-prod .unique (R-adjunct-ap L⊣R p) (R-adjunct-ap L⊣R q))
+        ap (L-adjunct L⊣R)
+          (d-prod .unique (R-adjunct-ap L⊣R p) (R-adjunct-ap L⊣R q))
+      ∙ L-R-adjunct L⊣R other
 
   right-adjoint→is-pullback
     : ∀ {p x y z}
@@ -120,9 +120,10 @@ if we do it by hand.
     c-pb .p₂∘universal =
       R.pulll (d-pb .p₂∘universal) ∙ L-R-adjunct L⊣R _
     c-pb .unique {_} {p₁'} {p₂'} {sq} {other} p q =
-      sym (L-R-adjunct L⊣R other)
-      ∙ ap (L-adjunct L⊣R)
-           (d-pb .unique (R-adjunct-ap L⊣R p) (R-adjunct-ap L⊣R q))
+        ap (L-adjunct L⊣R)
+          (d-pb .unique (R-adjunct-ap L⊣R p) (R-adjunct-ap L⊣R q))
+      ∙ L-R-adjunct L⊣R other
+
 
   right-adjoint→is-equaliser
     : ∀ {e a b} {f g : D.Hom a b} {equ : D.Hom e a}
@@ -138,9 +139,9 @@ if we do it by hand.
     c-equal .factors =
       R.pulll (d-equal .factors) ∙ L-R-adjunct L⊣R _
     c-equal .unique p =
-      sym (L-R-adjunct L⊣R _)
-      ∙ ap (L-adjunct L⊣R)
-           (d-equal .unique (R-adjunct-ap L⊣R p))
+        ap (L-adjunct L⊣R)
+          (d-equal .unique (R-adjunct-ap L⊣R p))
+      ∙ L-R-adjunct L⊣R _
 
   right-adjoint→terminal
     : ∀ {x} → is-terminal D x → is-terminal C (R.₀ x)
@@ -178,9 +179,9 @@ Dually, we show that left adjoints preserve "concrete colimits".
     d-coprod .[]∘ι₂ =
       L.pullr (c-coprod .[]∘ι₂) ∙ R-L-adjunct L⊣R _
     d-coprod .unique {other = other} p q =
-      sym (R-L-adjunct L⊣R other)
-      ∙ ap (R-adjunct L⊣R)
-           (c-coprod .unique (L-adjunct-ap L⊣R p) (L-adjunct-ap L⊣R q))
+        ap (R-adjunct L⊣R)
+          (c-coprod .unique (L-adjunct-ap L⊣R p) (L-adjunct-ap L⊣R q))
+      ∙ R-L-adjunct L⊣R other
 
   left-adjoint→is-pushout
     : ∀ {p x y z}
@@ -199,9 +200,9 @@ Dually, we show that left adjoints preserve "concrete colimits".
     d-po .universal∘i₂ =
       L.pullr (c-po .universal∘i₂) ∙ R-L-adjunct L⊣R _
     d-po .unique {_} {p₁'} {p₂'} {sq} {other} p q =
-      sym (R-L-adjunct L⊣R other)
-      ∙ ap (R-adjunct L⊣R)
-           (c-po .unique (L-adjunct-ap L⊣R p) (L-adjunct-ap L⊣R q))
+        ap (R-adjunct L⊣R)
+          (c-po .unique (L-adjunct-ap L⊣R p) (L-adjunct-ap L⊣R q))
+      ∙ R-L-adjunct L⊣R other
 
   left-adjoint→is-coequaliser
     : ∀ {e a b} {f g : C.Hom b a} {coequ : C.Hom a e}
@@ -217,9 +218,9 @@ Dually, we show that left adjoints preserve "concrete colimits".
     d-coequal .factors =
       L.pullr (c-coequal .factors) ∙ R-L-adjunct L⊣R _
     d-coequal .unique p =
-      sym (R-L-adjunct L⊣R _)
-      ∙ ap (R-adjunct L⊣R)
-           (c-coequal .unique (L-adjunct-ap L⊣R p))
+        ap (R-adjunct L⊣R)
+          (c-coequal .unique (L-adjunct-ap L⊣R p))
+      ∙ R-L-adjunct L⊣R _
 
   left-adjoint→initial
     : ∀ {x} → is-initial C x → is-initial D (L.₀ x)

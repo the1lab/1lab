@@ -115,13 +115,13 @@ diagram below is a cone over $K' \to X \ot Y$.
 functorial, but the details are not particularly enlightening.</summary>
 
 ```agda
-  Base-change .F-id {x} = ext (sym (xpb.unique id-comm (idr _)))
+  Base-change .F-id {x} = ext (xpb.unique id-comm (idr _))
     where module xpb = Pullback (pullbacks (x .map) f)
 
   Base-change .F-∘ {x} {y} {z} am bm =
-    ext (sym (zpb.unique
+    ext (zpb.unique
       (pulll zpb.p₁∘universal ∙ pullr ypb.p₁∘universal ∙ assoc _ _ _)
-      (pulll zpb.p₂∘universal ∙ ypb.p₂∘universal)))
+      (pulll zpb.p₂∘universal ∙ ypb.p₂∘universal))
     where
       module ypb = Pullback (pullbacks (y .map) f)
       module zpb = Pullback (pullbacks (z .map) f)
@@ -295,7 +295,7 @@ object of $(\cC/X)/f$, or [[in other words|iterated slice]] $\cC/Y$.
       eso .rinv (A , c) =
           Σ-pathp (/-Obj-path refl path)
         $ Coalgebra-on-pathp _ $ /-Hom-pathp _ _
-        $ symP $ Hom-pathp-reflr C $ pb≡.unique i0
+        $ symP $ Hom-pathp-reflr C $ sym $ pb≡.unique i0
           (pulll (from-pathp-to' C _ λ i → pb≡.p₁ i) ∙ unext (c .ρ-counit))
           (pulll (from-pathp-to' C _ λ i → pb≡.p₂ i))
         where

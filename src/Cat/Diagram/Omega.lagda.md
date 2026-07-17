@@ -87,7 +87,7 @@ module _ {o ℓ} (C : Precategory o ℓ) where
       unique
         : ∀ {X} {m : Subobject X} {nm : Hom X Ω}
         → is-pullback-along C (m .map) nm (true .map)
-        → nm ≡ name m
+        → name m ≡ nm
 ```
 
 ::: terminology
@@ -183,7 +183,7 @@ $\Sub(A)$; so we have $$\name{m} = \name{h'^*\true} = h'$$.
         rem₁ : m ≡ h' ^* point→subobject tru
         rem₁ = Sub-is-category cat .to-path $
           is-pullback-along→iso {m = m} {n = point→subobject tru} p
-      in sym (ap nm rem₁ ∙ invr _)
+      in ap nm rem₁ ∙ invr _
 ```
 
 <!--
@@ -301,8 +301,8 @@ module props {o ℓ} {C : Precategory o ℓ} (pb : has-pullbacks C) (so : Subobj
   named-name = is-pullback-along→iso (classifies _)
 
   name-named : ∀ {A} {f : Hom A Ω'} → name (named f) ≡ f
-  name-named {f = f} = sym $ so .unique record
-    { top = pb f (Subobjs.map true) .p₂
+  name-named {f = f} = so .unique record
+    { top       = pb f (Subobjs.map true) .p₂
     ; has-is-pb = has-is-pb (pb f (true .map))
     }
 
@@ -314,7 +314,7 @@ module props {o ℓ} {C : Precategory o ℓ} (pb : has-pullbacks C) (so : Subobj
     n              Sub.≅∎
 
   name-ap : ∀ {A} {m n : Subobject A} → m ≅ₘ n → name m ≡ name n
-  name-ap {m = m} im = so .unique record
+  name-ap {m = m} im = sym $ so .unique record
     { top       = classifies m .top ∘ im .Sub.from .map
     ; has-is-pb = subst-is-pullback (sym (im .Sub.from .com) ∙ eliml refl) refl refl refl
         (is-pullback-iso (≅ₘ→iso im) (classifies m .has-is-pb))
@@ -331,7 +331,7 @@ module props {o ℓ} {C : Precategory o ℓ} (pb : has-pullbacks C) (so : Subobj
     : ∀ {A} {f g : Hom A Ω'}
     → is-pullback-along C (named g .map) f (true .map)
     → f ≡ g
-  Ω-unique₂ {f = f} {g = g} pb = so .unique pb ∙ name-named
+  Ω-unique₂ {f = f} {g = g} pb = sym (so .unique pb) ∙ name-named
 
   is-total : ∀ {A} (f : Hom A Ω') → Type _
   is-total f = is-invertible (pb f (true .map) .p₁)
@@ -357,11 +357,11 @@ module props {o ℓ} {C : Precategory o ℓ} (pb : has-pullbacks C) (so : Subobj
       ; p₂∘universal = λ {P'} {p₁'} {p₂'} {α} → true .monic _ _ $
           pulll (pulll (sym (pb _ _ .square)) ∙ cancelr (inv .is-invertible.invl))
         ∙ α
-      ; unique       = λ p _ → introl refl ∙ p
+      ; unique       = λ p _ → sym p ∙ eliml refl
       }}
 
     done =
-      f                              ≡⟨ so .unique rem₁ ⟩
+      f                              ≡˘⟨ so .unique rem₁ ⟩
       name ⊤ₘ                        ≡⟨ intror refl ⟩
       name ⊤ₘ ∘ id                   ≡⟨ classifies ⊤ₘ .square ⟩
       true .map ∘ classifies ⊤ₘ .top ∎

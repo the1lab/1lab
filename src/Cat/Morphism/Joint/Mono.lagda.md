@@ -69,12 +69,11 @@ The forward direction follows from a short calculation.
     : ∀ {x y z} {f : Hom x y} {g : Hom x z}
     → is-monic ⟨ f , g ⟩
     → is-jointly-monic f g
-  ⟨⟩-monic→jointly-monic {f = f} {g = g} ⟨f,g⟩-mono h k p q =
-    ⟨f,g⟩-mono h k $
-      ⟨ f , g ⟩ ∘ h     ≡⟨ ⟨⟩∘ h ⟩
-      ⟨ f ∘ h , g ∘ h ⟩ ≡⟨ ap₂ ⟨_,_⟩ p q ⟩
-      ⟨ f ∘ k , g ∘ k ⟩ ≡˘⟨ ⟨⟩∘ k ⟩
-      ⟨ f , g ⟩ ∘ k     ∎
+  ⟨⟩-monic→jointly-monic {f = f} {g = g} ⟨f,g⟩-mono h k p q = ⟨f,g⟩-mono h k $
+    ⟨ f , g ⟩ ∘ h     ≡˘⟨ ⟨⟩∘ h ⟩
+    ⟨ f ∘ h , g ∘ h ⟩ ≡⟨ ap₂ ⟨_,_⟩ p q ⟩
+    ⟨ f ∘ k , g ∘ k ⟩ ≡⟨ ⟨⟩∘ k ⟩
+    ⟨ f , g ⟩ ∘ k     ∎
 ```
 
 The reverse direction is a bit trickier, but only just. Suppose that
@@ -97,13 +96,12 @@ exactly the pair of equalities that we were looking for.
     → is-jointly-monic f g
     → is-monic ⟨ f , g ⟩
   jointly-monic→⟨⟩-monic {f = f} {g = g} fg-joint-mono h k p =
-    fg-joint-mono h k (by-π₁ ⟨fh,gh⟩=⟨fk,gk⟩) (by-π₂ ⟨fh,gh⟩=⟨fk,gk⟩)
-    where
+    fg-joint-mono h k (by-π₁ ⟨fh,gh⟩=⟨fk,gk⟩) (by-π₂ ⟨fh,gh⟩=⟨fk,gk⟩) where
       ⟨fh,gh⟩=⟨fk,gk⟩ : ⟨ f ∘ h , g ∘ h ⟩ ≡ ⟨ f ∘ k , g ∘ k ⟩
       ⟨fh,gh⟩=⟨fk,gk⟩ =
-        ⟨ f ∘ h , g ∘ h ⟩ ≡˘⟨ ⟨⟩∘ h ⟩
+        ⟨ f ∘ h , g ∘ h ⟩ ≡⟨ ⟨⟩∘ h ⟩
         ⟨ f , g ⟩ ∘ h     ≡⟨ p ⟩
-        ⟨ f , g ⟩ ∘ k     ≡⟨ ⟨⟩∘ k ⟩
+        ⟨ f , g ⟩ ∘ k     ≡˘⟨ ⟨⟩∘ k ⟩
         ⟨ f ∘ k , g ∘ k ⟩ ∎
 ```
 
@@ -149,9 +147,9 @@ omit the details in the interest of brevity.
 ```agda
   tuple-monic→jointly-monic-fam {yᵢ = yᵢ} {fᵢ = fᵢ} tuple-mono h k p =
     tuple-mono h k $
-      ∏.tuple fᵢ ∘ h           ≡⟨ tuple∘ C yᵢ (indexed-products yᵢ) fᵢ ⟩
+      ∏.tuple fᵢ ∘ h           ≡˘⟨ tuple∘ C yᵢ (indexed-products yᵢ) fᵢ ⟩
       ∏.tuple (λ i → fᵢ i ∘ h) ≡⟨ ap ∏.tuple (funext p) ⟩
-      ∏.tuple (λ i → fᵢ i ∘ k) ≡˘⟨ tuple∘ C yᵢ (indexed-products yᵢ) fᵢ ⟩
+      ∏.tuple (λ i → fᵢ i ∘ k) ≡⟨ tuple∘ C yᵢ (indexed-products yᵢ) fᵢ ⟩
       ∏.tuple fᵢ ∘ k           ∎
 
   jointly-monic-fam→tuple-monic {yᵢ = yᵢ} {fᵢ = fᵢ} fᵢ-joint-mono h k p =

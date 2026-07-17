@@ -263,14 +263,13 @@ morphisms and the universal property of the product to establish the
 desired equation. Check it out:
 
 ```agda
-    coprod .has-is-coproduct .unique {inj0 = f} {g} {other} p q = sym $
+    coprod .has-is-coproduct .unique {inj0 = f} {g} {other} p q =
       f ∘ π₁ + g ∘ π₂                                         ≡⟨ ap₂ _+_ (pushl (sym p)) (pushl (sym q)) ⟩
       (other ∘ ⟨ id , 0m ⟩ ∘ π₁) + (other ∘ ⟨ 0m , id ⟩ ∘ π₂) ≡⟨ ∘-linear-r _ _ _ ⟩
       other ∘ (⟨ id , 0m ⟩ ∘ π₁ + ⟨ 0m , id ⟩ ∘ π₂)           ≡⟨ elimr lemma ⟩
       other                                                   ∎
       where
-        lemma : ⟨ id , 0m ⟩ ∘ π₁ + ⟨ 0m , id ⟩ ∘ π₂
-              ≡ id
+        lemma : ⟨ id , 0m ⟩ ∘ π₁ + ⟨ 0m , id ⟩ ∘ π₂ ≡ id
         lemma = ⟨⟩-unique₂ {pr1 = π₁} {pr2 = π₂}
           (sym (∘-linear-r _ _ _) ∙ ap₂ _+_ (cancell π₁∘⟨⟩) (pulll π₁∘⟨⟩ ∙ ∘-zero-l) ∙ Hom.elimr refl)
           (sym (∘-linear-r _ _ _) ∙ ap₂ _+_ (pulll π₂∘⟨⟩ ∙ ∘-zero-l) (cancell π₂∘⟨⟩) ∙ Hom.eliml refl)

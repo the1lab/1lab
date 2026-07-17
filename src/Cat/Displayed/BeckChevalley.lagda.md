@@ -263,9 +263,9 @@ applying various universal properties.
 
       comparison-square : ∀ {b'} → h^*k^!-comparison b' ≡ k^!h^*-comparison b'
       comparison-square {b'} = h.uniquep₂ (f.^! b') _ _ (idr _) _ _
-        (h.commutesv _ _) (k.uniquep (g.^* b') _ (idr _) _ _
+        (h.commutesv _ _) (symP (k.uniquep (g.^* b') _ (idr _) _ _
           (pullr[] _ (k.commutesv (g.^* b') _)
-            ∙[] h.commutesp _ (sym p) (f.ι b' ∘' g.π b')))
+            ∙[] h.commutesp _ (sym p) (f.ι b' ∘' g.π b'))))
 ```
 
 The immortal pentagon diagram above *almost* lets us "interpolate" $B'$
@@ -581,7 +581,7 @@ section.
           unfolding base-change-square
           mate-comparison
             : ∀ {b'}
-            → comparison b' ≡ π*.universalv (k.universal' _ (sym p) (f.ι b' ∘' π* g b'))
+            → π*.universalv (k.universal' _ (sym p) (f.ι _ ∘' π* _ _)) ≡ comparison b'
 ```
 
 <details>
@@ -592,16 +592,16 @@ tedious than one would hope, so we omit the details.
 </summary>
 
 ```agda
-          mate-comparison {b'} = π*.uniquev (comparison b') $ k.uniquep _ _ _ _ _ $
-            begin
-              _ ≡[]⟨ extendr[] _ (Fib.extendrf (Fib.pullrf (left-adjoint→cocartesian-lift-natural E E-fib Lᵏ⊣k^* _))) ⟩
-              _ ≡[]⟨ extendr[] _ (Fib.pullrf (pulll[] _ (left-adjoint→cocartesian-lift-natural E E-fib Lᵏ⊣k^* _))) ⟩
-              _ ≡[]⟨ extendr[] _ (extendl[] _ (pulll[] _ (left-adjoint→counit-commutesv E E-fib Lᵏ⊣k^*))) ⟩
-              _ ≡[]⟨ pullr[] _ (pulll[] _ (π*.commutesv _)) ⟩
-              _ ≡[]⟨ pulll[] _ (π*.commutesp (sym p) _) ⟩
-              _ ≡[]⟨ pullr[] _ (π*.commutesp id-comm _) ⟩
-              _ ≡[]⟨ pulll[] _ (wrap (idr f)) ⟩
-              _ ∎[]
+          mate-comparison {b'} =
+            π*.uniquev (comparison b') $ symP $ k.uniquep _ _ _ _ _ $ begin
+            _ ≡[]⟨ extendr[] _ (Fib.extendrf (Fib.pullrf (left-adjoint→cocartesian-lift-natural E E-fib Lᵏ⊣k^* _))) ⟩
+            _ ≡[]⟨ extendr[] _ (Fib.pullrf (pulll[] _ (left-adjoint→cocartesian-lift-natural E E-fib Lᵏ⊣k^* _))) ⟩
+            _ ≡[]⟨ extendr[] _ (extendl[] _ (pulll[] _ (left-adjoint→counit-commutesv E E-fib Lᵏ⊣k^*))) ⟩
+            _ ≡[]⟨ pullr[] _ (pulll[] _ (π*.commutesv _)) ⟩
+            _ ≡[]⟨ pulll[] _ (π*.commutesp (sym p) _) ⟩
+            _ ≡[]⟨ pullr[] _ (π*.commutesp id-comm _) ⟩
+            _ ≡[]⟨ pulll[] _ (wrap (idr f)) ⟩
+            _ ∎[]
 ```
 </details>
 
@@ -612,10 +612,9 @@ invertible.
 
 ```agda
       left-beck-chevalley→mate-invertible
-        : left-beck-chevalley E f g h k p
-        → ∀ {b'} → is-invertible↓ (comparison b')
+        : left-beck-chevalley E f g h k p → ∀ {b'} → is-invertible↓ (comparison b')
       left-beck-chevalley→mate-invertible left-bc =
-        subst is-invertible↓ (sym mate-comparison) $
+        subst is-invertible↓ mate-comparison $
         left-beck-chevalley→comparison-invertible p
           (left-adjoint→cocartesian-lift E E-fib Lᶠ⊣f^*)
           (E-fib g)
@@ -624,15 +623,14 @@ invertible.
           left-bc
 
       mate-invertible→left-beck-chevalley
-        : (∀ b' → is-invertible↓ (comparison b'))
-        → left-beck-chevalley E f g h k p
+        : (∀ b' → is-invertible↓ (comparison b')) → left-beck-chevalley E f g h k p
       mate-invertible→left-beck-chevalley mate-inv =
         comparison-invertible→left-beck-chevalley p
           (left-adjoint→cocartesian-lift E E-fib Lᶠ⊣f^*)
           (E-fib g)
           (E-fib h)
           (left-adjoint→cocartesian-lift E E-fib Lᵏ⊣k^*)
-          (λ b' → subst is-invertible↓ mate-comparison (mate-inv b'))
+          (λ b' → subst is-invertible↓ (sym mate-comparison) (mate-inv b'))
 ```
 
 ## Right Beck-Chevalley conditions

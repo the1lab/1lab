@@ -108,8 +108,8 @@ Graphs-products a b .has-is-product .π₁∘⟨⟩ = trivialᴳ!
 Graphs-products a b .has-is-product .π₂∘⟨⟩ = trivialᴳ!
 
 Graphs-products a b .has-is-product .unique p q = ext record where
-  node x i = p i .node x , q i .node x
-  edge e i = p i .edge e , q i .edge e
+  node x i = p (~ i) .node x , q (~ i) .node x
+  edge e i = p (~ i) .edge e , q (~ i) .edge e
 
 Graphs-terminal : ∀ {o ℓ} → Terminal (Graphs o ℓ)
 Graphs-terminal .Terminal.top = ⊤ᴳ
@@ -137,8 +137,8 @@ Graphs-pullbacks f g .has-is-pb .universal {p₁' = p₁'} {p₂'} α = record w
 Graphs-pullbacks f g .has-is-pb .p₁∘universal = trivialᴳ!
 Graphs-pullbacks f g .has-is-pb .p₂∘universal = trivialᴳ!
 Graphs-pullbacks f g .has-is-pb .unique α β = ext record where
-  node x = (λ i → α i .node x) ,ₚ (λ i → β i .node x) ,ₚ prop!
-  edge x = (λ i → α i .edge x) ,ₚ (λ i → β i .edge x) ,ₚ prop!
+  node x = (λ i → α (~ i) .node x) ,ₚ (λ i → β (~ i) .node x) ,ₚ prop!
+  edge x = (λ i → α (~ i) .edge x) ,ₚ (λ i → β (~ i) .edge x) ,ₚ prop!
 
 Graphs-finitely-complete : Finitely-complete (Graphs o ℓ)
 Graphs-finitely-complete = record

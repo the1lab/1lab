@@ -133,7 +133,8 @@ Assemblies-products X Y .π₂ = π₂Asm
 Assemblies-products X Y .has-is-product .⟨_,_⟩ f g = ⟨ f , g ⟩Asm
 Assemblies-products X Y .has-is-product .π₁∘⟨⟩ = ext λ _ → refl
 Assemblies-products X Y .has-is-product .π₂∘⟨⟩ = ext λ _ → refl
-Assemblies-products X Y .has-is-product .unique p q = ext λ a → p ·ₚ a ,ₚ q ·ₚ a
+Assemblies-products X Y .has-is-product .unique p q = ext λ a →
+  sym p ·ₚ a ,ₚ sym q ·ₚ a
 ```
 -->
 
@@ -208,7 +209,7 @@ Assemblies-equalisers f g .has-is-eq .universal {e' = e'} p =
       inc record { [_]_⊢_ et }
 
 Assemblies-equalisers f g .has-is-eq .factors  = ext λ _ → refl
-Assemblies-equalisers f g .has-is-eq .unique p = ext λ a → Σ-prop-path! (p ·ₚ a)
+Assemblies-equalisers f g .has-is-eq .unique p = ext λ a → Σ-prop-path! (sym p ·ₚ a)
 
 Assemblies-finite-limits : Finitely-complete (Assemblies 𝔸 ℓ)
 Assemblies-finite-limits = with-equalisers _

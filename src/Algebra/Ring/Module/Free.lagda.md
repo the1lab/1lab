@@ -279,7 +279,7 @@ make-free-module {ℓ' = ℓ'} S = go where
   go .unit = inc
   go .fold {b} f = linear-map→hom (fold-free-mod b f)
   go .commute = refl
-  go .unique {M} {f} g p = reext! p
+  go .unique {M} {f} g p = reext! (sym p)
 ```
 
 After that calculation, we can ✨ just ✨ conclude that

@@ -102,7 +102,7 @@ categories]].
       (λ x y → invertible→iso swap swap-is-iso)
       (λ f → products! products)
       (λ f → products! products)
-    mk .symmetric = ⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩ π₂∘⟨⟩ π₁∘⟨⟩ ∙ ⟨⟩-η
+    mk .symmetric = products! products
     mk .has-braiding-α→ = products! products
 ```
 

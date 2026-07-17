@@ -38,7 +38,7 @@ right-hand-sides agree.
       unique
         : ∀ {F} {e' : Hom F A} {p : f ∘ e' ≡ g ∘ e'} {other : Hom F E}
         → equ ∘ other ≡ e'
-        → other ≡ universal p
+        → universal p ≡ other
 
     equal-∘ : f ∘ equ ∘ h ≡ g ∘ equ ∘ h
     equal-∘ {h = h} =
@@ -51,7 +51,7 @@ right-hand-sides agree.
       → equ ∘ o1 ≡ e'
       → equ ∘ o2 ≡ e'
       → o1 ≡ o2
-    unique₂ p q r = unique {p = p} q ∙ sym (unique r)
+    unique₂ p q r = sym (unique {p = p} q) ∙ unique r
 ```
 
 We can visualise the situation using the commutative diagram below:
@@ -74,8 +74,8 @@ its domain:
 ```agda
   record Equaliser (f g : Hom A B) : Type (o ⊔ ℓ) where
     field
-      {apex}  : Ob
-      equ     : Hom apex A
+      {apex}    : Ob
+      equ       : Hom apex A
       has-is-eq : is-equaliser f g equ
 
     open is-equaliser has-is-eq public
@@ -137,7 +137,7 @@ by the identity map $\id : A \to A$.
   id-is-equaliser .is-equaliser.equal = refl
   id-is-equaliser .is-equaliser.universal {e' = e'} _ = e'
   id-is-equaliser .is-equaliser.factors = idl _
-  id-is-equaliser .is-equaliser.unique p = sym (idl _) ∙ p
+  id-is-equaliser .is-equaliser.unique p = sym p ∙ idl _
 ```
 
 If $e : E \to A$ is an equaliser and an [[epimorphism]], then $e$ is

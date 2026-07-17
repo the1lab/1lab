@@ -133,8 +133,8 @@ Posets-has-coproducts P Q .has-is-coproduct .is-coproduct.[_,_] = matchᵖ
 Posets-has-coproducts P Q .has-is-coproduct .[]∘ι₁ = ext λ _ → refl
 Posets-has-coproducts P Q .has-is-coproduct .[]∘ι₂ = ext λ _ → refl
 Posets-has-coproducts P Q .has-is-coproduct .unique α β = ext λ where
-  (inl x) → α ·ₚ x
-  (inr x) → β ·ₚ x
+  (inl x) → sym α ·ₚ x
+  (inr x) → sym β ·ₚ x
 ```
 
 As a related fact, we can show that the empty poset is the [[initial

@@ -104,9 +104,9 @@ id-rel : ∀ {a} → a ↬ a
 id-rel {a} .dom = a
 id-rel {a} .map = δ
 id-rel {a} .monic g h x = by-π₁ $
-  ⟨ g , g ⟩       ≡˘⟨ ⟨⟩∘ g ∙ ap₂ ⟨_,_⟩ (idl g) (idl g) ⟩
+  ⟨ g , g ⟩       ≡˘⟨ sym (⟨⟩∘ g) ∙ ap₂ ⟨_,_⟩ (idl g) (idl g) ⟩
   ⟨ id , id ⟩ ∘ g ≡⟨ x ⟩
-  ⟨ id , id ⟩ ∘ h ≡⟨ ⟨⟩∘ h ∙ ap₂ ⟨_,_⟩ (idl h) (idl h) ⟩
+  ⟨ id , id ⟩ ∘ h ≡⟨ sym (⟨⟩∘ h) ∙ ap₂ ⟨_,_⟩ (idl h) (idl h) ⟩
   ⟨ h , h ⟩       ∎
 ```
 
@@ -391,7 +391,7 @@ which we can calculate is exactly $\langle t_1u_1x_1 , r_2v_2x_2
   [rs]t≅i : Im ⟨ t₁ ∘ [rs]t.inter .p₁ , (π₂ ∘ i) ∘ [rs]t.inter .p₂ ⟩
       ≅ₘ Im ⟨ t₁ ∘ u₁ ∘ x₁ , r₂ ∘ v₂ ∘ x₂ ⟩
   [rs]t≅i = subst (λ e → Im [rs]t.it ≅ₘ Im e)
-    (⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩
+    (sym (⟨⟩∘ _) ∙ ap₂ ⟨_,_⟩
       (pullr ([rs]t.inter .p₁∘universal))
       ( pullr ([rs]t.inter .p₂∘universal)
       ∙ extendl (pullr (sym (factor _ .factors)) ∙ π₂∘⟨⟩)))
@@ -434,8 +434,10 @@ want to look at the formalisation.
 
   r[st]≅i : Im r[st].it ≅ₘ Im j
   r[st]≅i = subst (λ e → Im r[st].it ≅ₘ Im e)
-    (⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩ (pullr (r[st].inter .p₁∘universal) ∙ extendl (pullr (sym (factor _ .factors)) ∙ π₁∘⟨⟩))
-                       (pullr (r[st].inter .p₂∘universal)))
+    ( sym (⟨⟩∘ _)
+    ∙ ap₂ ⟨_,_⟩
+      (pullr (r[st].inter .p₁∘universal) ∙ extendl (pullr (sym (factor _ .factors)) ∙ π₁∘⟨⟩))
+      (pullr (r[st].inter .p₂∘universal)))
     (image-pre-cover r[st].it _ β-cover Sub.Iso⁻¹)
 
   done : Im r[st].it ≅ₘ Im [rs]t.it
@@ -489,7 +491,7 @@ but keep in mind that they are not commented.
 
 ∘-rel-idr f = Sub-antisym fid≤f f≤fid where
   fid≤f : ∘-rel f id-rel ≤ₘ f
-  fid≤f = Im-universal _ _ {e = ∘-rel.inter f id-rel .p₂} $ sym $ ⟨⟩-unique
+  fid≤f = Im-universal _ _ {e = ∘-rel.inter f id-rel .p₂} $ ⟨⟩-unique
     (sym (∘-rel.inter f id-rel .square ∙ sym (assoc _ _ _)) ∙ eliml π₂∘⟨⟩ ∙ introl π₁∘⟨⟩)
     (assoc _ _ _)
 
@@ -497,13 +499,13 @@ but keep in mind that they are not commented.
   f≤fid .map = factor _ .left ∘
     ∘-rel.inter f id-rel .universal {p₁' = Relation.src f} {p₂' = id}
       (eliml π₂∘⟨⟩ ∙ intror refl)
-  f≤fid .com = idl _ ∙ sym (pulll (sym (factor _ .factors)) ∙ ⟨⟩∘ _ ∙ sym (⟨⟩-unique
+  f≤fid .com = idl _ ∙ sym (pulll (sym (factor _ .factors)) ∙ sym (⟨⟩∘ _) ∙ ⟨⟩-unique
     (sym (ap₂ _∘_ (eliml π₁∘⟨⟩) refl ∙ ∘-rel.inter f id-rel .p₁∘universal))
-    (sym (pullr (∘-rel.inter f id-rel .p₂∘universal) ∙ idr _))))
+    (sym (pullr (∘-rel.inter f id-rel .p₂∘universal) ∙ idr _)))
 
 ∘-rel-idl f = Sub-antisym idf≤f f≤idf where
   idf≤f : ∘-rel id-rel f ≤ₘ f
-  idf≤f = Im-universal _ _ {e = ∘-rel.inter id-rel f .p₁} $ sym $ ⟨⟩-unique
+  idf≤f = Im-universal _ _ {e = ∘-rel.inter id-rel f .p₁} $ ⟨⟩-unique
     (assoc _ _ _)
     (assoc _ _ _ ∙ ∘-rel.inter id-rel f .square ∙ eliml π₁∘⟨⟩ ∙ introl π₂∘⟨⟩)
 
@@ -511,9 +513,9 @@ but keep in mind that they are not commented.
   f≤idf .map = factor _ .left ∘
     ∘-rel.inter id-rel f .universal {p₁' = id} {p₂' = Relation.tgt f}
       (idr _ ∙ sym (eliml π₁∘⟨⟩))
-  f≤idf .com = idl _ ∙ sym (pulll (sym (factor _ .factors)) ∙ ⟨⟩∘ _ ∙ sym (⟨⟩-unique
+  f≤idf .com = idl _ ∙ sym (pulll (sym (factor _ .factors)) ∙ sym (⟨⟩∘ _) ∙ ⟨⟩-unique
     (sym (pullr (∘-rel.inter id-rel f .p₁∘universal) ∙ idr _))
-    (sym (pullr (∘-rel.inter id-rel f .p₂∘universal) ∙ eliml π₂∘⟨⟩))))
+    (sym (pullr (∘-rel.inter id-rel f .p₂∘universal) ∙ eliml π₂∘⟨⟩)))
 
 open Prebicategory hiding (Ob ; Hom)
 open make-natural-iso

@@ -129,10 +129,9 @@ Direct-product-is-product {G} {H} = p where
   open is-product
   p : is-product _ _ _
   p .⟨_,_⟩ = factor
-  p .π₁∘⟨⟩ = Grp↪Sets-is-faithful refl
-  p .π₂∘⟨⟩ = Grp↪Sets-is-faithful refl
-  p .unique p q = Grp↪Sets-is-faithful (funext λ x →
-    ap₂ _,_ (happly (ap fst p) x) (happly (ap fst q) x))
+  p .π₁∘⟨⟩ = ext λ _ → refl
+  p .π₂∘⟨⟩ = ext λ _ → refl
+  p .unique p q = ext λ x i → p (~ i) .fst x , q (~ i) .fst x
 ```
 
 What sets the direct product of groups apart from (e.g.) the cartesian
@@ -145,12 +144,12 @@ a coproduct.
 inj₁ : G Groups.↪ Direct-product G H
 inj₁ {G} {H} .mor .fst x = x , H .snd .unit
 inj₁ {G} {H} .mor .snd .pres-⋆ x y = ap (_ ,_) (sym (H .snd .idl))
-inj₁ {G} {H} .monic g h x = Grp↪Sets-is-faithful (funext λ e i → (x i · e) .fst)
+inj₁ {G} {H} .monic g h x = ext λ e i → (x i · e) .fst
 
 inj₂ : H Groups.↪ Direct-product G H
 inj₂ {H} {G} .mor .fst x = G .snd .unit , x
 inj₂ {H} {G} .mor .snd .pres-⋆ x y = ap (_, _) (sym (G .snd .idl))
-inj₂ {H} {G} .monic g h x = Grp↪Sets-is-faithful (funext λ e i → (x i · e) .snd)
+inj₂ {H} {G} .monic g h x = ext λ e i → (x i · e) .snd
 ```
 
 ## Equalisers

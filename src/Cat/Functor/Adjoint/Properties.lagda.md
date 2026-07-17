@@ -260,12 +260,12 @@ $GFx \iso x$ for all $x$, which is to be expected by the theory of
   ff→free-object x .Free-object.unit = D.id
   ff→free-object x .Free-object.fold f = ff.from f
   ff→free-object x .Free-object.commute = D.idr _ ∙ ff.ε _
-  ff→free-object x .Free-object.unique g p = ff.adjunctl (D.intror refl ∙ p)
+  ff→free-object x .Free-object.unique g p = sym $ ff.adjunctl (D.intror refl ∙ p)
 
   ff→cofree-object : ∀ x → Cofree-object F (F.₀ x)
   ff→cofree-object x .Cofree-object.cofree = x
   ff→cofree-object x .Cofree-object.counit = D.id
   ff→cofree-object x .Cofree-object.unfold f = ff.from f
   ff→cofree-object x .Cofree-object.commute = D.idl _ ∙ ff.ε _
-  ff→cofree-object x .Cofree-object.unique g p = ff.adjunctl (D.introl refl ∙ p)
+  ff→cofree-object x .Cofree-object.unique g p = sym $ ff.adjunctl (D.introl refl ∙ p)
 ```

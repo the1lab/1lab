@@ -92,9 +92,8 @@ uniqueness properties of colimiting maps.
   Copowering .F₀ (X , A) = X ⊗ A
   Copowering .F₁ {X , A} {Y , B} (idx , obj) =
     coprods X (λ _ → A) .match λ i → coprods Y (λ _ → B) .ι (idx i) ∘ obj
-  Copowering .F-id {X , A} = sym $
-    coprods X (λ _ → A) .unique _ λ i → sym id-comm
-  Copowering .F-∘ {X , A} f g = sym $ coprods X (λ _ → A) .unique _ λ i →
+  Copowering .F-id {X , A} = coprods X (λ _ → A) .unique _ λ i → sym id-comm
+  Copowering .F-∘ {X , A} f g = coprods X (λ _ → A) .unique _ λ i →
     pullr (coprods _ _ .commute) ∙ extendl (coprods _ _ .commute)
 ```
 
@@ -151,8 +150,8 @@ module Consts
   Constant-objects : Functor (Sets ℓ) C
   Constant-objects .F₀ S = S ⊗ *C
   Constant-objects .F₁ f = coprods _ _ .match λ i → coprods _ _ .ι (f i)
-  Constant-objects .F-id = sym $ coprods _ _ .unique _ λ i → idl _
-  Constant-objects .F-∘ f g = sym $ coprods _ _ .unique _ λ i →
+  Constant-objects .F-id = coprods _ _ .unique _ λ i → idl _
+  Constant-objects .F-∘ f g = coprods _ _ .unique _ λ i →
     pullr (coprods _ _ .commute) ∙ coprods _ _ .commute
 
   Const⊣Γ : Constant-objects ⊣ Hom-from _ *C
@@ -161,6 +160,6 @@ module Consts
     (is-iso→is-equiv (iso
       (λ h → coprods _ _ .match h)
       (λ h → ext λ i → coprods _ _ .commute)
-      (λ x → sym (coprods _ _ .unique _ λ i → refl))))
+      (λ x → coprods _ _ .unique _ λ i → refl)))
     (λ g h x → ext λ y → pullr (pullr (coprods _ _ .commute)))
 ```

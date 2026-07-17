@@ -39,21 +39,22 @@ record is-indexed-coproduct (F : Idx → C.Ob) (ι : ∀ i → C.Hom (F i) S)
   field
     match   : ∀ {Y} → (∀ i → C.Hom (F i) Y) → C.Hom S Y
     commute : ∀ {i} {Y} {f : ∀ i → C.Hom (F i) Y} → match f C.∘ ι i ≡ f i
-    unique  : ∀ {Y} {h : C.Hom S Y} (f : ∀ i → C.Hom (F i) Y)
-            → (∀ i → h C.∘ ι i ≡ f i)
-            → h ≡ match f
+    unique
+      : ∀ {Y} {h : C.Hom S Y} (f : ∀ i → C.Hom (F i) Y)
+      → (∀ i → h C.∘ ι i ≡ f i)
+      → match f ≡ h
 
-  eta : ∀ {Y} (h : C.Hom S Y) → h ≡ match (λ i → h C.∘ ι i)
+  eta : ∀ {Y} (h : C.Hom S Y) → match (λ i → h C.∘ ι i) ≡ h
   eta h = unique _ λ _ → refl
 
   unique₂ : ∀ {Y} {g h : C.Hom S Y} → (∀ i → g C.∘ ι i ≡ h C.∘ ι i) → g ≡ h
-  unique₂ {g = g} {h} eq = eta g ∙ ap match (funext eq) ∙ sym (eta h)
+  unique₂ {g = g} {h} eq = sym (eta g) ∙∙ ap match (funext eq) ∙∙ eta h
 
   hom-iso : ∀ {Y} → C.Hom S Y ≃ (∀ i → C.Hom (F i) Y)
   hom-iso = (λ z i → z C.∘ ι i) , is-iso→is-equiv λ where
     .is-iso.from   → match
     .is-iso.rinv x → funext λ i → commute
-    .is-iso.linv x → sym (unique _ λ _ → refl)
+    .is-iso.linv x → unique _ λ _ → refl
 ```
 
 A category $\cC$ **admits indexed coproducts** (of level $\ell$) if,
@@ -104,7 +105,7 @@ is-indexed-coproduct-is-prop {Idx = Idx} {F} {ΣF} {ι} P Q = path where
   open is-indexed-coproduct
 
   p : ∀ {X} → (f : ∀ i → C.Hom (F i) X) → P .match f ≡ Q .match f
-  p f = Q .unique f (λ i → P .commute)
+  p f = P .unique f (λ i → Q .commute)
 
   path : P ≡ Q
   path i .match f = p f i
@@ -112,10 +113,9 @@ is-indexed-coproduct-is-prop {Idx = Idx} {F} {ΣF} {ι} P Q = path where
     is-prop→pathp (λ i → C.Hom-set _ _ (p f i C.∘ ι idx) (f idx))
       (P .commute)
       (Q .commute) i
-  path i .unique {h = h} f q =
-    is-prop→pathp (λ i → C.Hom-set _ _ h (p f i))
-      (P .unique f q)
-      (Q .unique f q) i
+  path i .unique {h = h} f q = is-prop→pathp (λ i → C.Hom-set _ _ (p f i) h)
+    (P .unique f q)
+    (Q .unique f q) i
 
 module _ {ℓ'} {Idx : Type ℓ'} {F : Idx → C.Ob} {P P' : Indexed-coproduct F} where
   private
@@ -213,9 +213,7 @@ is-indexed-coproduct-assoc {A = A} {B} {X} {ΣᵃΣᵇX = ΣᵃΣᵇX} {ιᵃ = 
     Σᵃᵇ' : is-indexed-coproduct X ιᵃᵇ'
     Σᵃᵇ' .match f = ΣᵃΣᵇ .match λ a → Σᵇ a .match λ b → f (a , b)
     Σᵃᵇ' .commute = C.pulll (ΣᵃΣᵇ .commute) ∙ Σᵇ _ .commute
-    Σᵃᵇ' .unique {h = h} f p =
-      ΣᵃΣᵇ .unique _ λ a →
-      Σᵇ _ .unique _ λ b →
+    Σᵃᵇ' .unique {h = h} f p = ΣᵃΣᵇ .unique _ λ a → sym $ Σᵇ _ .unique _ λ b →
       sym (C.assoc _ _ _) ∙ p (a , b)
 ```
 
@@ -298,7 +296,7 @@ is-initial→is-disjoint-coproduct {F = F} {i = i} init = is-disjoint where
   is-coprod : is-indexed-coproduct F i
   is-coprod .match _ = init _ .centre
   is-coprod .commute {i = i} = absurd i
-  is-coprod .unique {h = h} f p i = init _ .paths h (~ i)
+  is-coprod .unique {h = h} f p = init _ .paths h
 
   open is-disjoint-coproduct
   is-disjoint : is-disjoint-coproduct F i

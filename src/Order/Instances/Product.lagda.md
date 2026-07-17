@@ -89,7 +89,7 @@ Posets-has-products P Q .has-is-product .⟨_,_⟩ = pairᵖ
 Posets-has-products P Q .has-is-product .π₁∘⟨⟩ = ext λ _ → refl
 Posets-has-products P Q .has-is-product .π₂∘⟨⟩ = ext λ _ → refl
 Posets-has-products P Q .has-is-product .unique α β =
-  ext λ x → α ·ₚ x ,ₚ β ·ₚ x
+  ext λ x → sym α ·ₚ x ,ₚ sym β ·ₚ x
 ```
 
 As a related observation, we can show that the unique partial order on

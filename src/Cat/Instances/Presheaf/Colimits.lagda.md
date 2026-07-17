@@ -100,8 +100,8 @@ PSh-coproducts A B = coprod where
   coprod .has-is-coproduct .[]∘ι₁ = ext λ _ _ → refl
   coprod .has-is-coproduct .[]∘ι₂ = ext λ _ _ → refl
   coprod .has-is-coproduct .unique p q = ext λ where
-    a (inl x) → unext p a x
-    a (inr x) → unext q a x
+    a (inl x) → unext (sym p) a x
+    a (inr x) → unext (sym q) a x
 
 PSh-coequaliser
   : ∀ {X Y} (f g : PSh.Hom X Y)
@@ -135,7 +135,7 @@ PSh-coequaliser {X = X} {Y = Y} f g = coequ where
   coequ .has-is-coeq .universal {F = F} {e' = e'} p .is-natural x y f = ext λ x →
     e' .is-natural _ _ _ $ₚ _
   coequ .has-is-coeq .factors = ext λ _ _ → refl
-  coequ .has-is-coeq .unique {F = F} p = reext! p
+  coequ .has-is-coeq .unique {F = F} p = reext! (sym p)
 
 PSh-finitely-cocomplete : Finitely-cocomplete (PSh κ C)
 PSh-finitely-cocomplete =

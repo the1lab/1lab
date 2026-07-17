@@ -553,7 +553,7 @@ more case bashes. First, we'll show that a group homomorphism $g : F(A)
 letters.
 
 ```agda
-make-free-group .unique {Y} {f} g h = ext uniq where
+make-free-group .unique {Y} {f} g h = sym $ ext uniq where
   open fold {Y} f
   module g = is-group-hom (g .snd)
 

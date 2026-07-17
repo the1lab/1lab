@@ -382,7 +382,7 @@ Opposite-cartesian f y' = record
   ; cartesian = record
     { universal = λ m h → h ∘v γ←
     ; commutes  = λ m h → ∘,-idl (h ∘v γ←) ∙ F.cancelr (^*-comp .F.invr)
-    ; unique    = λ m h → sym (F.cancelr (^*-comp .F.invl)) ∙ ap (_∘v γ←) (sym (∘,-idl m) ∙ h)
+    ; unique    = λ m h → ap (_∘v γ←) (sym h ∙ ∘,-idl m) ∙ F.cancelr (^*-comp .F.invl)
     }
   }
 ```

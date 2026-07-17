@@ -243,10 +243,11 @@ ren-var-correct (keep ρ) (pop v) =
   pushl (ren-var-correct ρ v) ∙ sym (pullr π₁∘⟨⟩)
 
 ren-tm-correct ρ (var x)   = ren-var-correct ρ x
-ren-tm-correct ρ (v , v₁)  = sym (⟨⟩∘ _ ∙ sym (ap₂ ⟨_,_⟩ (ren-tm-correct ρ v) (ren-tm-correct ρ v₁)))
 ren-tm-correct ρ (`π₁ v)   = pushr (ren-tm-correct ρ v)
 ren-tm-correct ρ (`π₂ v)   = pushr (ren-tm-correct ρ v)
 ren-tm-correct ρ (fun x v) = pushr (ren-tm-correct ρ v)
+ren-tm-correct ρ (v , v₁)  =
+  ap₂ ⟨_,_⟩ (ren-tm-correct ρ v) (ren-tm-correct ρ v₁) ∙ ⟨⟩∘ _
 
 sub-var-correct stop    t       = sym (idr _)
 sub-var-correct (x , ρ) stop    = sym π₂∘⟨⟩
@@ -256,8 +257,8 @@ sub-var-correct (drop ρ) v      =
     ∙ extendl (idr _ ∙ sub-var-correct ρ v)
 
 sub-tm-correct ρ (var x) = sub-var-correct ρ x
-sub-tm-correct ρ (t , s) =
-  sym (⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩ (sym (sub-tm-correct ρ t)) (sym (sub-tm-correct ρ s)))
+sub-tm-correct ρ (v , v₁)  =
+  ap₂ ⟨_,_⟩ (sub-tm-correct ρ v) (sub-tm-correct ρ v₁) ∙ ⟨⟩∘ _
 sub-tm-correct ρ (`π₁ t) = ap (π₁ ∘_) (sub-tm-correct ρ t) ∙ assoc _ _ _
 sub-tm-correct ρ (`π₂ t) = ap (π₂ ∘_) (sub-tm-correct ρ t) ∙ assoc _ _ _
 sub-tm-correct ρ (fun x t) = ap (x ∘_) (sub-tm-correct ρ t) ∙ assoc _ _ _
@@ -377,10 +378,10 @@ $$
     rem₁ .universal {p₁' = p₁'} {p₂'} prf = ⟨ p₁' , π₂ ∘ p₂' ⟩
     rem₁ .p₁∘universal = π₁∘⟨⟩
     rem₁ .p₂∘universal {p = p} =
-        ⟨⟩∘ _
+         sym (⟨⟩∘ _)
       ∙∙ ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩ ∙ p) π₂∘⟨⟩
-      ∙∙ sym (⟨⟩∘ _)
-      ∙ eliml (sym (⟨⟩-unique (idr _) (idr _)))
+      ∙∙ ⟨⟩∘ _
+       ∙ eliml (⟨⟩-unique (idr _) (idr _))
     rem₁ .unique q r = ⟨⟩-unique q (sym (ap (π₂ ∘_) (sym r) ∙ pulll π₂∘⟨⟩))
 ```
 -->
@@ -393,7 +394,7 @@ sub-prop-correct ρ (s =ᵖ t) =
   exists ⟨ id , id ⟩ aye [ ⟨ ⟦ sub-tm ρ s ⟧ᵉ , ⟦ sub-tm ρ t ⟧ᵉ ⟩ ]
     ≡⟨ ap₂ _[_] refl (ap₂ ⟨_,_⟩ (sub-tm-correct ρ s) (sub-tm-correct ρ t)) ⟩
   exists ⟨ id , id ⟩ aye [ ⟨ ⟦ s ⟧ᵉ ∘ ⟦ ρ ⟧ˢ , ⟦ t ⟧ᵉ ∘ ⟦ ρ ⟧ˢ ⟩ ]
-    ≡⟨ ap₂ _[_] refl (sym (⟨⟩∘ _)) ⟩
+    ≡⟨ ap₂ _[_] refl (⟨⟩∘ _) ⟩
   exists ⟨ id , id ⟩ aye [ ⟨ ⟦ s ⟧ᵉ , ⟦ t ⟧ᵉ ⟩ ∘ ⟦ ρ ⟧ˢ ]
     ≡⟨ sym (subst-∘ _ _) ⟩
   (exists ⟨ id , id ⟩ aye [ ⟨ ⟦ s ⟧ᵉ , ⟦ t ⟧ᵉ ⟩ ]) [ ⟦ ρ ⟧ˢ ]
@@ -598,7 +599,7 @@ too.</summary>
 ```agda
   =-refl : entails φ (t =ᵖ t)
   =-refl {t = t} =
-    π*.universal _ $ hom[ pulll (⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩ (idl _) (idl _)) ] $
+    π*.universal _ $ hom[ pulll (sym (⟨⟩∘ _) ∙ ap₂ ⟨_,_⟩ (idl _) (idl _)) ] $
           ι! ⟨ id , id ⟩ aye
     ℙ.∘' π* _ _
     ℙ.∘' subst-! ⟦ t ⟧ᵉ

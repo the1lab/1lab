@@ -102,8 +102,8 @@ the universal map.
       mk .universal eta comm .map = UF-colim.universal
         (λ j → eta j .map)
         (λ f → unext (comm f))
-      mk .universal eta comm .com = ext (UF-colim.unique _ _ _ λ j →
-        C.pullr (UF-colim.factors _ _) ∙ eta j .com)
+      mk .universal eta comm .com = sym $ ext $ UF-colim.unique _ _ _ λ j →
+        C.pullr (UF-colim.factors _ _) ∙ eta j .com
       mk .factors eta comm = ext (UF-colim.factors _ _)
       mk .unique eta comm u fac = ext (UF-colim.unique _ _ _ λ j →
         unext (fac j))

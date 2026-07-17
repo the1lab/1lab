@@ -85,5 +85,5 @@ limits][rapl]).
 
   Direct-sum-is-product .π₁∘⟨⟩ = ext λ _ → refl
   Direct-sum-is-product .π₂∘⟨⟩ = ext λ _ → refl
-  Direct-sum-is-product .unique p q = ext λ x → p ·ₚ x ,ₚ q ·ₚ x
+  Direct-sum-is-product .unique p q = ext λ x → sym p ·ₚ x ,ₚ sym q ·ₚ x
 ```

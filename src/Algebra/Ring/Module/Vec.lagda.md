@@ -119,5 +119,5 @@ Fin-vec-is-product {n} .has-is-ip .tuple {Y} f = assemble where
   assemble .snd .linear r m n = funext λ i → f i .snd .linear _ _ _
 Fin-vec-is-product .has-is-ip .commute = ext λ _ → refl
 Fin-vec-is-product .has-is-ip .unique {h = h} f ps =
-  ext λ i ix → ps ix ·ₚ i
+  ext λ i ix → sym (ps ix) ·ₚ i
 ```

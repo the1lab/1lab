@@ -221,15 +221,13 @@ constraints are satisfied.
 ```
 <!--
 ```agda
-      F' .F-id =
-        sym $ ↓colim.unique _ _ _ _ λ j →
+      F' .F-id = ↓colim.unique _ _ _ _ λ j →
           D.idl _
-          ∙ ap (↓colim.ψ _) (↓Obj-path _ _ refl refl (sym (C'.idl _)))
-      F' .F-∘ f g =
-        sym $ ↓colim.unique _ _ _ _ λ j →
+        ∙ ap (↓colim.ψ _) (↓Obj-path _ _ refl refl (sym (C'.idl _)))
+      F' .F-∘ f g = ↓colim.unique _ _ _ _ λ j →
           D.pullr (↓colim.factors _ _ _)
-          ∙ ↓colim.factors _ _ _
-          ∙ ap (↓colim.ψ _) (↓Obj-path _ _ refl refl (C'.assoc _ _ _))
+        ∙ ↓colim.factors _ _ _
+        ∙ ap (↓colim.ψ _) (↓Obj-path _ _ refl refl (C'.assoc _ _ _))
 ```
 -->
 
@@ -283,7 +281,7 @@ properties of colimits.
 ```agda
       has-lan .σ-comm {M = M} = ext λ c →
         ↓colim.factors _ _ _ ∙ D.eliml (M .F-id)
-      has-lan .σ-uniq {M = M} {α = α} {σ' = σ'} p = ext λ c' → sym $
+      has-lan .σ-uniq {M = M} {α = α} {σ' = σ'} p = ext λ c' →
         ↓colim.unique _ _ _ _ λ j →
         σ' .η c' D.∘ ↓colim.ψ c' j                                ≡⟨ ap (λ ϕ → σ' .η c' D.∘ ↓colim.ψ c' ϕ) (↓Obj-path _ _ refl refl (sym (C'.idr _))) ⟩
         (σ' .η c' D.∘ ↓colim.ψ c' (↓obj (j .map C'.∘ C'.id)))     ≡⟨ D.pushr (sym $ ↓colim.factors _ _ _) ⟩
@@ -391,8 +389,8 @@ up not being very interesting.
         mi .eta∘inv _ = E.idl _
         mi .inv∘eta _ = E.idl _
         mi .natural _ _ _ =
-          E.idr _
-          ∙ H-↓colim.unique _ _ _ _ (λ j → pulll H (↓colim.factors _ _ _))
+            E.idr _
+          ∙ sym (H-↓colim.unique _ _ _ _ (λ j → pulll H (↓colim.factors _ _ _)))
           ∙ sym (E.idl _)
 
       module HF'-cohere = Isoⁿ HF'-cohere

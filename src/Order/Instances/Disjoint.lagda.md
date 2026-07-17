@@ -109,7 +109,7 @@ Posets-has-set-indexed-coproducts I F = mk where
   mk .ι  = injᵖ
   mk .has-is-ic .match      = matchᵖ
   mk .has-is-ic .commute    = ext λ _ → refl
-  mk .has-is-ic .unique f p = ext λ i x → p i ·ₚ x
+  mk .has-is-ic .unique f p = ext λ i x → sym (p i) ·ₚ x
 ```
 
 ## Binary coproducts are a special case of indexed coproducts

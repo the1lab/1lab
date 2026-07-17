@@ -124,7 +124,7 @@ showing that $(a, b) + (c, d)$ is $(a + c, b + d)$.
   tuple-sum : ∀ {j} {R} (f : Fin j → ∀ i → A.Hom R (F i))
         → ip.tuple (λ i → ∑ₕ j (λ j → f j i))
         ≡ ∑ₕ j λ j → ip.tuple (f j)
-  tuple-sum {j} f = sym $ ip.unique _ λ i →
+  tuple-sum {j} f = ip.unique _ λ i →
     ip.π i A.∘ ∑ₕ j (λ i → ip.tuple (f i))   ≡⟨ ∑-∘-left {j = j} _ ⟩
     ∑ₕ j (λ j → ip.π i A.∘ ip.tuple (f j))   ≡⟨ ∑-path {j} _ (λ j → ip.commute) ⟩
     ∑ₕ j (λ j → f j i)                       ∎
@@ -164,7 +164,7 @@ $$.
 
   private
     split-remark : A.id ≡ split
-    split-remark = ip.unique ip.π (λ _ → A.idr _) ∙ sym (ip.unique _ πΣδπ) where
+    split-remark = sym (ip.unique ip.π (λ _ → A.idr _)) ∙ ip.unique _ πΣδπ where
       sum-δ-π : ∀ i → ∑ {I} _ (λ j → δ j i A.∘ ip.π j) ≡ ip.π i
       sum-δ-π i = ∑-diagonal-lemma (Abelian→Group-on (A.Abelian-group-on-hom _ _)) {I} i _
         (A.eliml (ap (δ' i i) (prop! {x = i ≡ᵢ? i} {yes reflᵢ})))
@@ -240,10 +240,10 @@ above, and if it also satisfies $h\iota_j = f_j$, then a bit of
 massaging shows it is _exactly_ $m_f$.
 
 ```agda
-    ico .unique {h = h} f prf =
+    ico .unique {h = h} f prf = sym $
       h                                                    ≡⟨ A.intror (sym split-remark) ⟩
       h A.∘ split                                          ≡⟨ ∑-∘-left {I} _ ⟩
-      ∑ₕ I (λ i → h A.∘ ip.tuple (λ j → δ i j A.∘ ip.π i)) ≡⟨ ∑-path {I} _ (λ i → ap (h A.∘_) (sym (tuple∘ C F ip _))) ⟩
+      ∑ₕ I (λ i → h A.∘ ip.tuple (λ j → δ i j A.∘ ip.π i)) ≡⟨ ∑-path {I} _ (λ i → ap (h A.∘_) (tuple∘ C F ip _)) ⟩
       ∑ₕ I (λ i → h A.∘ ip.tuple (λ j → δ i j) A.∘ ip.π i) ≡⟨ ∑-path {I} _ (λ i → A.pulll (prf i)) ⟩
       ∑ₕ I (λ i → f i A.∘ ip.π i)                          ≡⟨⟩
       m f                                                  ∎

@@ -435,8 +435,8 @@ Free-category G .Free-object.commute {Y = C} {f = f} =
   where open Precategory (C .fst)
 Free-category G .Free-object.unique {Y = C} {f} F p =
   Path-category-functor-path
-    (λ x i → p i .node x)
-    (λ e → to-pathp (from-pathp (λ i → p i .edge e) ∙ sym (idl _)))
+    (λ x i → p (~ i) .node x)
+    (λ e → to-pathp (ap (subst₂ Hom _ _) (idl _) ∙ from-pathp (λ i → p (~ i) .edge e)))
   where open Precategory (C .fst)
 ```
 

@@ -197,7 +197,7 @@ equalisers to factor _that_ as a unique arrow $P' \to X \times_Z Y$.
     pb .p₁∘universal = pullr eq.factors ∙ pr.π₁∘⟨⟩
     pb .p₂∘universal = pullr eq.factors ∙ pr.π₂∘⟨⟩
     pb .unique p q =
-      eq.unique (pr.unique (assoc _ _ _ ∙ p) (assoc _ _ _ ∙ q))
+      eq.unique (sym (pr.unique (assoc _ _ _ ∙ p) (assoc _ _ _ ∙ q)))
 ```
 
 Hence, assuming that a category has a terminal object, binary products
@@ -458,11 +458,11 @@ Putting it all together into a record we get our proof of finite completeness:
       open Cone
 
       term' : Terminal C
-      term' = record { top = Limit.apex limF ; has⊤ = limiting } where
-        limiting : ∀ x → is-contr _
-        limiting x =
-          contr (Limit.universal limF (λ { () }) (λ { {()} })) λ h →
-            sym (Limit.unique limF _ _ h λ { () })
+      term' = record where
+        top  = Limit.apex limF
+        has⊤ x = record where
+          centre  = Limit.universal limF (λ ()) λ { {()} }
+          paths h = Limit.unique limF _ _ h λ ()
 ```
 -->
 

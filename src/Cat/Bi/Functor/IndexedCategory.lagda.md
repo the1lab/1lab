@@ -312,7 +312,7 @@ a lax functor, since we require the inverse of the compositor.
   fibration f b .cartesian .commutes m ϕ  =
     cdr (eliml (F.₁ m .F-id)) ∙ cancell (γ≅' .invl)
   fibration f b .cartesian .unique {m = m} m' p =
-    insertl3 (cancell (γ≅' .invr) ∙ F.₁ m .F-id) ∙ cdr p
+    sym (cdr p) ∙ cancell3 (cancell (γ≅' .invr) ∙ F.₁ m .F-id)
 ```
 
 ## Fibre categories of the Grothendieck construction

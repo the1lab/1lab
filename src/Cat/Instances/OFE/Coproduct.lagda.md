@@ -191,6 +191,6 @@ unique: but it suffices to reason at the level of sets.
   mk .has-is-coproduct .[]∘ι₁ = ext λ _ → refl
   mk .has-is-coproduct .[]∘ι₂ = ext λ _ → refl
   mk .has-is-coproduct .unique p q = ext λ where
-    (inl x) → p ·ₚ x
-    (inr x) → q ·ₚ x
+    (inl x) → sym p ·ₚ x
+    (inr x) → sym q ·ₚ x
 ```

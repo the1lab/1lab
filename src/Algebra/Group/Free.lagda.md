@@ -105,6 +105,28 @@ unquoteDef Free-elim-prop = make-elim-with (default-elim-visible into 1)
 
 </details>
 
+<!--
+```agda
+instance
+  Extensional-free-group-hom
+    : ∀ {ℓ ℓr} {A : Type ℓ} {G : Group ℓ}
+    → ⦃ ei : Extensional (A → ⌞ G ⌟) ℓr ⦄
+    → Extensional (Groups.Hom (Free-Group A) G) ℓr
+  Extensional-free-group-hom {G = G} ⦃ ei ⦄ =
+    injection→extensional! {f = λ g a → g · inc a}
+      (λ {g} {h} p →
+        let
+          module g = is-group-hom (g .snd)
+          module h = is-group-hom (h .snd)
+        in Grp↪Sets-is-faithful (funext (Free-elim-prop _ (λ _ → hlevel 1) (happly p)
+          (λ x p y q → g.pres-⋆ _ _ ∙∙ ap₂ G._⋆_ p q ∙∙ sym (h.pres-⋆ _ _))
+          (λ x p → g.pres-inv ∙∙ ap G._⁻¹ p ∙∙ sym h.pres-inv)
+          (g.pres-id ∙ sym h.pres-id))))
+      ei
+    where module G = Group-on (G .snd)
+```
+-->
+
 ## Universal property {defines=free-group}
 
 We now prove the universal property of `Free-group`{.Agda}, or, more
@@ -175,15 +197,7 @@ make-free-group S .free = Free-Group ⌞ S ⌟
 make-free-group S .unit = inc
 make-free-group S .fold = fold-free-group
 make-free-group S .commute = refl
-make-free-group S .unique {H} g p =
-  ext $ Free-elim-prop _ (λ _ → hlevel 1)
-    (p ·ₚ_)
-    (λ a p b q → g.pres-⋆ a b ∙ ap₂ H._⋆_ p q)
-    (λ a p → g.pres-inv ∙ ap H.inverse p)
-    g.pres-id
-  where
-    module H = Group-on (H .snd)
-    module g = is-group-hom (g .snd)
+make-free-group S .unique {H} g p = ext (sym p ·ₚ_)
 
 module Free-groups {ℓ} (S : Set ℓ) = Free-object (make-free-group S)
 ```

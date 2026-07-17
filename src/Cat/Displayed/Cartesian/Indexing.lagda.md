@@ -61,15 +61,13 @@ module _ {𝒶 𝒷} (f : Hom 𝒶 𝒷) where
 
 <!--
 ```agda
-  base-change .F-id {x} =
-    sym $ π*.uniquep _ _ _ _ $
-      idr' _ ∙[] symP (idl' _)
+  base-change .F-id {x} = π*.uniquep _ _ _ _ $
+    idr' _ ∙[] symP (idl' _)
 
-  base-change .F-∘ {x} {y} {z} f' g' =
-    sym $ π*.uniquep _ _ _ _ $
-      Fib.pulllf (π*.commutesp id-comm _)
-      ∙[] pullr[] _ (π*.commutesp id-comm _)
-      ∙[] pulll[] _ Fib.to-fibre
+  base-change .F-∘ {x} {y} {z} f' g' = π*.uniquep _ _ _ _ $
+    Fib.pulllf (π*.commutesp id-comm _)
+    ∙[] pullr[] _ (π*.commutesp id-comm _)
+    ∙[] pulll[] _ Fib.to-fibre
 ```
 -->
 
@@ -426,9 +424,9 @@ opaque
          (π*.commutesp (sym p ∙ sym (idl _ )) _))
       (pulll[] _ (π*.commutesp id-comm _)
        ∙[] pullr[] _ (π*.commutesv _)
-       ∙[] π*.uniquep _ (idl _) (sym p ∙ sym (idl _)) _
-         (pulll[] _ (π*.commutesp id-comm _ )
-          ∙[] pullr[] _ (π*.commutesp (sym p) _)))
+       ∙[] symP (π*.uniquep _ (idl _) (sym p ∙ sym (idl _)) _
+        (   pulll[] _ (π*.commutesp id-comm _)
+        ∙[] pullr[] _ (π*.commutesp (sym p) _))))
 
   base-change-square-inv
     : ∀ {Γ Δ Θ Ψ : Ob}

@@ -48,7 +48,7 @@ Degenerate squares where two opposite sides are identities are pullbacks.
   id-is-pullback .universal {p₁' = p₁'} _ = p₁'
   id-is-pullback .p₁∘universal = idl _
   id-is-pullback .p₂∘universal {p = p} = p ∙ idl _
-  id-is-pullback .unique q r = sym (idl _) ∙ q
+  id-is-pullback .unique q r = sym q ∙ idl _
 ```
 
 ## Pasting law {defines="pasting-law-for-pullbacks"}
@@ -183,7 +183,7 @@ then have a map $x \to a$, as we wanted.
       pb .p₁∘universal = pullr left.p₁∘universal ∙ right.p₁∘universal
       pb .p₂∘universal = left.p₂∘universal
       pb .unique {p₁' = P→c} {P→d} {p = p} {lim'} q r =
-        left.unique (right.unique (assoc _ _ _ ∙ q) s) r
+        left.unique (sym (right.unique (assoc _ _ _ ∙ q) s)) r
         where
           s : b→e ∘ a→b ∘ lim' ≡ d→e ∘ P→d
           s =
@@ -216,7 +216,7 @@ is a monomorphism iff. the square below is a pullback.
     is-monic→is-pullback mono .universal {p₁' = p₁'} p = p₁'
     is-monic→is-pullback mono .p₁∘universal = idl _
     is-monic→is-pullback mono .p₂∘universal {p = p} = idl _ ∙ mono _ _ p
-    is-monic→is-pullback mono .unique p q = introl refl ∙ p
+    is-monic→is-pullback mono .unique p q = sym p ∙ eliml refl
 
     is-pullback→is-monic : is-pullback C id f id f → is-monic f
     is-pullback→is-monic pb f g p = sym (pb .p₁∘universal {p = p}) ∙ pb .p₂∘universal
@@ -302,7 +302,7 @@ A similar result holds for isomorphisms.
       inv→pb .p₁∘universal = pulll (rswizzle (sym (pb .p₁∘universal)) i.invl) ∙ pb .p₁∘universal
       inv→pb .p₂∘universal = pulll (rswizzle (sym (pb .p₂∘universal)) i.invl) ∙ pb .p₂∘universal
       inv→pb .unique p q =
-        sym (lswizzle (sym (pb .unique (pulll (pb .p₁∘universal) ∙ p) (pulll (pb .p₂∘universal) ∙ q))) i.invr)
+        lswizzle (pb .unique (pulll (pb .p₁∘universal) ∙ p) (pulll (pb .p₂∘universal) ∙ q)) i.invr
     pb→inv : is-pullback C p1' f p2' g → is-invertible (pb .universal sq)
     pb→inv pb' = make-invertible (pb' .universal (pb .square))
       (unique₂ pb {p = pb .square}
@@ -330,7 +330,7 @@ A similar result holds for isomorphisms.
     → is-pullback C (p1 ∘ _≅_.from i) f (p2 ∘ _≅_.from i) g
   is-pullback-iso i pb = Equiv.to
     (invertible≃pullback pb (extendl (pb .square)))
-    (subst is-invertible (pb .unique refl refl) (iso→invertible (i Iso⁻¹)))
+    (subst is-invertible (sym (pb .unique refl refl)) (iso→invertible (i Iso⁻¹)))
 
   is-pullback-iso'
     : ∀ {p p' x y z} {f : Hom x z} {g : Hom y z} {p1 : Hom p x} {p2 : Hom p y}

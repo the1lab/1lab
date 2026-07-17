@@ -139,6 +139,6 @@ with precisely with the assumptions that $f$ and $g$ are tracked.
 Assembly-coproducts A B .has-is-coproduct .[]∘ι₁ = ext λ _ → refl
 Assembly-coproducts A B .has-is-coproduct .[]∘ι₂ = ext λ _ → refl
 Assembly-coproducts A B .has-is-coproduct .unique p q = ext λ where
-  (inl x) → ap map p · x
-  (inr x) → ap map q · x
+  (inl x) → sym p ·ₚ x
+  (inr x) → sym q ·ₚ x
 ```

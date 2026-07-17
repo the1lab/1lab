@@ -214,7 +214,7 @@ Here's the data of a congruence. Get ready, because there's a lot of it:
     → m ∘ has-trans ∘ R×R.universal sq ≡ A×A.⟨ rel₁ ∘ p₂' , rel₂ ∘ p₁' ⟩
   unpair-trans sq =
     pulll (sym trans-factors)
-    ∙∙ A×A.⟨⟩∘ _
+    ∙∙ sym (A×A.⟨⟩∘ _)
     ∙∙ ap₂ A×A.⟨_,_⟩ (pullr R×R.p₂∘universal) (pullr R×R.p₁∘universal)
 ```
 -->
@@ -358,7 +358,7 @@ Understanding the transitivity map is left as an exercise to the reader.
     cg .trans-factors =
       sym (
         kernel-pair ∘ Kp.universal _
-      ≡⟨ a×a.⟨⟩∘ _ ⟩
+      ≡⟨ sym (a×a.⟨⟩∘ _) ⟩
         a×a.⟨ Kp.p₁ ∘ Kp.universal _ , Kp.p₂ ∘ Kp.universal _ ⟩
       ≡⟨ ap₂ a×a.⟨_,_⟩ (Kp.p₁∘universal ∙ ap₂ _∘_ (sym a×a.π₁∘⟨⟩) refl)
                        (Kp.p₂∘universal ∙ ap₂ _∘_ (sym a×a.π₂∘⟨⟩) refl) ⟩

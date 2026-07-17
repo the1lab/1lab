@@ -86,22 +86,20 @@ Sets-effective-congruences {A = A} R = epi where
         }
 
   epi .has-quotient .factors = refl
-
-  epi .has-quotient .unique {F = F} path =
-    funext (Coeq-elim-prop (λ x → F .is-tr _ _) (happly path))
+  epi .has-quotient .unique {F = F} path = ext λ x → sym path ·ₚ x
 
   epi .has-kernel-pair .square = funext λ { x → quot (x , refl) }
 
-  epi .has-kernel-pair .universal path x = undo (happly path x) .fst
+  epi .has-kernel-pair .universal path x = undo (path ·ₚ x) .fst
 
   epi .has-kernel-pair .p₁∘universal {p = path} =
-    funext (λ x → ap fst (undo (happly path x) .snd))
+    funext (λ x → ap fst (undo (path ·ₚ x) .snd))
 
   epi .has-kernel-pair .p₂∘universal {p = path} =
-    funext (λ x → ap snd (undo (happly path x) .snd))
+    funext (λ x → ap snd (undo (path ·ₚ x) .snd))
 
   epi .has-kernel-pair .unique {p = p} q r = funext λ x →
-    let p = sym ( undo (happly p x) .snd
-                ∙ Σ-pathp (happly (sym q) _) (happly (sym r) _))
-     in happly (R.has-is-monic {c = unit} _ _ (funext λ _ → p)) _
+    let
+      p = undo (happly p x) .snd ∙ Σ-pathp (happly (sym q) _) (happly (sym r) _)
+    in happly (R.has-is-monic {c = unit} _ _ (funext λ _ → p)) _
 ```

@@ -279,6 +279,6 @@ must be equal to the $[\eps]$ we obtained from *the* section for
 $\eps$.
 
 ```agda
-  mk .unique ε p σ q = sym $ ap whole $ univ.[ ε ] p .paths
+  mk .unique ε p σ q = ap whole $ univ.[ ε ] p .paths
     record { glues = λ f hf → q (elem _ (f , hf)) }
 ```

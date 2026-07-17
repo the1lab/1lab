@@ -378,7 +378,7 @@ exactly those squares whose underlying top map is invertible.
       m ∘ y' .map ∘ f' .map ∘ inv.inv ≡⟨ (refl⟩∘⟨ elimr inv.invl) ⟩
       m ∘ y' .map                     ∎
     cocart .commutes m h' = Slice-path (cancelr inv.invr)
-    cocart .unique m' p   = Slice-path (sym (rswizzle (sym (ap map p)) inv.invl))
+    cocart .unique m' p   = Slice-path (rswizzle (sym (ap map p)) inv.invl)
 ```
 
 Given a map $f : X \to Y$ and an object $X' : \cB/X$, the cocartesian

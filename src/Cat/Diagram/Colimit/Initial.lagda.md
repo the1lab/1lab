@@ -37,9 +37,11 @@ is-colimit→is-initial
   : ∀ {T : Ob} {eta : ¡F => Const T}
   → is-colimit {C = C} ¡F T eta
   → is-initial C T
-is-colimit→is-initial colim Y = contr (colim.universal (λ ()) (λ ()))
-                                      (λ _ → sym (colim.unique _ _ _ λ ()))
-  where module colim = is-colimit colim
+is-colimit→is-initial colim Y = record where
+  module colim = is-colimit colim
+
+  centre  = colim.universal (λ ()) λ ()
+  paths _ = colim.unique _ _ _ λ ()
 
 is-initial→is-colimit : ∀ {T : Ob} {F : Functor ⊥Cat C} → is-initial C T → is-colimit {C = C} F T ¡nt
 is-initial→is-colimit {T} {F} init = to-is-colimitp mc λ {} where
@@ -49,7 +51,7 @@ is-initial→is-colimit {T} {F} init = to-is-colimitp mc λ {} where
   mc .commutes ()
   mc .universal _ _ = init _ .centre
   mc .factors {}
-  mc .unique _ _ _ _ = sym (init _ .paths _)
+  mc .unique _ _ _ _ = init _ .paths _
 
 Colimit→Initial : Colimit {C = C} ¡F → Initial C
 Colimit→Initial colim .bot = Colimit.coapex colim

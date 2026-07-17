@@ -76,7 +76,7 @@ module
         → {p : ev ∘ (n ⊗₁ id) ≡ m}
         → {m' : Hom[ m ] (Γ' ⊗₀' _) _} (n' : Hom[ n ] Γ' _)
         → ev' ∘' ⟨ n' ∘' π₁' , id' ∘' π₂' ⟩' ≡[ p ] m'
-        → n' ≡[ unique n p ] ƛ' m'
+        → ƛ' m' ≡[ unique n p ] n'
 ```
 
 <!--

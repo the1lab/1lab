@@ -130,6 +130,7 @@ module _ {ℓ o' ℓ'} {S : Type ℓ → Type o'} {spec : Thin-structure ℓ' S}
       → Extensional (So.Hom a b) ℓr
     Extensional-Hom ⦃ sa ⦄ = injection→extensional!
       (Structured-hom-path spec) sa
+    {-# OVERLAPPABLE Extensional-Hom #-}
 
   Homomorphism-monic
     : ∀ {x y} (f : So.Hom x y)

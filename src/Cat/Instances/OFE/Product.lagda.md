@@ -83,7 +83,7 @@ OFE-Product A B .has-is-product .⟨_,_⟩ f g .snd .pres-≈ p =
 
 OFE-Product A B .has-is-product .π₁∘⟨⟩ = ext λ _ → refl
 OFE-Product A B .has-is-product .π₂∘⟨⟩ = ext λ _ → refl
-OFE-Product A B .has-is-product .unique p q = ext λ x → p ·ₚ x ,ₚ q ·ₚ x
+OFE-Product A B .has-is-product .unique p q = ext λ x → sym p ·ₚ x ,ₚ sym q ·ₚ x
 ```
 
 <!--
@@ -178,5 +178,5 @@ OFE-Indexed-product F .has-is-ip .tuple f .fst x i = f i · x
 OFE-Indexed-product F .has-is-ip .tuple f .snd .pres-≈ wit =
   lift $ inc λ i → f i .snd .pres-≈ wit
 OFE-Indexed-product F .has-is-ip .commute      = ext λ _ → refl
-OFE-Indexed-product F .has-is-ip .unique f prf = ext λ x y → prf y ·ₚ x
+OFE-Indexed-product F .has-is-ip .unique f prf = ext λ x y → sym (prf y) ·ₚ x
 ```

@@ -101,7 +101,8 @@ PSh-products A B = prod where
       f .is-natural x y h i a , g .is-natural x y h i a
   prod .has-is-product .π₁∘⟨⟩ = ext λ _ _ → refl
   prod .has-is-product .π₂∘⟨⟩ = ext λ _ _ → refl
-  prod .has-is-product .unique p q = ext λ i x → unext p i x ,ₚ unext q i x
+  prod .has-is-product .unique p q = ext λ i x →
+    unext (sym p) i x ,ₚ unext (sym q) i x
 ```
 
 <!--
@@ -157,7 +158,7 @@ componentwise.
   pb .has-is-pb .p₁∘universal = ext λ _ _ → refl
   pb .has-is-pb .p₂∘universal = ext λ _ _ → refl
   pb .has-is-pb .unique p q = ext λ _ _ →
-    pb-path (unext p _ _) (unext q _ _)
+    pb-path (unext (sym p) _ _) (unext (sym q) _ _)
 ```
 
 <!--

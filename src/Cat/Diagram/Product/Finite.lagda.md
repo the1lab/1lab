@@ -82,13 +82,11 @@ Cartesian→standard-finite-products F = prod where
   F-unique
     : ∀ {Y} {n} (F : Fin n → Ob) (f : (i : Fin n) → Hom Y (F i))
     → {h : Hom Y (F-apex F)} → ((i : Fin n) → F-pi F i ∘ h ≡ f i)
-    → h ≡ F-mult F f
-  F-unique {n = zero} F f {h} p = sym $ !-unique terminal _
-  F-unique {n = suc zero} F f {h} p = sym (idl h) ∙ p fzero
-  F-unique {n = suc (suc n)} F f {h} p =
-    products _ _ .unique (p fzero)
-      (F-unique (λ e → F (fsuc e)) (λ i → f (fsuc i))
-        λ i → assoc _ _ _ ∙ p (fsuc i))
+    → F-mult F f ≡ h
+  F-unique {n = zero} F f {h} p = !-unique terminal _
+  F-unique {n = suc zero} F f {h} p = sym (p fzero) ∙ idl h
+  F-unique {n = suc (suc n)} F f {h} p = products _ _ .unique (p fzero) $ sym $
+    F-unique (λ e → F (fsuc e)) _ λ i → assoc _ _ _ ∙ p (fsuc i)
 
   prod : Indexed-product C F
   prod .ΠF = F-apex F
