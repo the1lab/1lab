@@ -9,7 +9,7 @@ open import Data.String.Show
 open import Data.Bool.Base
 open import Data.List.Base
 open import Data.Dec.Base
-open import Data.Vec.Base
+open import Data.Vec.Base hiding (_++_)
 
 open import Meta.Append
 ```
@@ -394,20 +394,31 @@ extend-context* : ∀ {a} {A : Type a} → Telescope → TC A → TC A
 extend-context* [] a = a
 extend-context* ((nm , tm) ∷ xs) a = extend-context nm tm (extend-context* xs a)
 
+record New-meta : Type where
+  constructor meta
+  field
+    new-meta : Meta
+    new-term : Term
+    ⦃ neu ⦄ : Has-neutrals.neutral auto new-term
+
+new-meta' : Term → TC New-meta
+new-meta' ty = do
+  debugPrint "tactic.meta" 70 [ "new-meta'\n" , termErr ty ]
+  tm@(Term.meta mv _) ← check-type unknown ty
+    where what → do
+      debugPrint "tactic.meta" 70
+        [ "check-type unknown returns\n" , termErr what ]
+      typeError "impossible new-meta'"
+  debugPrint "tactic.meta" 70
+    [ "Created new meta\n  " , termErr tm , "\nof type\n  " , termErr ty ]
+  pure (meta mv tm)
+
 new-meta : Term → TC Term
 new-meta ty = do
   mv ← check-type unknown ty
   debugPrint "tactic.meta" 70
-    [ "Created new meta " , termErr mv , " of type " , termErr ty ]
+    [ "Created new meta\n  " , termErr mv , "\nof type\n  " , termErr ty ]
   pure mv
-
-new-meta' : Term → TC (Meta × Term)
-new-meta' ty = do
-  tm@(meta mv _) ← check-type unknown ty
-    where _ → typeError "impossible new-meta'"
-  debugPrint "tactic.meta" 70
-    [ "Created new meta " , termErr tm , " of type " , termErr tm ]
-  pure (mv , tm)
 
 block-on-meta : ∀ {a} {A : Type a} → Meta → TC A
 block-on-meta m = blockTC (blocker-meta m)
@@ -509,12 +520,16 @@ unapply-path' false red@(def (quote PathP) (l h∷ T v∷ x v∷ y v∷ [])) = d
   pure (just (domain , x , y))
 
 unapply-path' true tm = reduce tm >>= λ where
-  tm@(meta _ _) → do
-    (Tmv , T) ← new-meta' (pi (argN (quoteTerm I)) (abs "i" (def (quote Type) (unknown v∷ []))))
-    l ← new-meta (meta Tmv (quoteTerm i0 v∷ []))
-    r ← new-meta (meta Tmv (quoteTerm i1 v∷ []))
+  tm@(meta _ cx) → do
+    meta Tmv T ← new-meta' $ pi (argN (quoteTerm I))
+      (abs "i" (def (quote Type) (unknown v∷ [])))
+
+    meta lmv l ← new-meta' (T ##ₙ quoteTerm i0)
+    meta rmv r ← new-meta' (T ##ₙ quoteTerm i1)
+
     unify tm (def (quote PathP) (T v∷ l v∷ r v∷ []))
-    traverse wait-for-type (l ∷ r ∷ [])
+    blockTC {A = ⊤} (blocker-all (blocker-meta lmv ∷ blocker-meta rmv ∷ []))
+
     pure (just (T , l , r))
 
   red@(def (quote PathP) (T v∷ l v∷ r v∷ [])) → do

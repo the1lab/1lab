@@ -1,3 +1,4 @@
+{-# OPTIONS --allow-unsolved-metas #-}
 open import 1Lab.Reflection
 open import 1Lab.Path
 open import 1Lab.Type
@@ -16,6 +17,15 @@ module 1Lab.Reflection.Marker where
 ⌜ x ⌝ = x
 {-# NOINLINE ⌜_⌝ #-}
 
+-- A placeholder for terms that should be turned into metavariables when
+-- abstracting.
+-- This can be used with apd! to mark terms on which the type of a
+-- marker depends, as long as the path that ¿? replaces can be inferred
+-- from the type of the argument to apd!.
+¿? : ∀ {ℓ} {A : Type ℓ} {x : A} → A
+¿? {x = x} = x
+{-# NOINLINE ¿? #-}
+
 -- Abstract over the marked term(s). All marked terms refer to the same
 -- variable, so e.g.
 --
@@ -23,25 +33,25 @@ module 1Lab.Reflection.Marker where
 --
 -- is (λ e → f e (λ _ → e)). The resulting term is open in precisely one
 -- variable: that variable is what substitutes the marked terms.
-abstract-marker : Term → Maybe Term
-abstract-marker = go 0 where
+abstract-marker : Nat → Term → Maybe Term
+abstract-marker base = go 0 where
   go  : Nat → Term → Maybe Term
   go* : Nat → List (Arg Term) → Maybe (List (Arg Term))
 
-  go k (var j args) = var j' <$> go* k args
-    where
-      j' : Nat
-      j' with j < k
-      ... | false = suc j
-      ... | true = j
+  go k (var j args) = var j' <$> go* k args where
+    j' : Nat
+    j' with j < k
+    ... | false = base + j
+    ... | true = j
   go k (con c args) = con c <$> go* k args
   go k (def f args) with f
   ... | quote ⌜_⌝ = pure (var k [])
-  -- ^ This is the one interesting case. Any application of the marker
+  -- ^ This is the first interesting case. Any application of the marker
   -- gets replaced with the 'k'th variable. Initially k = 0, so this is
   -- the variable bound by the lambda. But as we encounter further
   -- binders, we must increment this, since the marked term gets farther
   -- and farther away in the context.
+  ... | quote ¿? = pure unknown
   ... | x = def f <$> go* k args
   go k (lam v (abs x t)) = lam v ∘ abs x <$> go (suc k) t
   go k (pat-lam cs args) = nothing
@@ -88,9 +98,9 @@ private
   ap-worker : ∀ {ℓ} {A : Type ℓ} (x : A) → Term → TC ⊤
   ap-worker x goal = withNormalisation false do
     `x ← wait-for-type =<< quoteTC x
-    case abstract-marker `x of λ where
+    case abstract-marker 1 `x of λ where
       (just l) → do
-        debugPrint "1lab.marked-ap" 10
+        debugPrint "tactic.marked-ap" 10
           [ "original  " , termErr `x , "\n"
           , "abstracted" , termErr (lam visible (abs "x" l))
           ]
@@ -129,3 +139,93 @@ module _ {ℓ} {A : Type ℓ} {x y : A} {p : x ≡ y} {f : A → (A → A) → A
     r =
       f ⌜ y ⌝ (λ _ → ⌜ y ⌝) ≡˘⟨ ap¡ p ⟩
       f x (λ _ → x)         ∎
+
+private
+  -- In addition to supporting ¿? to mark explicit problematic
+  -- dependencies, we also remove all implicit arguments when
+  -- abstracting over the path.
+  censor  : Term → Term
+  censor* : List (Arg Term) → List (Arg Term)
+
+  censor (var x args)             = var x (censor* args)
+  censor (con c args)             = con c (censor* args)
+  censor (def f args)             = def f (censor* args)
+  censor (lam v (abs n tm))       = lam v (abs n (censor tm))
+  censor (pat-lam cs args)        = pat-lam cs (censor* args)
+  censor (pi (arg i x) (abs n y)) = pi (arg i (censor x)) (abs n (censor y))
+  censor (agda-sort s)            = agda-sort s
+  censor (lit l)                  = lit l
+  censor (meta m args)            = unknown
+  censor unknown                  = unknown
+
+  censor* [] = []
+  censor* (t v∷ ts) = censor t v∷ censor* ts
+  censor* (t h∷ ts) = censor* ts
+  censor* (t i∷ ts) = censor* ts
+
+  macro
+    apd-worker : ∀ {ℓ} {A : Type ℓ} → A → Term → Term → TC ⊤
+    apd-worker endpoint what goal = withNormalisation false do
+      `endpoint ← wait-for-type =<< quoteTC endpoint
+      case abstract-marker 2 (censor `endpoint) of λ where
+        (just l) → do
+          let fn = lam visible (abs "i" (lam visible (abs "x" l)))
+          debugPrint "tactic.marked-ap" 10
+            [ "original  " , termErr `endpoint , "\n"
+            , "abstracted" , termErr fn
+            ]
+          unify goal (def₀ (quote apd) ##ₙ fn ##ₙ what)
+        nothing → typeError [ "apd!: Failed to abstract over marker in term\n  " , termErr `endpoint ]
+
+  -- The entry point for apd! can't use tactic arguments to have the
+  -- elaborator propagate the endpoint; it's just too circular.
+  --
+  -- To prevent a performance blowup from quoting the entire type of the
+  -- goal, we take it apart by unifying against metavariables and
+  -- deferring to a different macro. The second macro application acts
+  -- like a "fence" for the blockTC primitive.
+  apd-wrapper : Bool → Term → Term → TC ⊤
+  apd-wrapper right what goal = do
+    meta Tmv T ← new-meta' $ pi (argN (quoteTerm I))
+      (abs "i" (def (quote Type) (unknown v∷ [])))
+
+    l ← new-meta (T ##ₙ quoteTerm i0)
+    r ← new-meta (T ##ₙ quoteTerm i1)
+
+    g' ← check-type goal (def₀ (quote PathP) ##ₙ T ##ₙ l ##ₙ r)
+
+    unify goal (def₀ (quote apd-worker) ##ₙ (if right then r else l) ##ₙ what)
+
+macro
+  -- Generalised apd. Automatically generates the function to apply to
+  -- by abstracting over any markers in the LEFT ENDPOINT of the path.
+  -- Use with _≡[]⟨_⟩_.
+  apd! : Term → Term → TC ⊤
+  apd! = apd-wrapper false
+
+  -- Generalised apd. Automatically generates the function to apply to
+  -- by abstracting over any markers in the RIGHT ENDPOINT of the path.
+  -- Use with _≡[]˘⟨_⟩_.
+  apd¡ : Term → Term → TC ⊤
+  apd¡ = apd-wrapper true
+
+module
+  _ {ℓ ℓ' ℓ''} {A : Type ℓ} {x y : A} {p : x ≡ y} {B : A → Type ℓ'}
+    {α : B x} {β : B y} (q : PathP (λ i → B (p i)) α β)
+    {C : (x : A) → B x → Type ℓ''}
+    (f : {x : A} (y : B x) → C x y)
+    (g : (x : A) (y : B x) → C x y)
+  where
+
+  -- test that needs 'censor'
+  _ : PathP (λ i → C (p i) (q i)) (f ⌜ α ⌝) (f β)
+  _ = apd! q
+
+  -- test that needs an explicit placeholder
+  _ : PathP (λ i → C (p i) (q i)) (g ¿? ⌜ α ⌝) (g y β)
+  _ = apd! q
+
+  -- test that the tactic works with goals.
+  -- this needs --quote-metas
+  _ : PathP (λ i → C (p i) (q i)) (f ⌜ α ⌝) (f β)
+  _ = apd! {!   !}

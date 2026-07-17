@@ -74,26 +74,16 @@ taking care of the extra identity morphisms due to `∫ᶠ∘`{.Agda} and
 `∫ᶠId'≅Id`{.Agda}.
 
 ```agda
-∫⊣ .zig {x , x'} = ∫Hom-path ℱ
-  ( (B.id B.∘ L⊣R.ε (₀ L x) B.∘ B.id) B.∘ ₁ L (A.id A.∘ L⊣R.η x A.∘ A.id) ≡⟨ ap (B._∘ ₁ L (A.id A.∘ L⊣R.η x A.∘ A.id)) (B.idlr (L⊣R.ε (₀ L x))) ⟩
-    L⊣R .ε (₀ L x) B.∘ ₁ L (A.id A.∘ L⊣R.η x A.∘ A.id)                    ≡⟨ ap (λ f → L⊣R.ε (F₀ L x) B.∘ ₁ L f) (A.idlr (L⊣R.η x)) ⟩
-    L⊣R .ε (₀ L x) B.∘ ₁ L (L⊣R .η x)                                     ≡⟨ L⊣R.zig ⟩
-    B.id                                                                  ∎)
-  $ ℱ.begin[]
-    (ℱ.id' ℱ.∘' L'⊣R'.counit'.ε' (₀' L' x') ℱ.∘' ℱ.id')
-      ℱ.∘' ₁' L' (ℰ.id' ℰ.∘' L'⊣R'.unit'.η' x' ℰ.∘' ℰ.id')                            ℱ.≡[]⟨ apd (λ i → ℱ._∘' ₁' L' (ℰ.id' ℰ.∘' L'⊣R'.unit'.η' x' ℰ.∘' ℰ.id')) (ℱ.idlr' (L'⊣R'.counit'.ε' (₀' L' x'))) ⟩
-    L'⊣R'.counit'.ε' (₀' L' x') ℱ.∘' ₁' L' (ℰ.id' ℰ.∘' L'⊣R'.unit'.η' x' ℰ.∘' ℰ.id')  ℱ.≡[]⟨ apd (λ i f' → L'⊣R'.counit'.ε' (₀' L' x') ℱ.∘' ₁' L' f') (ℰ.idlr' (L'⊣R'.unit'.η' x')) ⟩
-    L'⊣R'.counit'.ε' (₀' L' x') ℱ.∘' ₁' L' (L'⊣R'.unit'.η' x')                        ℱ.≡[]⟨ L'⊣R'.zig' ⟩
-    ℱ.id'                                                                             ℱ.∎[]
-∫⊣ .zag {x , x'} = ∫Hom-path ℰ
-  ( ₁ R (B.id B.∘ L⊣R.ε x B.∘ B.id) A.∘ A.id A.∘ L⊣R.η (₀ R x) A.∘ A.id   ≡⟨ ap (₁ R (B.id B.∘ L⊣R.ε x B.∘ B.id) A.∘_) (A.idlr (L⊣R.η (₀ R x))) ⟩
-    ₁ R (B.id B.∘ L⊣R.ε x B.∘ B.id) A.∘ L⊣R.η (₀ R x)                     ≡⟨ ap (λ f → ₁ R f A.∘ L⊣R.η (F₀ R x)) (B.idlr (L⊣R.ε x)) ⟩
-    ₁ R (L⊣R.ε x) A.∘ L⊣R.η (₀ R x)                                       ≡⟨ L⊣R.zag ⟩
-    A.id ∎)
-  $ ℰ.begin[]
-    ₁' R' (ℱ.id' ℱ.∘' L'⊣R'.counit'.ε' x' ℱ.∘' ℱ.id')
-      ℰ.∘' ℰ.id' ℰ.∘' L'⊣R'.unit'.η' (₀' R' x') ℰ.∘' ℰ.id'                            ℰ.≡[]⟨ apd (λ i → ₁' R' (ℱ.id' ℱ.∘' L'⊣R'.counit'.ε' x' ℱ.∘' ℱ.id') ℰ.∘'_) (ℰ.idlr' (L'⊣R'.unit'.η' (₀' R' x'))) ⟩
-    ₁' R' (ℱ.id' ℱ.∘' L'⊣R'.counit'.ε' x' ℱ.∘' ℱ.id') ℰ.∘' L'⊣R'.unit'.η' (₀' R' x')  ℰ.≡[]⟨ apd (λ i f → ₁' R' f ℰ.∘' L'⊣R'.unit'.η' (₀' R' x')) (ℱ.idlr' (L'⊣R'.counit'.ε' x')) ⟩
-    ₁' R' (L'⊣R'.counit'.ε' x') ℰ.∘' L'⊣R'.unit'.η' (₀' R' x')                        ℰ.≡[]⟨ L'⊣R'.zag' ⟩
-    ℰ.id'                                                                             ℰ.∎[]
+∫⊣ .zig {x , x'} = ∫Hom-path ℱ _ $ ℱ.begin
+  ⌜ ℱ.id' ℱ.∘' L'⊣R'.counit'.ε' (₀' L' x') ℱ.∘' ℱ.id' ⌝
+    ℱ.∘' ₁' L' (ℰ.id' ℰ.∘' L'⊣R'.unit'.η' x' ℰ.∘' ℰ.id')                              ℱ.≡[]⟨ apd! (ℱ.idlr' (L'⊣R'.counit'.ε' (₀' L' x'))) ⟩
+  L'⊣R'.counit'.ε' (₀' L' x') ℱ.∘' ₁' L' ⌜ ℰ.id' ℰ.∘' L'⊣R'.unit'.η' x' ℰ.∘' ℰ.id' ⌝  ℱ.≡[]⟨ apd! (ℰ.idlr' (L'⊣R'.unit'.η' x')) ⟩
+  L'⊣R'.counit'.ε' (₀' L' x') ℱ.∘' ₁' L' (L'⊣R'.unit'.η' x')                          ℱ.≡[]⟨ L'⊣R'.zig' ⟩
+  ℱ.id'                                                                               ℱ.∎[]
+∫⊣ .zag {x , x'} = ∫Hom-path ℰ _ $ ℰ.begin
+  ₁' R' (ℱ.id' ℱ.∘' L'⊣R'.counit'.ε' x' ℱ.∘' ℱ.id')
+    ℰ.∘' ⌜ ℰ.id' ℰ.∘' L'⊣R'.unit'.η' (₀' R' x') ℰ.∘' ℰ.id' ⌝                         ℰ.≡[]⟨ apd! (ℰ.idlr' (L'⊣R'.unit'.η' (₀' R' x'))) ⟩
+  ₁' R' ⌜ ℱ.id' ℱ.∘' L'⊣R'.counit'.ε' x' ℱ.∘' ℱ.id' ⌝ ℰ.∘' L'⊣R'.unit'.η' (₀' R' x') ℰ.≡[]⟨ apd! (ℱ.idlr' (L'⊣R'.counit'.ε' x')) ⟩
+  ₁' R' (L'⊣R'.counit'.ε' x') ℰ.∘' L'⊣R'.unit'.η' (₀' R' x')                         ℰ.≡[]⟨ L'⊣R'.zag' ⟩
+  ℰ.id'                                                                              ℰ.∎[]
 ```

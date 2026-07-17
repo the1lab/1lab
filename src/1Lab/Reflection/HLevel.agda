@@ -152,7 +152,7 @@ hlevel-proj A want goal = withNormalisation false do
   debugPrint "tactic.hlevel" 30 [ "H-Level: trying projections for term:\n  " , termErr (def head args), "\nwith head symbol ", nameErr head ]
 
   projection ← resetting do
-    (mv , _) ← new-meta' (def (quote hlevel-projection) (argN (lit (name head)) ∷ []))
+    meta mv _ ← new-meta' (def (quote hlevel-projection) (argN (lit (name head)) ∷ []))
     get-instances mv >>= λ where
       [] → typeError
         [ "H-Level: There are no hints for treating the name " , nameErr head , " as a projection.\n"

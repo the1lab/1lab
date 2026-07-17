@@ -258,13 +258,13 @@ module
   (F' F∘' G') .F₀' x = F' .F₀' (G' .F₀' x)
   (F' F∘' G') .F₁' f = F' .F₁' (G' .F₁' f)
   (F' F∘' G') .F-id' = begin[]
-    F' .F₁' (G' .F₁' ℰ.id') ℋ.≡[]⟨ apd (λ i → F' .F₁') (G' .F-id') ⟩
-    F' .F₁' ℱ.id'           ℋ.≡[]⟨ F' .F-id' ⟩
-    ℋ.id'                   ∎[]
+    F' .F₁' ⌜ G' .F₁' ℰ.id' ⌝ ℋ.≡[]⟨ apd! (G' .F-id') ⟩
+    F' .F₁' ℱ.id'             ℋ.≡[]⟨ F' .F-id' ⟩
+    ℋ.id'                     ∎[]
   (F' F∘' G') .F-∘' {f = f} {g = g} {f' = f'} {g' = g'} = begin[]
-    F' .F₁' (G' .F₁' (f' ℰ.∘' g'))                   ℋ.≡[]⟨ apd (λ i → F' .F₁') (G' .F-∘') ⟩
-    F₁' F' (G' .F₁' f' ℱ.∘' G' .F₁' g')              ℋ.≡[]⟨ F' .F-∘' ⟩
-    F' .F₁' (G' .F₁' f') ℋ.∘' F' .F₁' (G' .F₁' g')   ∎[]
+    F' .F₁' ⌜ G' .F₁' (f' ℰ.∘' g') ⌝               ℋ.≡[]⟨ apd! (G' .F-∘') ⟩
+    F₁' F' (G' .F₁' f' ℱ.∘' G' .F₁' g')            ℋ.≡[]⟨ F' .F-∘' ⟩
+    F' .F₁' (G' .F₁' f') ℋ.∘' F' .F₁' (G' .F₁' g') ∎[]
 ```
 
 The composite of two fibred functors is a fibred functor.
