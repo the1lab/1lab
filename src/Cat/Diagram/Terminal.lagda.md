@@ -28,25 +28,24 @@ if it admits a _unique_ map from any other object:
 ```agda
   is-terminal : Ob → Type _
   is-terminal ob = ∀ x → is-contr (Hom x ob)
-
-  record Terminal : Type (o ⊔ h) where
-    field
-      top : Ob
-      has⊤ : is-terminal top
 ```
 
 We refer to the centre of contraction as `!`{.Agda}. Since it inhabits a
 contractible type, it is unique.
 
 ```agda
-    ! : ∀ {x} → Hom x top
-    ! = has⊤ _ .centre
+  module is-terminal {ob} (t : is-terminal ob) where
+    module _ {x} where open is-contr (t x) renaming (centre to ! ; paths to !-unique) public
 
-    !-unique : ∀ {x} (h : Hom x top) → ! ≡ h
-    !-unique = has⊤ _ .paths
+    !-unique₂ : ∀ {x} (f g : Hom x ob) → f ≡ g
+    !-unique₂ = is-contr→is-prop (t _)
 
-    !-unique₂ : ∀ {x} (f g : Hom x top) → f ≡ g
-    !-unique₂ = is-contr→is-prop (has⊤ _)
+  record Terminal : Type (o ⊔ h) where
+    field
+      top  : Ob
+      has⊤ : is-terminal top
+
+    open is-terminal has⊤ public
 
   open Terminal
 ```

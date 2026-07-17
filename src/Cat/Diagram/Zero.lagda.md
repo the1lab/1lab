@@ -31,6 +31,9 @@ coincide. When this occurs, we call the object a **zero object**.
       has-is-initial  : is-initial C ob
       has-is-terminal : is-terminal C ob
 
+    open is-terminal C has-is-terminal public
+    open is-initial C has-is-initial public
+
   record Zero : Type (o ⊔ h) where
     field
       ∅       : Ob
@@ -43,9 +46,6 @@ coincide. When this occurs, we call the object a **zero object**.
 
     initial : Initial C
     initial = record { bot = ∅ ; has⊥ = has-is-initial }
-
-    open Terminal terminal public hiding (top)
-    open Initial initial public hiding (bot)
 ```
 
 ::: {.definition #zero-morphism}

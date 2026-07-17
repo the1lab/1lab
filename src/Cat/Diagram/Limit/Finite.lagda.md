@@ -274,8 +274,8 @@ object $*$.
     module Pb = is-pullback pb
 
     prod : is-product C p1 p2
-    prod .is-product.⟨_,_⟩ p1' p2' =
-      Pb.universal {p₁' = p1'} {p₂' = p2'} (is-contr→is-prop (term _) _ _)
+    prod .is-product.⟨_,_⟩ p1' p2' = Pb.universal {p₁' = p1'} {p₂' = p2'} $
+      is-contr→is-prop (term _) _ _
     prod .is-product.π₁∘⟨⟩ = Pb.p₁∘universal
     prod .is-product.π₂∘⟨⟩ = Pb.p₂∘universal
     prod .is-product.unique p q = Pb.unique p q
@@ -287,8 +287,9 @@ object $*$.
   with-pullbacks top pb = fc where
     module top = Terminal top
     mkprod : ∀ A B → Product C A B
-    mkprod A B = record { has-is-product = terminal-pullback→product top.has⊤ pb' }
-      where pb' = pb (top.has⊤ A .centre) (top.has⊤ B .centre) .Pullback.has-is-pb
+    mkprod A B = record where
+      has-is-product = terminal-pullback→product top.has⊤ $
+        pb top.! top.! .Pullback.has-is-pb
 
     mkeq : ∀ {A B} (f g : Hom A B) → Equaliser C f g
     mkeq {A = A} {B} f g = eq where

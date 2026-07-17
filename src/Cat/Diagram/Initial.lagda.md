@@ -25,25 +25,24 @@ if there exists a _unique_ map to any other object:
 ```agda
   is-initial : Ob → Type _
   is-initial ob = ∀ x → is-contr (Hom ob x)
-
-  record Initial : Type (o ⊔ h) where
-    field
-      bot  : Ob
-      has⊥ : is-initial bot
 ```
 
 We refer to the centre of contraction as `¡`{.Agda}. Since it inhabits a
 contractible type, it is unique.
 
 ```agda
-    ¡ : ∀ {x} → Hom bot x
-    ¡ = has⊥ _ .centre
+  module is-initial {ob} (t : is-initial ob) where
+    module _ {x} where open is-contr (t x) renaming (centre to ¡ ; paths to ¡-unique) public
 
-    ¡-unique : ∀ {x} (h : Hom bot x) → ¡ ≡ h
-    ¡-unique = has⊥ _ .paths
+    ¡-unique₂ : ∀ {x} (f g : Hom ob x) → f ≡ g
+    ¡-unique₂ = is-contr→is-prop (t _)
 
-    ¡-unique₂ : ∀ {x} (f g : Hom bot x) → f ≡ g
-    ¡-unique₂ = is-contr→is-prop (has⊥ _)
+  record Initial : Type (o ⊔ h) where
+    field
+      bot  : Ob
+      has⊥ : is-initial bot
+
+    open is-initial has⊥ public
 
   open Initial
 ```
