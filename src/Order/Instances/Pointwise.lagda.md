@@ -113,7 +113,7 @@ Posets-has-indexed-products F = mk where
   mk .π  = prjᵖ
   mk .has-is-ip .tuple   = tupleᵖ
   mk .has-is-ip .commute = ext λ _ → refl
-  mk .has-is-ip .unique f g = ext λ y i → g i ·ₚ y
+  mk .has-is-ip .unique f g = ext λ y i → sym (g i) ·ₚ y
 ```
 
 ## Binary products are a special case of indexed products

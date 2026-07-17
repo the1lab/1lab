@@ -99,13 +99,13 @@ data Mor where
 
   `π₁β  : `π₁ `∘ (f `, g) ≡ f
   `π₂β  : `π₂ `∘ (f `, g) ≡ g
-  `πη   : f ≡ (`π₁ `∘ f `, `π₂ `∘ f)
+  `πη   : (`π₁ `∘ f `, `π₂ `∘ f) ≡ f
 
   `ev  : Mor ((τ `⇒ σ) `× τ) σ
   `ƛ   : Mor (τ `× σ) ρ → Mor τ (σ `⇒ ρ)
 
   `ƛβ : `ev `∘ (`ƛ f `∘ `π₁ `, `id `∘ `π₂) ≡ f
-  `ƛη : f ≡ `ƛ (`ev `∘ (f `∘ `π₁ `, `id `∘ `π₂))
+  `ƛη : `ƛ (`ev `∘ (f `∘ `π₁ `, `id `∘ `π₂)) ≡ f
 
   squash : is-set (Mor τ σ)
 ```
@@ -146,7 +146,7 @@ module _ where
   Free-products a b .has-is-product .⟨_,_⟩ f g = f `, g
   Free-products a b .has-is-product .π₁∘⟨⟩ = `π₁β
   Free-products a b .has-is-product .π₂∘⟨⟩ = `π₂β
-  Free-products a b .has-is-product .unique p q = `πη ∙ ap₂ _`,_ p q
+  Free-products a b .has-is-product .unique p q = ap₂ _`,_ (sym p) (sym q) ∙ `πη
 
   Free-terminal : Terminal Free-ccc
   Free-terminal .top    = `⊤
@@ -162,7 +162,7 @@ module _ where
   Free-closed .has-exp A B .ev = `ev
   Free-closed .has-exp A B .has-is-exp .ƛ = `ƛ
   Free-closed .has-exp A B .has-is-exp .commutes m = `ƛβ
-  Free-closed .has-exp A B .has-is-exp .unique m' x = `ƛη ∙ ap `ƛ x
+  Free-closed .has-exp A B .has-is-exp .unique m' x = ap `ƛ (sym x) ∙ `ƛη
 
 private
   module Syn = Cartesian-category Free-cartesian
@@ -308,16 +308,13 @@ Cartesian closed category.
 
 ```agda
     go (`πη {f = f} i) = want i where
-      have : PathP (λ i → Hom[ Syn.⟨⟩-unique refl refl i ] _ _) (go f) ⟨ π₁' ∘' go f , π₂' ∘' go f ⟩'
-      have = ⟨⟩'-unique {other' = go f} refl refl
-
-      want : PathP (λ i → Hom[ `πη i ] _ _) (go f) ⟨ π₁' ∘' go f , π₂' ∘' go f ⟩'
-      want = cast[] have
+      want : PathP (λ i → Hom[ `πη i ] _ _) ⟨ π₁' ∘' go f , π₂' ∘' go f ⟩' (go f)
+      want = cast[] (⟨⟩'-unique {p1 = refl} {refl} refl refl)
     go (`ƛβ {f = f} i) = want i where
       want : PathP (λ i → Hom[ `ƛβ {f = f} i ] _ _) (ev' ∘' ⟨ ƛ' (go f) ∘' π₁' , id' ∘' π₂' ⟩') (go f)
       want = cast[] (commutes' (go f))
     go (`ƛη {f = f} i) = want i where
-      want : PathP (λ i → Hom[ `ƛη {f = f} i ] _ _) (go f) (ƛ' (ev' ∘' ⟨ go f ∘' π₁' , id' ∘' π₂' ⟩'))
+      want : PathP (λ i → Hom[ `ƛη {f = f} i ] _ _) (ƛ' (ev' ∘' ⟨ go f ∘' π₁' , id' ∘' π₂' ⟩')) (go f)
       want = cast[] (ƛ'-unique {p = refl} (go f) refl)
 
     go (squash x y p q i j) = is-set→squarep (λ i j → Hom[ squash x y p q i j ]-set (Ty-elim _) (Ty-elim _)) (λ i → go x) (λ i → go (p i)) (λ i → go (q i)) (λ i → go y) i j
@@ -1015,7 +1012,7 @@ ren-⟦⟧ⁿ (keep ρ) (pop v) = Syn.pushl (ren-⟦⟧ⁿ ρ v) ∙ sym (Syn.pu
 
 ren-⟦⟧ₛ ρ (var x) = ren-⟦⟧ⁿ ρ x
 ren-⟦⟧ₛ ρ (app f x) = ap₂ _`∘_ refl
-  (ap₂ _`,_ (ren-⟦⟧ₛ ρ f) (ren-⟦⟧ₙ ρ x) ∙ sym (Syn.⟨⟩∘ _))
+  (ap₂ _`,_ (ren-⟦⟧ₛ ρ f) (ren-⟦⟧ₙ ρ x) ∙ Syn.⟨⟩∘ _)
   ∙ Syn.pulll refl
 ren-⟦⟧ₛ ρ (fstₙ t)  = Syn.pushr (ren-⟦⟧ₛ ρ t)
 ren-⟦⟧ₛ ρ (sndₙ t)  = Syn.pushr (ren-⟦⟧ₛ ρ t)
@@ -1023,12 +1020,12 @@ ren-⟦⟧ₛ ρ (hom x a) = Syn.pushr (ren-⟦⟧ₙ ρ a)
 
 ren-⟦⟧ₙ ρ (lam t) =
     ap `ƛ (ren-⟦⟧ₙ (keep ρ) t)
-  ∙ sym (Cartesian-closed.unique Free-closed _ (ap₂ _`∘_ refl rem₁ ∙ Syn.pulll `ƛβ ∙ ap₂ _`∘_ refl (ap₂ _`,_ refl `idl)))
+  ∙ Cartesian-closed.unique Free-closed _ (ap₂ _`∘_ refl rem₁ ∙ Syn.pulll `ƛβ ∙ ap₂ _`∘_ refl (ap₂ _`,_ refl `idl))
   where
   rem₁ : (⟦ lam t ⟧ₙ `∘ ⟦ ρ ⟧ʳ) Syn.⊗₁ `id ≡ (⟦ lam t ⟧ₙ Syn.⊗₁ `id) `∘ ⟦ ρ ⟧ʳ Syn.⊗₁ `id
   rem₁ = Bifunctor.lmap-∘ (Curry Syn.×-functor) _ _
 
-ren-⟦⟧ₙ ρ (pair a b) = ap₂ _`,_ (ren-⟦⟧ₙ ρ a) (ren-⟦⟧ₙ ρ b) ∙ sym (Syn.⟨⟩∘ _)
+ren-⟦⟧ₙ ρ (pair a b) = ap₂ _`,_ (ren-⟦⟧ₙ ρ a) (ren-⟦⟧ₙ ρ b) ∙ Syn.⟨⟩∘ _
 ren-⟦⟧ₙ ρ (ne x) = ren-⟦⟧ₛ ρ x
 ren-⟦⟧ₙ ρ unit   = `!-η _
 
@@ -1037,7 +1034,9 @@ ren-⟦⟧ʳ stop     g        = sym `idr
 ren-⟦⟧ʳ (drop f) g        = Syn.pushl (ren-⟦⟧ʳ f g)
 ren-⟦⟧ʳ (keep f) stop     = sym `idl
 ren-⟦⟧ʳ (keep f) (drop g) = Syn.pushl (ren-⟦⟧ʳ f g) ∙ sym (Syn.pullr `π₁β)
-ren-⟦⟧ʳ (keep f) (keep g) = sym (Syn.⟨⟩-unique (Syn.pulll `π₁β ∙ Syn.pullr `π₁β ∙ Syn.pulll (sym (ren-⟦⟧ʳ f g))) (Syn.pulll `π₂β ∙ `π₂β))
+ren-⟦⟧ʳ (keep f) (keep g) = Syn.⟨⟩-unique
+  (Syn.pulll `π₁β ∙ Syn.pullr `π₁β ∙ Syn.pulll (sym (ren-⟦⟧ʳ f g)))
+  (Syn.pulll `π₂β ∙ `π₂β)
 
 
 ren-var-∘ʳ : ∀ {Γ Δ Θ} (ρ : Ren Γ Δ) (σ : Ren Δ Θ) (x : Var Θ τ) → ren-var (ρ ∘ʳ σ) x ≡ ren-var ρ (ren-var σ x)
@@ -1181,9 +1180,9 @@ open Cartesian-functor using (pres-products ; pres-terminal)
 
 Tm-cartesian : Cartesian-functor Tm Free-cartesian PSh-cartesian
 Tm-cartesian .pres-products a b = Sem.make-invertible
-  (NT (elim! (λ a p q → p `, q)) λ x y f → ext λ p q → sym (Syn.⟨⟩∘ _))
-  (ext (λ i a b → `π₁β ,ₚ `π₂β))
-  (ext (λ i x → sym `πη))
+  (NT (elim! (λ a p q → p `, q)) λ x y f → ext λ p q → Syn.⟨⟩∘ _)
+  (ext λ i a b → `π₁β ,ₚ `π₂β)
+  (ext λ i x → `πη)
 Tm-cartesian .pres-terminal x .centre  = NT (λ _ _ → `!) (λ x y f → ext λ a → `!-η _)
 Tm-cartesian .pres-terminal x .paths a = ext λ i x → `!-η _
 ```
@@ -1348,8 +1347,8 @@ triangle for the normalisation algebras we assumed.
 ```agda
   com₀ x =
     x.⟦ x.reflect (fstₙ x) ⟧ₚ `, y.⟦ y.reflect (sndₙ x) ⟧ₚ ≡⟨ ap₂ _`,_ (x.com₀ _) (y.com₀ _) ⟩
-    `π₁ `∘ ⟦ x ⟧ₛ `, `π₂ `∘ ⟦ x ⟧ₛ                         ≡˘⟨ Syn.⟨⟩∘ _ ⟩
-    (`π₁ `, `π₂) `∘ ⟦ x ⟧ₛ                                 ≡⟨ Syn.eliml (ap₂ _`,_ (sym `idr) (sym `idr) ∙ sym `πη) ⟩
+    `π₁ `∘ ⟦ x ⟧ₛ `, `π₂ `∘ ⟦ x ⟧ₛ                         ≡⟨ Syn.⟨⟩∘ _ ⟩
+    (`π₁ `, `π₂) `∘ ⟦ x ⟧ₛ                                 ≡⟨ Syn.eliml (ap₂ _`,_ (sym `idr) (sym `idr) ∙ `πη) ⟩
     ⟦ x ⟧ₛ                                                 ∎
 
   com₁ (a , b) = ap₂ _`,_ (x.com₁ _) (y.com₁ _)
@@ -1443,7 +1442,7 @@ algebra on.
   arr .com₁ (φ , f , α) = sym $
     `ƛ ⟦ y.reify (f .η _ (drop stop , x.reflect (var stop))) ⟧ₙ   ≡⟨ ap `ƛ (sym (y.com₁ _) ∙ sym (unext α _ _ _)) ⟩
     `ƛ (`ev `∘ (φ `∘ `id `∘ `π₁ `, x.⟦ x.reflect (var stop) ⟧ₚ))  ≡⟨ ap `ƛ (ap₂ (λ a b → `ev `∘ (a `, b)) (ap (φ `∘_) `idl) (x.com₀ _ ∙ sym `idl)) ⟩
-    `ƛ (`ev `∘ (φ `∘ `π₁ `, `id `∘ `π₂))                          ≡⟨ sym `ƛη ⟩
+    `ƛ (`ev `∘ (φ `∘ `π₁ `, `id `∘ `π₂))                          ≡⟨ `ƛη ⟩
     φ                                                             ∎
 ```
 
@@ -1549,8 +1548,12 @@ idsec ∅       = lift tt
 idsec (Γ , x) = (⟦ ⟦ Γ ⟧ᶜ ⟧₀ .dom ⟪ drop stop ⟫ idsec Γ) , Nfa.reflect (normalisation x) (var stop)
 
 idsecβ ∅       = `!-η _
-idsecβ (Γ , x) = ap₂ _`,_ (Γ'.map .is-natural _ _ _ ·ₚ _ ∙ ap₂ _`∘_ (idsecβ Γ) refl ∙ Syn.cancell `idl ∙ Syn.intror refl) (Nfa.com₀ (normalisation x) (var stop) ∙ Syn.intror refl) ∙ sym `πη
-  where module Γ' = /-Obj ⟦ ⟦ Γ ⟧ᶜ ⟧₀
+idsecβ (Γ , x) =
+  let open module Γ' = /-Obj ⟦ ⟦ Γ ⟧ᶜ ⟧₀ in
+    ap₂ _`,_
+      (Γ'.map .is-natural _ _ _ ·ₚ _ ∙ ap₂ _`∘_ (idsecβ Γ) refl ∙ Syn.cancell `idl ∙ Syn.intror refl)
+      (Nfa.com₀ (normalisation x) (var stop) ∙ Syn.intror refl)
+    ∙ `πη
 ```
 -->
 

@@ -158,7 +158,7 @@ The universal property of the pushout is easy to verify.
   Groups-pushout .universal comm .snd .pres-⋆ _ _ = refl
   Groups-pushout .universal∘i₁ = ext λ _ → refl
   Groups-pushout .universal∘i₂ = ext λ _ → refl
-  Groups-pushout .unique {Q = Q} {colim' = u} comm₁ comm₂ = ext $
+  Groups-pushout .unique {Q = Q} {colim' = u} comm₁ comm₂ = sym $ ext $
     Amalgamated-elim-prop (λ _ → hlevel 1)
       (λ x p y q → u .snd .pres-⋆ x y ∙ ap₂ Q._⋆_ p q)
       (λ x p → pres-inv (u .snd) ∙ ap Q._⁻¹ p)

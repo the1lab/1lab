@@ -110,8 +110,8 @@ must lift it.
 This is the unique group homomorphism $\ZZ \to G$ that sends $1$ to $x$.
 
 ```agda
-    pow-unique : (g : Groups.Hom (Lift-group ℓ ℤ) G) → g · 1 ≡ x → g ≡ pow-hom
-    pow-unique g g1≡x = ext λ x → p x ∙ sym (q x) where
+    pow-unique : (g : Groups.Hom (Lift-group ℓ ℤ) G) → g · 1 ≡ x → pow-hom ≡ g
+    pow-unique g g1≡x = ext λ x → q x ∙ sym (p x) where
       pow' = ℤ.map-out unit ((_⋆ x) , ⋆-equivr x)
       p : ∀ x → g · lift x ≡ pow' x
       p = ℤ.map-out-unique (λ i → g · lift i) (pres-id (g .snd)) λ y →
@@ -126,7 +126,7 @@ This is the unique group homomorphism $\ZZ \to G$ that sends $1$ to $x$.
   open pow public
 
   pow-unique₂ : (g h : Groups.Hom (Lift-group ℓ ℤ) G) → g · 1 ≡ h · 1 → g ≡ h
-  pow-unique₂ g h p = pow-unique (g · 1) g refl ∙ sym (pow-unique (g · 1) h (sym p))
+  pow-unique₂ g h p = sym (pow-unique (g · 1) g refl) ∙ pow-unique (g · 1) h (sym p)
 ```
 
 <details>

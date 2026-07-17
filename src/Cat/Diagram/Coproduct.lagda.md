@@ -51,17 +51,17 @@ $Q$. This is best explained by a commutative diagram:
       []∘ι₁ : ∀ {Q} {inj0 : Hom A Q} {inj1} → [ inj0 , inj1 ] ∘ ι₁ ≡ inj0
       []∘ι₂ : ∀ {Q} {inj0 : Hom A Q} {inj1} → [ inj0 , inj1 ] ∘ ι₂ ≡ inj1
 
-      unique : ∀ {Q} {inj0 : Hom A Q} {inj1}
-            → {other : Hom P Q}
-            → other ∘ ι₁ ≡ inj0
-            → other ∘ ι₂ ≡ inj1
-            → other ≡ [ inj0 , inj1 ]
+      unique
+        : ∀ {Q} {inj0 : Hom A Q} {inj1} {other : Hom P Q}
+        → other ∘ ι₁ ≡ inj0 → other ∘ ι₂ ≡ inj1
+        → [ inj0 , inj1 ] ≡ other
 
-    unique₂ : ∀ {Q} {inj0 : Hom A Q} {inj1}
-            → ∀ {o1} (p1 : o1 ∘ ι₁ ≡ inj0) (q1 : o1 ∘ ι₂ ≡ inj1)
-            → ∀ {o2} (p2 : o2 ∘ ι₁ ≡ inj0) (q2 : o2 ∘ ι₂ ≡ inj1)
-            → o1 ≡ o2
-    unique₂ p1 q1 p2 q2 = unique p1 q1 ∙ sym (unique p2 q2)
+    unique₂
+      : ∀ {Q} {inj0 : Hom A Q} {inj1}
+      → ∀ {o1} (p1 : o1 ∘ ι₁ ≡ inj0) (q1 : o1 ∘ ι₂ ≡ inj1)
+      → ∀ {o2} (p2 : o2 ∘ ι₁ ≡ inj0) (q2 : o2 ∘ ι₂ ≡ inj1)
+      → o1 ≡ o2
+    unique₂ p1 q1 p2 q2 = sym (unique p1 q1) ∙ unique p2 q2
 ```
 
 A coproduct of $A$ and $B$ is an explicit choice of coproduct diagram:
@@ -88,12 +88,15 @@ module _ {o ℓ} {C : Precategory o ℓ} where
   is-coproduct-is-prop {X = X} {Y = Y} {i₁ = i₁} {i₂} x y = q where
     open is-coproduct
     p : Path (∀ {P'} → Hom X P' → Hom Y P' → _) (x .[_,_]) (y .[_,_])
-    p i inj0 inj1 = y .unique {inj0 = inj0} {inj1} (x .[]∘ι₁) (x .[]∘ι₂) i
+    p i inj0 inj1 = y .unique {inj0 = inj0} {inj1} (x .[]∘ι₁) (x .[]∘ι₂) (~ i)
     q : x ≡ y
     q i .[_,_] = p i
     q i .[]∘ι₁ {inj0 = inj0} {inj1} = is-prop→pathp (λ i → Hom-set _ _ (p i inj0 inj1 ∘ i₁) inj0) (x .[]∘ι₁) (y .[]∘ι₁) i
     q i .[]∘ι₂ {inj0 = inj0} {inj1} = is-prop→pathp (λ i → Hom-set _ _ (p i inj0 inj1 ∘ i₂) inj1) (x .[]∘ι₂) (y .[]∘ι₂) i
-    q i .unique {inj0 = inj0} {inj1} {other} c₁ c₂ = is-prop→pathp (λ i → Hom-set _ _ other (p i inj0 inj1)) (x .unique c₁ c₂) (y .unique c₁ c₂) i
+    q i .unique {inj0 = inj0} {inj1} {other} c₁ c₂ = is-prop→pathp
+      (λ i → Hom-set _ _ (p i inj0 inj1) other)
+      (x .unique c₁ c₂)
+      (y .unique c₁ c₂) i
 
   instance
     H-Level-is-coproduct : ∀ {X Y P} {i₁ : Hom X P} {i₂ : Hom Y P} {n} → H-Level (is-coproduct C i₁ i₂) (suc n)
@@ -184,8 +187,8 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     coprod' .[_,_] qa qb = coprod .[_,_] qa qb ∘ fi.inv
     coprod' .[]∘ι₁ = pullr (lswizzle (sym f-ι₁) fi.invr) ∙ coprod .[]∘ι₁
     coprod' .[]∘ι₂ = pullr (lswizzle (sym f-ι₂) fi.invr) ∙ coprod .[]∘ι₂
-    coprod' .unique p q = sym $ rswizzle
-      (sym (coprod .unique (pullr f-ι₁ ∙ p) (pullr f-ι₂ ∙ q))) fi.invl
+    coprod' .unique p q = rswizzle
+      (coprod .unique (pullr f-ι₁ ∙ p) (pullr f-ι₂ ∙ q)) fi.invl
 
   Coproduct-is-prop
     : ∀ {A B}
@@ -224,11 +227,10 @@ module Binary-coproducts
   ⊕-functor : Functor (C ×ᶜ C) C
   ⊕-functor .F₀ (a , b) = a ⊕₀ b
   ⊕-functor .F₁ (f , g) = f ⊕₁ g
-  ⊕-functor .F-id = sym $ []-unique id-comm-sym id-comm-sym
-  ⊕-functor .F-∘ (f , g) (h , i) =
-    sym $ []-unique
-      (pullr []∘ι₁ ∙ extendl []∘ι₁)
-      (pullr []∘ι₂ ∙ extendl []∘ι₂)
+  ⊕-functor .F-id = []-unique id-comm-sym id-comm-sym
+  ⊕-functor .F-∘ (f , g) (h , i) = []-unique
+    (pullr []∘ι₁ ∙ extendl []∘ι₁)
+    (pullr []∘ι₂ ∙ extendl []∘ι₂)
 
   ∇ : ∀ {a} → Hom (a ⊕₀ a) a
   ∇ = [ id , id ]
@@ -248,14 +250,14 @@ module Binary-coproducts
     (cancelr []∘ι₁) (cancelr []∘ι₂)
 
   ∇-coswap : ∀ {a} → ∇ ∘ coswap ≡ ∇ {a}
-  ∇-coswap = []-unique (pullr []∘ι₁ ∙ []∘ι₂) (pullr []∘ι₂ ∙ []∘ι₁)
+  ∇-coswap = sym $ []-unique (pullr []∘ι₁ ∙ []∘ι₂) (pullr []∘ι₂ ∙ []∘ι₁)
 
   ∇-assoc : ∀ {a} → ∇ {a} ∘ (∇ {a} ⊕₁ id) ∘ ⊕-assoc ≡ ∇ ∘ (id ⊕₁ ∇)
   ∇-assoc = unique₂
     (pullr (pullr []∘ι₁) ∙ (refl⟩∘⟨ pulll []∘ι₁) ∙ pulll (pulll []∘ι₁) ∙ pullr []∘ι₁)
-    (pullr (pullr []∘ι₂) ∙ []-unique
+    (pullr (pullr []∘ι₂) ∙ sym ([]-unique
       (pullr (pullr []∘ι₁) ∙ extend-inner []∘ι₁ ∙ cancell []∘ι₁ ∙ []∘ι₂)
-      (pullr (pullr []∘ι₂) ∙ (refl⟩∘⟨ []∘ι₂) ∙ cancell []∘ι₂))
+      (pullr (pullr []∘ι₂) ∙ (refl⟩∘⟨ []∘ι₂) ∙ cancell []∘ι₂)))
     (pullr []∘ι₁ ∙ pulll []∘ι₁)
     (pullr []∘ι₂ ∙ cancell []∘ι₂)
 ```

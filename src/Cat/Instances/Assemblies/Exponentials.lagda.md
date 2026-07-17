@@ -152,7 +152,7 @@ Assemblies-exp A B .B^A = A ⇒Asm B
 Assemblies-exp A B .ev = asm-ev
 Assemblies-exp A B .has-is-exp .ƛ = curry-asm
 Assemblies-exp A B .has-is-exp .commutes m = ext λ x y → refl
-Assemblies-exp A B .has-is-exp .unique m' p = ext λ x y → ap map p · (x , y)
+Assemblies-exp A B .has-is-exp .unique m' p = ext λ x y → sym p ·ₚ (x , y)
 
 Assemblies-cc : Cartesian-closed (Assemblies 𝔸 ℓA) _
 Assemblies-cc = record { has-exp = Assemblies-exp }

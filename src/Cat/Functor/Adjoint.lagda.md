@@ -403,7 +403,7 @@ this to an *operations-and-properties* presentation, we could say that:
       unique
         : ∀ {Y} {f : D.Hom X (U.₀ Y)} (g : C.Hom free Y)
         → U.₁ g D.∘ unit ≡ f
-        → g ≡ fold f
+        → fold f ≡ g
 ```
 
 <!--
@@ -412,17 +412,17 @@ this to an *operations-and-properties* presentation, we could say that:
       fold-natural
         : ∀ {Y Y'} (f : C.Hom Y Y') (g : D.Hom X (U.₀ Y))
         → fold (U.₁ f D.∘ g) ≡ f C.∘ fold g
-      fold-natural f g = sym (unique (f C.∘ fold g) (U.popr commute))
+      fold-natural f g = unique (f C.∘ fold g) (U.popr commute)
 
       fold-unit : fold unit ≡ C.id
-      fold-unit = sym (unique C.id (D.eliml U.F-id))
+      fold-unit = unique C.id (D.eliml U.F-id)
 
       unique₂
         : ∀ {B} {f : D.Hom X (U.₀ B)} (g₁ g₂ : C.Hom free B)
         → U.₁ g₁ D.∘ unit ≡ f
         → U.₁ g₂ D.∘ unit ≡ f
         → g₁ ≡ g₂
-      unique₂ g₁ g₂ p q = unique g₁ p ∙ sym (unique g₂ q)
+      unique₂ g₁ g₂ p q = sym (unique g₁ p) ∙ unique g₂ q
 ```
 -->
 
@@ -435,7 +435,7 @@ the functor $\cD(X,U(-))$.
     fold-is-equiv : ∀ B → is-equiv (fold {B})
     fold-is-equiv B = is-iso→is-equiv λ where
       .is-iso.from f → U.₁ f D.∘ unit
-      .is-iso.rinv _ → sym (unique _ refl)
+      .is-iso.rinv _ → unique _ refl
       .is-iso.linv _ → commute
 ```
 
@@ -486,12 +486,12 @@ so we will omit the details.</summary>
     folds
       : ∀ {Y} (f : D.Hom X (U.₀ Y))
       → PathP (λ i → C.Hom (p i) Y) (x .fold f) (y .fold f)
-    folds {Y} f = to-pathp $
+    folds {Y} f = to-pathp⁻ $
       let
-        it : U.₁ (x .fold f) D.∘ x .unit
-           ≡ U.₁ (transport (λ i → C.Hom (p i) Y) (x .fold f)) D.∘ y .unit
-        it i = U.₁ (coe0→i (λ i → C.Hom (p i) Y) i (x .fold f)) D.∘ q i
-      in y .unique _ (sym it ∙ x .commute)
+        it : U.₁ (transport (λ i → C.Hom (p (~ i)) Y) (y .fold f)) D.∘ x .unit
+           ≡ U.₁ (y .fold f) D.∘ y .unit
+        it i = U.₁ (coe1→i (λ i → C.Hom (p i) Y) i (y .fold f)) D.∘ q i
+      in x .unique _ (it ∙ y .commute)
 
     r : x ≡ y
     r i .free = p i
@@ -501,7 +501,7 @@ so we will omit the details.</summary>
       (λ i → D.Hom-set _ _ (U.₁ (folds f i) D.∘ q i) f) (x .commute) (y .commute) i
     r i .unique {Y = Y} {f} = is-prop→pathp
       (λ i → Π-is-hlevel² {A = C.Hom (p i) Y} {B = λ g → U.₁ g D.∘ q i ≡ f} 1
-        λ g _ → C.Hom-set _ _ g (folds f i))
+        λ g _ → C.Hom-set _ _ (folds f i) g)
       (x .unique) (y .unique) i
 
   instance
@@ -538,8 +538,7 @@ equivalence, but it would not be very useful, either.
   free-object→universal-map fo = λ where
     .I.bot → ↓obj (fo .unit)
     .I.has⊥ x .centre  → ↓hom (D.idr _ ∙ sym (fo .commute))
-    .I.has⊥ x .paths p → ↓Hom-path _ _ refl $ sym $
-      fo .unique _ (sym (p .com) ∙ D.idr _)
+    .I.has⊥ x .paths p → ↓Hom-path _ _ refl $ fo .unique _ (sym (p .com) ∙ D.idr _)
 ```
 
 ### Free objects and adjoints
@@ -563,7 +562,7 @@ even if a functor $F(-)$ does not necessarily exist.
     left-adjoint→free-objects X .fold f  = R-adjunct F⊣U f
     left-adjoint→free-objects X .commute = L-R-adjunct F⊣U _
     left-adjoint→free-objects X .unique g p =
-      Equiv.injective (_ , L-adjunct-is-equiv F⊣U) (p ∙ sym (L-R-adjunct F⊣U _))
+      Equiv.injective (_ , L-adjunct-is-equiv F⊣U) (L-R-adjunct F⊣U _ ∙ sym p)
 ```
 
 Conversely, if $\cD$ has all free objects, then $U$ has a left adjoint.
@@ -715,8 +714,7 @@ $A$ is an initial object in $\cC$.
       : (F[⊥] : Free-object U init)
       → is-initial C (F[⊥] .free)
     free-on-initial→initial F[⊥] x .centre = F[⊥] .fold ¡
-    free-on-initial→initial F[⊥] x .paths f =
-      sym $ F[⊥] .unique f (sym (¡-unique _))
+    free-on-initial→initial F[⊥] x .paths f = F[⊥] .unique f (sym (¡-unique _))
 ```
 
 Conversely, if $\cC$ has an initial object $\bot_{\cC}$, then $\bot_{\cC}$
@@ -892,7 +890,7 @@ module _ {o h o' h'} {C : Precategory o h} {D : Precategory o' h'} where
   universal-map→free-object x .fold f = x .has⊥ (↓obj f) .centre .bot
   universal-map→free-object x .commute = sym (x .has⊥ _ .centre .com) ∙ C.idr _
   universal-map→free-object x .unique g p = ap bot
-    (sym (x .has⊥ _ .paths (↓hom (sym (p ∙ sym (C.idr _))))))
+    (x .has⊥ _ .paths (↓hom (sym (p ∙ sym (C.idr _)))))
 
   universal-maps→functor : ∀ {R} → (∀ X → Universal-morphism R X) → Functor C D
   universal-maps→functor u = free-objects→functor

@@ -176,7 +176,7 @@ category we have just constructed.
     colim .universal eta p = init (cocone _ eta p) .centre .map
     colim .factors eta p = init (cocone _ eta p) .centre .com _
     colim .unique eta p other q =
-      ap map (sym (init (cocone _ eta p) .paths (cocone-hom other q)))
+      ap map (init (cocone _ eta p) .paths (cocone-hom other q))
 ```
 
 To finish concretising the correspondence, note that this process is
@@ -203,7 +203,7 @@ invertible: From a colimit, we can extract an initial cocone.
     init .centre .map   = L.universal K.ψ K.commutes
     init .centre .com _ = L.factors K.ψ K.commutes
     init .paths f =
-      Cocone-hom-path (sym (L.unique K.ψ K.commutes (f .map) (f .com)))
+      Cocone-hom-path (L.unique K.ψ K.commutes (f .map) (f .com))
 ```
 </details>
 

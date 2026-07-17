@@ -87,7 +87,8 @@ F$ into $L$ componentwise, and these satisfy the universal property.
     lim' .commutes f = ext (sym (limf.eps .is-natural _ _ _) ∙ C.elimr limf.Ext.F-id)
     lim' .universal eta p .top = tt
     lim' .universal eta p .bot = limf.universal (λ j → eta j .bot) λ f → ap bot (p f)
-    lim' .universal eta p .com = D.elimr refl ∙ sym (flimf.unique _ _ _ λ j → F.pulll (limf.factors _ _) ∙ sym (eta j .com) ∙ D.elimr refl)
+    lim' .universal eta p .com = D.elimr refl ∙ flimf.unique _ _ _ λ j →
+      F.pulll (limf.factors _ _) ∙ sym (eta j .com) ∙ D.elimr refl
     lim' .factors eta p = ext (limf.factors _ _)
     lim' .unique eta p other q = ext (limf.unique _ _ _ λ j → ap bot (q j))
 ```

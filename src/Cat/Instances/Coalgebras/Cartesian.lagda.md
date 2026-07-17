@@ -225,9 +225,9 @@ so $\nu$ was indeed the map we were looking for!
     pb' .universal {p₁' = p₁'} {p₂'} x = factor p₁' p₂' (ap fst x)
     pb' .p₁∘universal {p₁' = p₁'} {p₂'} {p} = ext $ comm₁ p₁' p₂' (ap fst p)
     pb' .p₂∘universal {p₁' = p₁'} {p₂'} {p} = ext $ comm₂ p₁' p₂' (ap fst p)
-    pb' .unique {p₁' = p₁'} {p₂'} {p} q r = ext $ p.unique₂
-      {p = ap fst p} (ap fst q) (ap fst r)
+    pb' .unique {p₁' = p₁'} {p₂'} {p} q r = ext $ p.unique₂ {p = ap fst p}
       (comm₁ p₁' p₂' (ap fst p)) (comm₂ p₁' p₂' (ap fst p))
+      (ap fst q) (ap fst r)
 ```
 
 ```agda

@@ -87,10 +87,13 @@ through a map $u' \to a'$ (in green, marked $\exists!$).
 ```agda
   field
     universal : ∀ {u u'} (m : Hom u a) (h' : Hom[ f ∘ m ] u' b') → Hom[ m ] u' a'
-    commutes  : ∀ {u u'} (m : Hom u a) (h' : Hom[ f ∘ m ] u' b')
-              → f' ∘' universal m h' ≡ h'
-    unique    : ∀ {u u'} {m : Hom u a} {h' : Hom[ f ∘ m ] u' b'}
-              → (m' : Hom[ m ] u' a') → f' ∘' m' ≡ h' → m' ≡ universal m h'
+    commutes
+      : ∀ {u u'} (m : Hom u a) (h' : Hom[ f ∘ m ] u' b')
+      → f' ∘' universal m h' ≡ h'
+    unique
+      : ∀ {u u'} {m : Hom u a} {h' : Hom[ f ∘ m ] u' b'} (m' : Hom[ m ] u' a')
+      → f' ∘' m' ≡ h'
+      → universal m h' ≡ m'
 ```
 Given a "right corner" like that of the diagram below, and note that the
 input data consists of $a$, $b$, $f : a \to b$ and $b'$ over $a$,
@@ -128,13 +131,14 @@ composite, rather than displayed directly over a composite.
     universalp {u = u} p q r h' i =
       universal' (is-set→squarep (λ _ _ → Hom-set u b) (ap (f ∘_) q) p r refl i) h'
 
-    uniquep : ∀ {u u'} {m₁ m₂ : Hom u a} {k : Hom u b}
-            → (p : f ∘ m₁ ≡ k) (q : m₁ ≡ m₂) (r : f ∘ m₂ ≡ k)
-            → {h' : Hom[ k ] u' b'}
-            → (m' : Hom[ m₁ ] u' a')
-            → f' ∘' m' ≡[ p ] h' → m' ≡[ q ] universal' r h'
-    uniquep p q r {h' = h'} m' s =
-      to-pathp[]⁻ (unique m' (from-pathp[]⁻ s) ∙ from-pathp[]⁻ (universalp p q r h'))
+    uniquep
+      : ∀ {u u'} {m₁ m₂ : Hom u a} {k : Hom u b}
+      → (p : f ∘ m₁ ≡ k) (q : m₁ ≡ m₂) (r : f ∘ m₂ ≡ k)
+      → {h' : Hom[ k ] u' b'} (m' : Hom[ m₁ ] u' a')
+      → f' ∘' m' ≡[ p ] h'
+      → universal' r h' ≡[ sym q ] m'
+    uniquep p q r {h' = h'} m' s = to-pathp[] $
+      from-pathp[] (universalp r (sym q) p h') ∙ unique _ (from-pathp[]⁻ s)
 
     uniquep₂
       : ∀ {u u'} {m₁ m₂ : Hom u a} {k : Hom u b}
@@ -144,9 +148,9 @@ composite, rather than displayed directly over a composite.
       → f' ∘' m₂' ≡[ r ] h'
       → m₁' ≡[ q ] m₂'
     uniquep₂ {u' = u'} p q r m₁' m₂' α β = to-pathp[]⁻ $
-         unique m₁' (from-pathp[]⁻ α)
+         sym (unique m₁' (from-pathp[]⁻ α))
       ∙∙ from-pathp[]⁻ (universalp p q r _)
-      ∙∙ ap hom[] (sym (unique m₂' (from-pathp[]⁻ β)))
+      ∙∙ ap hom[] (unique m₂' (from-pathp[]⁻ β))
 ```
 
 Furthermore, if $f'' : a'' \to_{f} b'$ is also displayed over $f$,
@@ -168,7 +172,7 @@ every cartesian map is [weakly cartesian].
     : ∀ {x'} {g' : Hom[ f ] x' b'}
     → (h' : Hom[ id ] x' a')
     → f' ∘' h' ≡[ idr _ ] g'
-    → h' ≡ universalv g'
+    → universalv g' ≡ h'
   uniquev h' p = uniquep (idr f) refl (idr f) h' p
 
   uniquev₂
@@ -204,14 +208,15 @@ is-cartesian-is-prop {f' = f'} cart cart' = worker where
   open is-cartesian
 
   worker : cart ≡ cart'
-  worker i .universal m h' = cart' .unique
-    (cart .universal m h')
-    (cart .commutes _ _) i
+  worker i .universal m h' = cart .unique
+    (cart' .universal m h')
+    (cart' .commutes _ _) i
   worker i .commutes m h' = is-set→squarep (λ _ _ → Hom[ _ ]-set _ _)
-    (ap (f' ∘'_) (cart' .unique _ _)) (cart .commutes m h')
+    (ap (f' ∘'_) (cart .unique _ _))
+    (cart .commutes m h')
     (cart' .commutes m h') refl i
   worker i .unique m' p = is-set→squarep (λ _ _ → Hom[ _ ]-set _ _)
-    refl (cart .unique m' p) (cart' .unique m' p) (cart' .unique _ _) i
+    (cart .unique _ _) (cart .unique m' p) (cart' .unique m' p) refl i
 ```
 </details>
 
@@ -301,7 +306,7 @@ cartesian-∘ {f = f} {g = g} {f' = f'} {g' = g'} f-cart g-cart = fg-cart where
     f' ∘' f'.universal' _ h'                          ≡[]⟨ f'.commutesp (assoc f g m) h' ⟩
     h'                                                ∎[]
   fg-cart .is-cartesian.unique {m = m} {h' = h'} m' p =
-    g'.unique m' $ f'.uniquep (assoc _ _ _) _ _ (g' ∘' m') $ begin[]
+    g'.unique m' $ symP $ f'.uniquep (assoc _ _ _) _ _ (g' ∘' m') $ begin[]
       f' ∘' g' ∘' m'   ≡[]⟨ assoc' f' g' m' ⟩
       (f' ∘' g') ∘' m' ≡[]⟨ p ⟩
       h'               ∎[]
@@ -325,8 +330,7 @@ cartesian-id : ∀ {x x'} → is-cartesian id (id' {x} {x'})
 cartesian-id .is-cartesian.universal m h' = hom[ idl m ] h'
 cartesian-id .is-cartesian.commutes m h' =
   from-pathp[]⁻ (idl' _) ∙ hom[]-∙ _ _ ∙ liberate _
-cartesian-id .is-cartesian.unique m' p =
-  from-pathp[]⁻ (symP $ idl' _) ∙ weave _ _ _ p
+cartesian-id .is-cartesian.unique m' p = ap hom[] (sym p) ∙ from-pathp[] (idl' _)
 
 idcart : ∀ {x} {x' : Ob[ x ]} → Cartesian-morphism id x' x'
 idcart .Cartesian-morphism.hom' = id'
@@ -354,9 +358,9 @@ invertible→cartesian {f = f} {f' = f'} f-inv f'-inv = f-cart where
     f' ∘' f'.inv' ∘' h'         ≡[]⟨ cancell[] _ f'.invl' ⟩
     h'                          ∎[]
   f-cart .is-cartesian.unique {h' = h'} m' p = begin[]
-    m'                    ≡[]⟨ introl[] f.invr f'.invr' ∙[] pullr[] _ p ⟩
-    f'.inv' ∘' h'         ≡[]⟨ wrap (cancell f.invr) ⟩
-    hom[] (f'.inv' ∘' h') ∎[]
+    hom[] (f'.inv' ∘' h')  ≡[]⟨ unwrap (cancell f.invr) ⟩
+    f'.inv' ∘' h'          ≡[]⟨ pushr[] _ (sym p) ∙[] eliml[] _ f'.invr' ⟩
+    m'                     ∎[]
 ```
 
 <!--
@@ -505,7 +509,7 @@ module
           f' ∘' φ.section' ∘' m' ≡[]⟨ pulll[] _ (symP (pre-section[] φ-sect factor)) ⟩
           f'' ∘' m'              ≡[]⟨ p ⟩
           h'                     ∎[]
-      in from-pathp[]⁻ $ post-section' φ-sect $
+      in from-pathp[] $ symP $ post-section' φ-sect $
         f.uniquep₂ _ (idl m) refl _ _ lemma (f.commutes m h')
 ```
 
@@ -606,7 +610,7 @@ postcompose-equiv→cartesian
 postcompose-equiv→cartesian f' eqv = record where
   universal m h' = equiv→inverse eqv h'
   commutes  m h' = equiv→counit eqv h'
-  unique m' p = sym (equiv→unit eqv m') ∙ ap (equiv→inverse eqv) p
+  unique m' p    = ap (equiv→inverse eqv) (sym p) ∙ equiv→unit eqv m'
 
 cartesian→postcompose-equiv
   : ∀ {x y z x' y' z'} {f : Hom y z} {g : Hom x y} {f' : Hom[ f ] y' z'}
@@ -616,7 +620,7 @@ cartesian→postcompose-equiv cart = is-iso→is-equiv record where
   open is-cartesian cart
   from g = universal _ g
   rinv g = commutes _ g
-  linv g = sym (unique g refl)
+  linv g = unique g refl
 ```
 
 

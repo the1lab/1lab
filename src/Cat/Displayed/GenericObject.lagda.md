@@ -139,11 +139,11 @@ complexity of this sentence is a bit high, so please refer to the code:
       hom[] ((π* _ _ ∘' viso.from' x') ∘' (viso.to' x' ∘' π*.universal _ _))     ≡⟨ weave _ _ refl (cancel-inner[] _ (viso.invr' x')) ⟩
       hom[] (π* _ _ ∘' π*.universal _ _)                                         ≡⟨ shiftl _ (π*.commutes _ _) ⟩
       h' ∎
-    gobj .classify-cartesian x' .is-cartesian.unique {m = m} {h' = h'} m' p =
+    gobj .classify-cartesian x' .is-cartesian.unique {m = m} {h' = h'} m' p = sym $
       m'                                                            ≡⟨ shiftr (sym (idl _) ∙ sym (idl _)) (insertl' _ (viso.invl' x')) ⟩
       hom[] (viso.to' x' ∘' viso.from' x' ∘' m')                    ≡⟨ reindex _ _ ∙ sym (hom[]-∙ (idl _) (idl _))  ∙ ap hom[] (unwhisker-r (idl _) (idl _)) ⟩
-      hom[] (viso.to' x' ∘' ⌜ hom[ idl _ ] (viso.from' x' ∘' m') ⌝) ≡⟨ ap! (π*.unique _ (whisker-r _ ∙ assoc[] ∙ unwhisker-l (ap (_∘ m) (idr _)) _ ∙ p)) ⟩
-      hom[] (viso.to' x' ∘' π*.universal _ h') ∎
+      hom[] (viso.to' x' ∘' ⌜ hom[ idl _ ] (viso.from' x' ∘' m') ⌝) ≡˘⟨ ap¡ (π*.unique _ (whisker-r _ ∙ assoc[] ∙ unwhisker-l (ap (_∘ m) (idr _)) _ ∙ p)) ⟩
+      hom[] (viso.to' x' ∘' π*.universal _ h')                      ∎
 ```
 -->
 

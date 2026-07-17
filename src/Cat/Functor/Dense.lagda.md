@@ -81,7 +81,7 @@ the induced [[nerve]] functor is fully faithful.
     invr f = ext λ x i → is-dense.factors _ {j = ↓obj i} _ _
 
     invl : ∀ {x y} (f : D.Hom x y) → inv (Nerve F .F₁ f) ≡ f
-    invl f = sym $ is-dense.unique _ _ _ f (λ _ → refl)
+    invl f = is-dense.unique _ _ _ f (λ _ → refl)
 ```
 
 Another way of putting this is that probes by a dense subcategory are
@@ -114,6 +114,6 @@ enough to tell morphisms (and so objects) in the ambient category apart.
       .η          i h   → eta (↓obj h)
       .is-natural x y f → ext λ h → sym (p (↓hom (D.introl refl)))
     mk .factors eta p = unext (nrv.ε _) _ _ ∙ ap eta (↓Obj-path _ _ refl refl refl)
-    mk .unique eta p other x = nrv.injective₂ (ext (λ i h → x (↓obj h))) (nrv.ε _)
+    mk .unique eta p other x = nrv.injective₂ (nrv.ε _) (ext λ i h → x (↓obj h))
 ```
 -->

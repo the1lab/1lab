@@ -112,10 +112,10 @@ Simple-ct-fibration ct u Y .x' = Y
 Simple-ct-fibration ct u Y .lifting = π₂
 Simple-ct-fibration ct u Y .cartesian .universal _ h = h
 Simple-ct-fibration ct u Y .cartesian .commutes g h = π₂∘⟨⟩
-Simple-ct-fibration ct u Y .cartesian .unique {m = g} {h' = h} h' p =
+Simple-ct-fibration ct u Y .cartesian .unique {m = g} {h' = h} h' p = sym $
   h'                   ≡˘⟨ π₂∘⟨⟩ ⟩
   π₂ ∘ ⟨ g ∘ π₁ , h' ⟩ ≡⟨ p ⟩
-  h ∎
+  h                    ∎
 ```
 
 # Embeddings

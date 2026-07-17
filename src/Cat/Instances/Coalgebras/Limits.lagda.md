@@ -150,7 +150,7 @@ commutativity condition we remarked was sufficient above; we're done!
       (λ j → pulll (phi .η j .snd) ∙ pullr (ν-β eta nat))
     mk .factors eta nat = ext (ν-β eta nat)
     mk .unique eta nat other comm = ext (l.unique₂ _
-      (λ f → ap fst (nat f)) (λ j → ap fst (comm j)) (λ j → ν-β eta nat))
+      (λ f → ap fst (nat f)) (λ j → ν-β eta nat) (λ j → ap fst (comm j)))
 
     abstract
       fixup : ∀ {j} → mk .ψ j ≡ phi .η j

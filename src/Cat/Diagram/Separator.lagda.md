@@ -287,13 +287,10 @@ This follows immediately from the universal property of equalisers!
 
 ```agda
     equ-invertible : is-invertible Eq.equ
-    equ-invertible =
-      f∘-conservative $
-      is-equiv→is-invertible $
-      is-iso→is-equiv $ iso
-        (λ e → Eq.universal (p e))
-        (λ e → Eq.factors)
-        (λ h → sym (Eq.unique refl))
+    equ-invertible = f∘-conservative $ is-equiv→is-invertible $ is-iso→is-equiv $ iso
+      (λ e → Eq.universal (p e))
+      (λ e → Eq.factors)
+      (λ h → Eq.unique refl)
 ```
 
 A similar line of argument lets us generalize this result to separating
@@ -318,13 +315,11 @@ equalisers+jointly-conservative→separating-family
     module Eq = Equaliser (equalisers f g)
 
     equ-invertible : is-invertible Eq.equ
-    equ-invertible =
-      fᵢ∘-conservative λ i →
-      is-equiv→is-invertible $
-      is-iso→is-equiv $ iso
+    equ-invertible = fᵢ∘-conservative λ i →
+      is-equiv→is-invertible $ is-iso→is-equiv $ iso
         (λ eᵢ → Eq.universal (p eᵢ))
         (λ eᵢ → Eq.factors)
-        (λ h → sym (Eq.unique refl))
+        (λ h → Eq.unique refl)
 ```
 </details>
 
@@ -433,7 +428,7 @@ record is-dense-separator (s : Ob) : Type (o ⊔ ℓ) where
       → {eta : Hom s x → Hom s y}
       → (h : Hom x y)
       → (∀ (e : Hom s x) → h ∘ e ≡ eta e)
-      → h ≡ universal eta
+      → universal eta ≡ h
 ```
 
 As the name suggests, dense separators are separators: this follows
@@ -445,7 +440,7 @@ directly from the uniqueness of the universal map.
     → {f g : Hom x y}
     → (∀ (e : Hom s x) → f ∘ e ≡ g ∘ e)
     → f ≡ g
-  separate p = unique _ p ∙ sym (unique _ λ _ → refl)
+  separate p = sym (unique _ p) ∙ unique _ λ _ → refl
 ```
 
 <!--
@@ -467,18 +462,16 @@ $\cC(S,-)$ is [[fully faithful]].
     is-iso→is-equiv $ iso
       (dense .universal)
       (λ eta → ext λ e → dense .commute)
-      (λ h → sym (dense .unique h (λ _ → refl)))
+      (λ h → dense .unique h (λ _ → refl))
 
   ff→dense-separator
     : ∀ {s}
     → is-fully-faithful (Hom-from C s)
     → is-dense-separator s
-  ff→dense-separator ff .universal =
-    equiv→inverse ff
-  ff→dense-separator ff .commute {eta = eta} {e = e} =
-    equiv→counit ff eta $ₚ e
+  ff→dense-separator ff .universal = equiv→inverse ff
+  ff→dense-separator ff .commute {eta = eta} {e = e} = equiv→counit ff eta $ₚ e
   ff→dense-separator ff .unique h p =
-    sym (equiv→unit ff h) ∙ ap (equiv→inverse ff) (ext p)
+    ap (equiv→inverse ff) (sym (ext p)) ∙ equiv→unit ff h
 ```
 
 Furthermore, if $S$ is a dense separator, then every object $X$ is a copower
@@ -558,7 +551,7 @@ record is-dense-separating-family
       → {p : ∀ {i j} (f : Hom (sᵢ j) x) (g : Hom (sᵢ i) (sᵢ j)) → eta i (f ∘ g) ≡ eta j f ∘ g}
       → (h : Hom x y)
       → (∀ (i : Idx) → (eᵢ : Hom (sᵢ i) x) → h ∘ eᵢ ≡ eta i eᵢ)
-      → h ≡ universal eta p
+      → universal eta p ≡ h
 ```
 
 Like their single-object counterparts, dense separating families are
@@ -572,8 +565,8 @@ of the universal map.
     → (∀ (i : Idx) (eᵢ : Hom (sᵢ i) x) → f ∘ eᵢ ≡ g ∘ eᵢ)
     → f ≡ g
   separate p =
-    unique {p = λ _ _ → assoc _ _ _} _ p
-    ∙ sym (unique _ λ _ _ → refl)
+    sym (unique {p = λ _ _ → assoc _ _ _} _ p)
+    ∙ unique _ λ _ _ → refl
 ```
 
 
@@ -601,7 +594,7 @@ by $S_i$ into $[\cC, \Sets]$
   jointly-ff→dense-separating-family joint-ff .commute {i = i} {eᵢ = eᵢ} =
     equiv→counit joint-ff _ ηₚ i $ₚ eᵢ
   jointly-ff→dense-separating-family joint-ff .unique h p =
-    sym (equiv→unit joint-ff h) ∙ ap (equiv→inverse joint-ff) (ext p)
+    ap (equiv→inverse joint-ff) (sym (ext p)) ∙ equiv→unit joint-ff h
 
   dense-separating-family→jointly-ff
     : is-dense-separating-family sᵢ
@@ -610,7 +603,7 @@ by $S_i$ into $[\cC, \Sets]$
     is-iso→is-equiv $ iso
       (λ α → dense .universal (α .η) (λ f g → α .is-natural _ _ g $ₚ f))
       (λ α → ext λ i eᵢ → dense .commute)
-      λ h → sym (dense .unique h λ i eᵢ → refl)
+      λ h → dense .unique h λ i eᵢ → refl
 ```
 
 We can also express this universality using the language of colimits.

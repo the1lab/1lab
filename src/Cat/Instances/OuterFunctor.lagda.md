@@ -103,10 +103,7 @@ to $\cC$, then we can construct a _constant outer-functor functor_ $\cC
   Δo : Functor C (Outer-functors ℂ)
   Δo .F₀ = ConstO prods
   Δo .F₁ = const-nato prods
-  Δo .F-id = Outer-nat-path λ px →
-    ap₂ ⟨_,_⟩ (idl _) refl
-    ∙ sym (⟨⟩∘ px)
-    ∙ eliml ⟨⟩-η
+  Δo .F-id = Outer-nat-path λ px → ap₂ ⟨_,_⟩ (idl _) refl ∙ ⟨⟩∘ px ∙ eliml ⟨⟩-η
   Δo .F-∘ f g = Outer-nat-path λ px →
     ⟨ (f ∘ g) ∘ π₁ ∘ px , π₂ ∘ px ⟩                                        ≡⟨ products! prods ⟩
     ⟨ f ∘ π₁ ∘ ⟨ g ∘ π₁ ∘ px , π₂ ∘ px ⟩ , π₂ ∘ ⟨ g ∘ π₁ ∘ px , π₂ ∘ px ⟩ ⟩ ∎

@@ -144,8 +144,8 @@ reveals that $f'$ must agree with $\widehat{f}$.
     → ( ∀ {I : Type o} (F : I → Lower-set A)
       → f~ · Lub.lub (Lower-sets-cocomplete A F) ≡ ⋃ (λ i → f~ · (F i)) )
     → (∀ x → f~ · ↓ A x ≡ f · x)
-    → f~ ≡ Lan↓
-  Lan↓-unique f~ f~-cocont f~-comm = ext λ i →
+    → Lan↓ ≡ f~
+  Lan↓-unique f~ f~-cocont f~-comm = sym $ ext λ i →
     f~ · i                                                           ≡⟨ ap· f~ (↓Coyoneda.lower-set-∫ A i) ⟩
     f~ · Lub.lub (Lower-sets-cocomplete A (↓Coyoneda.diagram A i))   ≡⟨ f~-cocont (↓Coyoneda.diagram A i) ⟩
     ⋃ (λ j → f~ · (↓Coyoneda.diagram A i j))                         ≡⟨ ap ⋃ (funext λ j → f~-comm (j .fst) ∙ sym (Lan↓-commutes (j .fst))) ⟩

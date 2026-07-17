@@ -82,7 +82,7 @@ FinSets-omega .Subobject-classifier.generic .classifies m = record { top = λ _ 
   fb .is-pullback.universal α x = from-name m _ (happly α x) .fst
   fb .is-pullback.p₁∘universal  = ext λ a → from-name m _ _ .snd
   fb .is-pullback.p₂∘universal {p₂' = p₂'}  = ext λ a → Fin-cases {P = λ x → 0 ≡ x} refl (λ ()) (p₂' a)
-  fb .is-pullback.unique a e = ext λ x → inj m (happly a x ∙ sym (from-name m _ _ .snd))
+  fb .is-pullback.unique a e = ext λ x → inj m (from-name m _ _ .snd ∙ sym a ·ₚ x)
 ```
 
 We can show uniqueness also by cases on the cardinality of each fibre.
@@ -90,7 +90,7 @@ First, if the fibre is inhabited, then let $x'$ be the preimage of $x$;
 we then have $n(x) = n(mx') = 1$ as needed.
 
 ```agda
-FinSets-omega .Subobject-classifier.generic .unique {m = m} {nm} pb = ext uniq where
+FinSets-omega .Subobject-classifier.generic .unique {m = m} {nm} pb = sym $ ext uniq where
   uniq : ∀ x → nm x ≡ fin-name m x
   uniq x with cardinality {A = fibre (m .map) x} | enumeration {A = fibre (m .map) x} | from-name m x
   ... | suc n | e | f with (x' , α) ← f refl = ap nm (sym α) ∙ happly (pb .square) _

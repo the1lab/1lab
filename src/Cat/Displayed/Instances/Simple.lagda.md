@@ -134,11 +134,11 @@ $\langle \pi_1 , f' \rangle$ is, in fact, an inverse.
 
 ```agda
   cart .commutes m h' =
-    f' ∘ ⟨ m ∘ π₁ , π₂ ∘ ⟨⟩-inv.inv ∘ ⟨ m ∘ π₁ , h' ⟩ ⟩ ≡˘⟨ ap₂ _∘_ refl (⟨⟩-unique (pulll (π₁-inv ⟨⟩-inv) ∙ π₁∘⟨⟩) refl) ⟩
+    f' ∘ ⟨ m ∘ π₁ , π₂ ∘ ⟨⟩-inv.inv ∘ ⟨ m ∘ π₁ , h' ⟩ ⟩ ≡⟨ ap₂ _∘_ refl (⟨⟩-unique (pulll (π₁-inv ⟨⟩-inv) ∙ π₁∘⟨⟩) refl) ⟩
     f' ∘ ⟨⟩-inv.inv ∘ ⟨ m ∘ π₁ , h' ⟩                   ≡⟨ pulll (π₂-inv ⟨⟩-inv) ⟩
     π₂ ∘ ⟨ m ∘ π₁ , h' ⟩                                ≡⟨ π₂∘⟨⟩ ⟩
     h'                                                  ∎
-  cart .unique {m = m} {h' = h'} m' p =
+  cart .unique {m = m} {h' = h'} m' p = sym $
     m'                                                      ≡˘⟨ π₂∘⟨⟩ ⟩
     π₂ ∘ ⟨ m ∘ π₁ , m' ⟩                                    ≡⟨ ap₂ _∘_ refl (introl ⟨⟩-inv.invr) ⟩
     π₂ ∘ (⟨⟩-inv.inv ∘ ⟨ π₁ , f' ⟩) ∘ ⟨ m ∘ π₁ , m' ⟩       ≡⟨ products! has-prods ⟩
@@ -236,8 +236,8 @@ see that $i \circ \langle \pi_1 , f' \rangle = \pi_2$.
 
       universal-π₂∘f' : universal id π₂ ∘ ⟨ π₁ , f' ⟩ ≡ π₂
       universal-π₂∘f' =
-        universal id π₂ ∘ ⟨ π₁ , f' ⟩ ≡⟨ unique _ universal-π₂-unique ⟩
-        universal id f'               ≡˘⟨ unique _ (elimr (ap₂ ⟨_,_⟩ (idl _) refl ∙ ⟨⟩-η)) ⟩
+        universal id π₂ ∘ ⟨ π₁ , f' ⟩ ≡˘⟨ unique _ universal-π₂-unique ⟩
+        universal id f'               ≡⟨ unique _ (elimr (ap₂ ⟨_,_⟩ (idl _) refl ∙ ⟨⟩-η)) ⟩
         π₂                            ∎
 ```
 
@@ -276,7 +276,7 @@ Simple-fibration f Y .x' = Y
 Simple-fibration f Y .lifting = π₂
 Simple-fibration f Y .cartesian .universal _ h = h
 Simple-fibration f Y .cartesian .commutes g h = π₂∘⟨⟩
-Simple-fibration f Y .cartesian .unique {m = g} {h' = h} h' p =
+Simple-fibration f Y .cartesian .unique {m = g} {h' = h} h' p = sym $
   h'                   ≡˘⟨ π₂∘⟨⟩ ⟩
   π₂ ∘ ⟨ g ∘ π₁ , h' ⟩ ≡⟨ p ⟩
   h ∎
@@ -353,15 +353,15 @@ tedious calculations, so we omit them.
       π₁ ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩              ≡⟨ π₁∘⟨⟩ ⟩
       p₁' ∎
     pb .p₂∘universal {P} {p₁'} {p₂'} {p} =
-      ⟨ f ∘ π₁ , f' ⟩ ∘ ⟨⟩-inv.inv ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩                ≡⟨ pulll (⟨⟩∘ _) ⟩
-      ⟨ (f ∘ π₁) ∘ ⟨⟩-inv.inv , f' ∘ ⟨⟩-inv.inv ⟩ ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩ ≡⟨ ap₂ _∘_ (ap₂ ⟨_,_⟩ (pullr (π₁-inv ⟨⟩-inv)) (π₂-inv ⟨⟩-inv)) refl ⟩
+      ⟨ f ∘ π₁ , f' ⟩ ∘ ⟨⟩-inv.inv ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩                ≡⟨ pulll (sym (⟨⟩∘ _)) ⟩
+      ⟨ (f ∘ π₁) ∘ ⟨⟩-inv.inv , f' ∘ ⟨⟩-inv.inv ⟩ ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩ ≡⟨ car (ap₂ ⟨_,_⟩ (pullr (π₁-inv ⟨⟩-inv)) (π₂-inv ⟨⟩-inv)) ⟩
       ⟨ f ∘ π₁ , π₂ ⟩ ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩                             ≡⟨ products! has-prods ⟩
       ⟨ f ∘ p₁' , π₂ ∘ p₂' ⟩                                           ≡⟨ ap₂ ⟨_,_⟩ p refl ⟩
       ⟨ π₁ ∘ p₂' , π₂ ∘ p₂' ⟩                                          ≡⟨ products! has-prods ⟩
       p₂' ∎
-    pb .unique {P} {p₁'} {p₂'} {p} {h'} q r =
+    pb .unique {P} {p₁'} {p₂'} {p} {h'} q r = sym $
       h'                                                   ≡⟨ insertl ⟨⟩-inv.invr ⟩
-      ⟨⟩-inv.inv ∘ ⟨ π₁ , f' ⟩ ∘ h'                        ≡⟨ ap₂ _∘_ refl (⟨⟩∘ h') ⟩
+      ⟨⟩-inv.inv ∘ ⟨ π₁ , f' ⟩ ∘ h'                        ≡˘⟨ cdr (⟨⟩∘ h') ⟩
       ⟨⟩-inv.inv ∘ ⟨ ⌜ π₁ ∘ h' ⌝ , f' ∘ h' ⟩               ≡⟨ ap! q ⟩
       ⟨⟩-inv.inv ∘ ⟨ p₁' , ⌜ f' ∘ h' ⌝ ⟩                   ≡⟨ ap! (pushl (sym π₂∘⟨⟩)) ⟩
       ⟨⟩-inv.inv ∘ ⟨ p₁' , π₂ ∘ ⌜ ⟨ f ∘ π₁ , f' ⟩ ∘ h' ⌝ ⟩ ≡⟨ ap! r ⟩

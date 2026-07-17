@@ -62,25 +62,24 @@ chaotic-cartesian→is-iso cart =
   J.make-invertible
     (universal B.id J.id)
     (commutes B.id J.id)
-    (unique _ (J.cancell (commutes B.id J.id))
-     ∙ sym (unique {m = B.id} J.id (J.idr _)))
+    ( sym (unique _ (J.cancell (commutes B.id J.id)))
+    ∙ unique {m = B.id} J.id (J.idr _))
   where open is-cartesian cart
 
 is-iso→chaotic-cartesian
   : ∀ {x y x' y'} {f : B.Hom x y} {g : J.Hom x' y'}
   → J.is-invertible g → is-cartesian Chaotic f g
-is-iso→chaotic-cartesian {f = f} {g = g} is-inv = cart
-  where
-    open J.is-invertible is-inv
-    open is-cartesian
+is-iso→chaotic-cartesian {f = f} {g = g} is-inv = cart where
+  open J.is-invertible is-inv
+  open is-cartesian
 
-    cart : is-cartesian Chaotic f g
-    cart .universal _ h = inv J.∘ h
-    cart .commutes _ h = J.cancell invl
-    cart .unique {h' = h} m p =
-      m                     ≡⟨ J.introl invr ⟩
-      (inv J.∘ g) J.∘ m     ≡⟨ J.pullr p ⟩
-      inv J.∘ h             ∎
+  cart : is-cartesian Chaotic f g
+  cart .universal _ h = inv J.∘ h
+  cart .commutes _ h = J.cancell invl
+  cart .unique {h' = h} m p = sym $
+    m                     ≡⟨ J.introl invr ⟩
+    (inv J.∘ g) J.∘ m     ≡⟨ J.pullr p ⟩
+    inv J.∘ h             ∎
 ```
 
 This implies that the chaotic fibration is a fibration, as $\id$ is
@@ -99,7 +98,7 @@ Chaotic-fibration f y = cart-lift where
   cart-lift .lifting = J.id
   cart-lift .cartesian .universal _ g = g
   cart-lift .cartesian .commutes _ g = J.idl g
-  cart-lift .cartesian .unique m p = sym (J.idl m) ∙ p
+  cart-lift .cartesian .unique m p = sym p ∙ J.idl m
 ```
 
 We observe a similar situation for cocartesian morphisms.
@@ -111,26 +110,25 @@ chaotic-cocartesian→is-iso
 chaotic-cocartesian→is-iso cocart =
   J.make-invertible
     (universal B.id J.id)
-    (unique _ (J.cancelr (commutes B.id J.id))
-     ∙ sym (unique {m = B.id} J.id (J.idl _)))
+    ( sym (unique _ (J.cancelr (commutes B.id J.id)))
+    ∙ unique {m = B.id} J.id (J.idl _))
     (commutes B.id J.id)
   where open is-cocartesian cocart
 
 is-iso→chaotic-cocartesian
   : ∀ {x y x' y'} {f : B.Hom x y} {g : J.Hom x' y'}
   → J.is-invertible g → is-cocartesian Chaotic f g
-is-iso→chaotic-cocartesian {f = f} {g = g} is-inv = cocart
-  where
-    open J.is-invertible is-inv
-    open is-cocartesian
+is-iso→chaotic-cocartesian {f = f} {g = g} is-inv = cocart where
+  open J.is-invertible is-inv
+  open is-cocartesian
 
-    cocart : is-cocartesian Chaotic f g
-    cocart .universal _ h = h J.∘ inv
-    cocart .commutes _ h = J.cancelr invr
-    cocart .unique {h' = h} m p =
-      m               ≡⟨ J.intror invl ⟩
-      m J.∘ g J.∘ inv ≡⟨ J.pulll p ⟩
-      h J.∘ inv       ∎
+  cocart : is-cocartesian Chaotic f g
+  cocart .universal _ h = h J.∘ inv
+  cocart .commutes _ h = J.cancelr invr
+  cocart .unique {h' = h} m p = sym $
+    m               ≡⟨ J.intror invl ⟩
+    m J.∘ g J.∘ inv ≡⟨ J.pulll p ⟩
+    h J.∘ inv       ∎
 
 Chaotic-opfibration : Cocartesian-fibration Chaotic
 Chaotic-opfibration f x' = cocart-lift where
@@ -142,7 +140,7 @@ Chaotic-opfibration f x' = cocart-lift where
   cocart-lift .lifting = J.id
   cocart-lift .cocartesian .universal _ g = g
   cocart-lift .cocartesian .commutes _ g = J.idr g
-  cocart-lift .cocartesian .unique m p = sym (J.idr m) ∙ p
+  cocart-lift .cocartesian .unique m p = sym p ∙ J.idr m
 ```
 
 This implies that the chaotic bifibration actually lives up to its name.

@@ -61,7 +61,6 @@ out by $\lim F$ since $K$ is a cone, hence $F(f) \circ \psi(x) =
 \psi(y)$, as required.
 
 ```agda
-  -- open Terminal
   lim : make-is-limit F apex
   lim .ψ x (f , p) = f x
   lim .commutes f = funext λ where
@@ -69,8 +68,7 @@ out by $\lim F$ since $K$ is a cone, hence $F(f) \circ \psi(x) =
   lim .universal eta p x =
     (λ j → eta j x) , λ x y f → p f $ₚ _
   lim .factors _ _ = refl
-  lim .unique eta p other q = funext λ x →
-    Σ-prop-path! (funext λ j → q j $ₚ x)
+  lim .unique eta p other q = funext λ x → Σ-prop-path! $ funext λ j → sym (q j) ·ₚ x
 ```
 
 <!--
@@ -116,7 +114,7 @@ Products are given by product sets:
   Sets-products A B .has-is-product .⟨_,_⟩ f g x = f x , g x
   Sets-products A B .has-is-product .π₁∘⟨⟩ = refl
   Sets-products A B .has-is-product .π₂∘⟨⟩ = refl
-  Sets-products A B .has-is-product .unique p q i x = p i x , q i x
+  Sets-products A B .has-is-product .unique p q i x = p (~ i) x , q (~ i) x
 ```
 
 <!--
@@ -140,8 +138,7 @@ using $\Sigma$:
     eq .has-is-eq .equal = funext snd
     eq .has-is-eq .universal {e' = e'} p x = e' x , p $ₚ x
     eq .has-is-eq .factors = refl
-    eq .has-is-eq .unique {p = p} q =
-      funext λ x → Σ-prop-path! (happly q x)
+    eq .has-is-eq .unique {p = p} q = funext λ x → Σ-prop-path! $ sym q ·ₚ x
 ```
 
 Pullbacks are the same, but carving out a subset of $A \times B$.
@@ -160,9 +157,9 @@ Pullbacks are the same, but carving out a subset of $A \times B$.
     pb .has-is-pb .p₁∘universal = refl
     pb .has-is-pb .p₂∘universal = refl
     pb .has-is-pb .unique {p = p} {lim' = lim'} q r i x =
-      q i x , r i x ,
+      q (~ i) x , r (~ i) x ,
       λ j → is-set→squarep (λ i j → C .is-tr)
-        (λ j → f (q j x)) (λ j → lim' x .snd .snd j) (happly p x) (λ j → g (r j x)) i j
+        (ap f (sym q ·ₚ x)) (p · x) (lim' x .snd .snd) (ap g (sym r ·ₚ x)) i j
 ```
 
 Hence, `Sets`{.Agda} is finitely complete:

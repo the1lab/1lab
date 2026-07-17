@@ -73,10 +73,11 @@ record is-weak-cartesian
   field
     universal : ∀ {x'} → (g' : Hom[ f ] x' b') → Hom[ id ] x' a'
     commutes  : ∀ {x'} → (g' : Hom[ f ] x' b') → f' ∘' universal g' ≡[ idr _ ] g'
-    unique    : ∀ {x'} {g' : Hom[ f ] x' b'}
-                → (h' : Hom[ id ] x' a')
-                → f' ∘' h' ≡[ idr _ ] g'
-                → h' ≡ universal g'
+    unique
+      : ∀ {x'} {g' : Hom[ f ] x' b'}
+      → (h' : Hom[ id ] x' a')
+      → f' ∘' h' ≡[ idr _ ] g'
+      → universal g' ≡ h'
 
 open is-weak-cartesian
 ```
@@ -93,8 +94,8 @@ weak-cartesian-domain-unique
   → x' ≅↓ x''
 weak-cartesian-domain-unique {f' = f'} {f'' = f''} f'-weak f''-weak =
   make-iso[ _ ] to* from*
-    (to-pathp[] $ unique f''-weak _ invl* ∙ (sym $ unique f''-weak _ (idr' f'')))
-    (to-pathp[] $ unique f'-weak _ invr* ∙ (sym $ unique f'-weak _ (idr' f')))
+    (to-pathp[] $ sym (unique f''-weak _ invl*) ∙ unique f''-weak _ (idr' f''))
+    (to-pathp[] $ sym (unique f'-weak _ invr*)  ∙ unique f'-weak _ (idr' f'))
   where
     open is-weak-cartesian
 
@@ -105,7 +106,7 @@ weak-cartesian-domain-unique {f' = f'} {f'' = f''} f'-weak f''-weak =
     invl* = to-pathp[] $
       hom[] (f'' ∘' hom[] (to* ∘' from*)) ≡⟨ smashr _ _ ⟩
       hom[] (f'' ∘' to* ∘' from*)         ≡⟨ revive₁ {p = ap (_ ∘_) (idl _)} (pulll' (idr _) (f''-weak .commutes f')) ⟩
-      hom[] (f' ∘' from*)                ≡⟨ revive₁ (f'-weak .commutes f'') ⟩
+      hom[] (f' ∘' from*)                 ≡⟨ revive₁ (f'-weak .commutes f'') ⟩
       hom[] f''                           ≡⟨ liberate _ ⟩
       f'' ∎
 
@@ -176,9 +177,9 @@ postcompose-equiv→weak-cartesian f' eqv .universal h' = equiv→inverse eqv h'
 postcompose-equiv→weak-cartesian f' eqv .commutes h'  =
   to-pathp[] $ equiv→counit eqv h'
 postcompose-equiv→weak-cartesian f' eqv .unique {g' = g'} m' p =
-  m'                                   ≡˘⟨ equiv→unit eqv m' ⟩
-  equiv→inverse eqv (hom[] (f' ∘' m')) ≡⟨ ap (equiv→inverse eqv) (from-pathp[] p) ⟩
-  equiv→inverse eqv g'                 ∎
+  equiv→inverse eqv g'                 ≡˘⟨ ap (equiv→inverse eqv) (from-pathp[] p) ⟩
+  equiv→inverse eqv (hom[] (f' ∘' m')) ≡⟨ equiv→unit eqv _ ⟩
+  m'                                   ∎
 
 weak-cartesian→postcompose-equiv
   : ∀ {x y x' x'' y'} {f : Hom x y} {f' : Hom[ f ] x' y'}
@@ -187,7 +188,7 @@ weak-cartesian→postcompose-equiv
 weak-cartesian→postcompose-equiv wcart = is-iso→is-equiv $ iso
   (λ h' → wcart .universal h')
   (λ h' → from-pathp[] (wcart .commutes h'))
-  (λ h' → sym (wcart .unique _ (wrap (idr _))))
+  (λ h' → wcart .unique _ (wrap (idr _)))
 ```
 
 ## Weak cartesian lifts {defines=weak-cartesian-fibration}
@@ -378,7 +379,7 @@ maps.
 </summary>
 
 ```agda
-    f*-cartesian .unique {u = u} {u' = u'} {m = m} {h' = h'} m' p = path where abstract
+    f*-cartesian .unique {u = u} {u' = u'} {m = m} {h' = h'} m' p = sym path where abstract
       universal-path : (π* f y' ∘' π* m (f ^* y')) ∘' π*.universal m' ≡[ idr (f ∘ m) ] h'
       universal-path = to-pathp[] $
         hom[] ((π* f y' ∘' π* m (f ^* y')) ∘' π*.universal m') ≡˘⟨ assoc[] {p = ap (f ∘_) (idr m)} ⟩
@@ -391,7 +392,7 @@ maps.
       path =
         m'                                                ≡˘⟨ from-pathp[] (π*.commutes m') ⟩
         hom[] (π* m (f ^* y') ∘' π*.universal m')         ≡⟨ reindex _ (idr m) ⟩
-        hom[] (π* m (f ^* y') ∘' π*.universal m')         ≡⟨ hom[]⟩⟨ ap (π* m (f ^* y') ∘'_) (f*∘m*.unique m h' _ universal-path) ⟩
+        hom[] (π* m (f ^* y') ∘' π*.universal m')         ≡˘⟨ hom[]⟩⟨ ap (π* m (f ^* y') ∘'_) (f*∘m*.unique m h' _ universal-path) ⟩
         hom[] (π* m (f ^* y') ∘' f*∘m*.universal m h' h') ∎
 ```
 
@@ -469,18 +470,17 @@ module _ (wfib : Weak-cartesian-fibration) where
     : ∀ {x y x' y'}
     → (f : Hom x y)
     → is-equiv (π*.universal {f = f} {y' = y'} {x'})
-  weak-fibration→universal-is-equiv {y' = y'} f = is-iso→is-equiv $
-    iso (λ f' → hom[ idr f ] (π* f y' ∘' f') )
-        (λ f' → sym $ π*.unique f' (to-pathp[] refl))
-        (λ f' → cancel _ _ (π*.commutes f'))
+  weak-fibration→universal-is-equiv {y' = y'} f = is-iso→is-equiv $ iso
+    (λ f' → hom[ idr f ] (π* f y' ∘' f') )
+    (λ f' → π*.unique f' (to-pathp[] refl))
+    (λ f' → cancel _ _ (π*.commutes f'))
 
   weak-fibration→vertical-equiv
     : ∀ {x y x' y'}
     → (f : Hom x y)
     → Hom[ f ] x' y' ≃ Hom[ id ] x' (f ^* y')
   weak-fibration→vertical-equiv {y' = y'} f =
-    π*.universal ,
-    weak-fibration→universal-is-equiv f
+    π*.universal , weak-fibration→universal-is-equiv f
 ```
 
 Furthermore, this equivalence can be extended into a natural isomorphism
@@ -497,14 +497,11 @@ between $\cE_{u}(-,y')$ and $\cE_{x}(-,u^{*}(y'))$.
     mi : make-natural-iso (Hom-over-into ℰ u y') (Hom-into (Fibre ℰ x) (u ^* y'))
     mi .eta x u' = π*.universal u'
     mi .inv x v' = hom[ idr u ] (π* u y' ∘' v')
-    mi .eta∘inv x = funext λ v' →
-      sym $ π*.unique _ (to-pathp[] refl)
-    mi .inv∘eta x = funext λ u' →
-      from-pathp[] (π*.commutes _)
-    mi .natural x y v' = funext λ u' →
-      π*.unique _ $ to-pathp[] $
+    mi .eta∘inv x = funext λ v' → π*.unique _ (to-pathp[] refl)
+    mi .inv∘eta x = funext λ u' → from-pathp[] (π*.commutes _)
+    mi .natural x y v' = funext λ u' → sym $ π*.unique _ $ to-pathp[] $
         smashr _ _
-        ∙ weave _ (ap (u ∘_) (idl id)) _ (pulll' _ (π*.commutes _))
+      ∙ weave _ (ap (u ∘_) (idl id)) _ (pulll' _ (π*.commutes _))
 ```
 
 An *extremely* useful fact is that the converse is true: if there is some
@@ -580,7 +577,7 @@ the equivalence is natural.
       from* (hom[] (id' ∘' to* g')) ≡⟨ ap from* idl[] ⟩
       from* (to* g')                ≡⟨ equiv→unit to-eqv g' ⟩
       g'                            ∎
-    f-lift .weak-cartesian .unique {g' = g'} h' p =
+    f-lift .weak-cartesian .unique {g' = g'} h' p = sym $
       h'                            ≡˘⟨ idl[] {p = idl id} ⟩
       hom[] (id' ∘' h')             ≡˘⟨ hom[]⟩⟨ ap (_∘' h') (equiv→counit to-eqv id') ⟩
       hom[] (to* (from* id') ∘' h') ≡˘⟨ from-pathp[]⁻ (natural (from* id') h') ⟩
@@ -632,15 +629,12 @@ module _ (fib : Cartesian-fibration) where
           (Hom-from (Fibre ℰ x) x' F∘ base-change u)
     mi .eta x u' = π*.universalv u'
     mi .inv x v' = hom[ idr u ] (π* u x ∘' v')
-    mi .eta∘inv x = funext λ v' →
-      sym $ π*.uniquev _ (to-pathp[] refl)
-    mi .inv∘eta x = funext λ u' →
-      from-pathp[] (π*.commutesv _)
-    mi .natural _ _ v' = funext λ u' →
-      π*.uniquep _ _ _ _ $
-        Fib.pulllf (π*.commutesp id-comm _)
-        ∙[] pullr[] _ (π*.commutesv _)
-        ∙[] to-pathp[] refl
+    mi .eta∘inv x = funext λ v' → π*.uniquev _ (to-pathp[] refl)
+    mi .inv∘eta x = funext λ u' → from-pathp[] (π*.commutesv _)
+    mi .natural _ _ v' = funext λ u' → sym $ π*.uniquep _ _ _ _ $
+          Fib.pulllf (π*.commutesp id-comm _)
+      ∙[] pullr[] _ (π*.commutesv _)
+      ∙[] to-pathp[] refl
 ```
 
 <!--
@@ -701,7 +695,7 @@ a natural iso between $\cE_{u}(-,-)$ and $\cE_{\id}(-,u^{*}(-))$.
       _ ≡[]⟨ wrapr _ ⟩
       _ ≡[]⟨ wrap _ ⟩
       _ ∎[]
-    mi .eta∘inv x = ext λ a u → sym (π*.uniquev _ (to-pathp[] refl))
+    mi .eta∘inv x = ext λ a u → π*.uniquev _ (to-pathp[] refl)
     mi .inv∘eta x = ext λ a u → from-pathp[] (π*.commutesv _)
     mi .natural x y f = ext λ v₂' u' → from-pathp[] (π*.uniquep₂ _ _ _ _ _ (pulll[] _ (π*.commutes _ _)) (π*.commutesp (idr u) _ ∙[] unwrap _ ∙[] wrapl _))
 ```

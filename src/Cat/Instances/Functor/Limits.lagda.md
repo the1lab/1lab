@@ -74,9 +74,9 @@ homomorphism $K \to \lim F(-, x)$ will be called `!-for`{.Agda}.
     functor-apex : Functor E C
     functor-apex .F₀ x = D-lim.apex x
     functor-apex .F₁ {x} {y} f = !-for f
-    functor-apex .F-id = sym $ D-lim.unique _ _ _ _ λ j →
+    functor-apex .F-id = D-lim.unique _ _ _ _ λ j →
       C.idr _ ∙ C.introl F'.rmap-id
-    functor-apex .F-∘ f g = sym $ D-lim.unique _ _ _ _ λ j →
+    functor-apex .F-∘ f g = D-lim.unique _ _ _ _ λ j →
         C.pulll (D-lim.factors _ _ _)
       ∙ C.pullr (D-lim.factors _ _ _)
       ∙ C.pulll (sym (F'.rmap-∘ _ _))

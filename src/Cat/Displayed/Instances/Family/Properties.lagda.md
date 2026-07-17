@@ -72,8 +72,8 @@ up.
     total-prod .has-is-product' .π₂∘⟨⟩' = ext (λ k → π₂∘⟨⟩)
     total-prod .has-is-product' .unique' {a' = Zₖ} {p1 = p1} {p2 = p2} {other' = other'} p q i k =
       unique
-        (coe0→i (λ i → π₁ C.∘ other-line k i ≡ p i k) i refl)
-        (coe0→i (λ i → π₂ C.∘ other-line k i ≡ q i k) i refl)
+        (coe0→i (λ i → π₁ C.∘ other-line k i ≡ p i k) (~ i) refl)
+        (coe0→i (λ i → π₂ C.∘ other-line k i ≡ q i k) (~ i) refl)
         i
       where
         other-line : ∀ k i → C.Hom (Zₖ k) (Xᵢ×Yⱼ (p1 i k) (p2 i k))

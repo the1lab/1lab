@@ -209,9 +209,7 @@ this follows directly from our hypothesis.
 
 ```agda
     f-mono : is-monic f
-    f-mono u v p =
-      strong-separator→separator strong λ e →
-      f∘-.injective (extendl p)
+    f-mono u v p = strong-separator→separator strong λ e → f∘-.injective (extendl p)
 ```
 
 Proving that $f$ is a strong epi is a bit more work. First, note that
@@ -223,7 +221,7 @@ map factorizes the canonical map $\coprod_{\cC(S,B)} S \to B$.
     f* : Hom ((Hom s b) ⊗! s) a
     f* = ⊗!.match (Hom s b) s λ e → f∘-.from e
 
-    f*-factors : f ∘ f* ≡ ⊗!.match (Hom s b) s (λ e → e)
+    f*-factors : ⊗!.match (Hom s b) s (λ e → e) ≡ f ∘ f*
     f*-factors = ⊗!.unique _ _ _ λ e →
       (f ∘ f*) ∘ ⊗!.ι (Hom s b) s e ≡⟨ pullr (⊗!.commute (Hom s b) s) ⟩
       f ∘ f∘-.from e                ≡⟨ f∘-.ε e ⟩
@@ -237,9 +235,7 @@ immediately see that $f$ is a strong epi.
 
 ```agda
     f-strong-epi : is-strong-epi f
-    f-strong-epi =
-      strong-epi-cancelr f f* $
-      subst is-strong-epi (sym f*-factors) strong
+    f-strong-epi = strong-epi-cancelr f f* $ subst is-strong-epi f*-factors strong
 ```
 
 Conversely, if $\cC(S,-)$ is conservative, then $S$ is an extremal
@@ -302,10 +298,7 @@ so we omit the details.
 </summary>
 ```agda
 strong-separating-family→jointly-conservative Idx sᵢ strong {x = a} {y = b} {f = f} f∘ᵢ-inv =
-  strong-epi+mono→invertible
-    f-strong-epi
-    f-mono
-  where
+  strong-epi+mono→invertible f-strong-epi f-mono where
     module f∘- {i : ∣ Idx ∣} = Equiv (_ , is-invertible→is-equiv (f∘ᵢ-inv i))
 
     f-mono : is-monic f
@@ -316,22 +309,17 @@ strong-separating-family→jointly-conservative Idx sᵢ strong {x = a} {y = b} 
     f* : Hom (∐! (Σ[ i ∈ ∣ Idx ∣ ] (Hom (sᵢ i) b)) (sᵢ ⊙ fst)) a
     f* = ∐!.match _ _ (f∘-.from ⊙ snd)
 
-    f*-factors : f ∘ f* ≡ ∐!.match (Σ[ i ∈ ∣ Idx ∣ ] (Hom (sᵢ i) b)) (sᵢ ⊙ fst) snd
-    f*-factors =
-      ∐!.unique _ _ _ λ (i , eᵢ) →
+    f*-factors : ∐!.match (Σ[ i ∈ ∣ Idx ∣ ] (Hom (sᵢ i) b)) (sᵢ ⊙ fst) snd ≡ f ∘ f*
+    f*-factors = ∐!.unique _ _ _ λ (i , eᵢ) →
       (f ∘ f*) ∘ ∐!.ι _ _ (i , eᵢ) ≡⟨ pullr (∐!.commute _ _) ⟩
       f ∘ f∘-.from eᵢ              ≡⟨ f∘-.ε eᵢ ⟩
       eᵢ                           ∎
 
     f-strong-epi : is-strong-epi f
-    f-strong-epi =
-      strong-epi-cancelr f f* $
-      subst is-strong-epi (sym f*-factors) strong
+    f-strong-epi = strong-epi-cancelr f f* $ subst is-strong-epi f*-factors strong
 
 jointly-conservative→extremal-separating-family Idx sᵢ lex f∘-conservative m f p =
-  f∘-conservative $ λ i →
-  is-equiv→is-invertible $
-  is-iso→is-equiv $ iso
+  f∘-conservative $ λ i → is-equiv→is-invertible $ is-iso→is-equiv $ iso
     (λ eᵢ → f ∘ ∐!.ι _ _ (i , eᵢ))
     (λ f* → pulll (sym p) ∙ ∐!.commute _ _)
     (λ eᵢ → m .monic _ _ (pulll (sym p) ∙ ∐!.commute _ _))

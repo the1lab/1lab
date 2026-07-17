@@ -145,7 +145,7 @@ commutes with $\pi_1'$ and $\pi_2'$.
         → {other' : Hom[ other ] a' p'}
         → (p1' : (π₁' ∘' other') ≡[ p1 ] f')
         → (p2' : (π₂' ∘' other') ≡[ p2 ] g')
-        → other' ≡[ unique p1 p2 ] ⟨ f' , g' ⟩'
+        → ⟨ f' , g' ⟩' ≡[ unique p1 p2 ] other'
 ```
 
 <!--
@@ -153,7 +153,7 @@ commutes with $\pi_1'$ and $\pi_2'$.
     ⟨_,_⟩ₚ
       : (f' : Hom[ π₁ ∘ f ] a' x') (g' : Hom[ π₂ ∘ f ] a' y')
       → Hom[ f ] a' p'
-    ⟨ f' , g' ⟩ₚ = hom[ sym (unique refl refl) ] ⟨ f' , g' ⟩'
+    ⟨ f' , g' ⟩ₚ = hom[ unique refl refl ] ⟨ f' , g' ⟩'
 
     abstract
       π₁∘⟨⟩ₚ : π₁' ∘' ⟨ f' , g' ⟩ₚ ≡ f'

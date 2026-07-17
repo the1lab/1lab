@@ -153,6 +153,7 @@ Strict-cats-products {C = C} {D = D} cob dob = prod where
   prod .has-is-product .⟨_,_⟩ p q = Cat⟨ p , q ⟩
   prod .has-is-product .π₁∘⟨⟩ = Functor-path (λ _ → refl) λ _ → refl
   prod .has-is-product .π₂∘⟨⟩ = Functor-path (λ _ → refl) λ _ → refl
-  prod .has-is-product .unique p q =
-    Functor-path (λ x i → F₀ (p i) x , F₀ (q i) x) λ f i → F₁ (p i) f , F₁ (q i) f
+  prod .has-is-product .unique p q = Functor-path
+    (λ x i → F₀ (p (~ i)) x , F₀ (q (~ i)) x)
+    (λ f i → F₁ (p (~ i)) f , F₁ (q (~ i)) f)
 ```

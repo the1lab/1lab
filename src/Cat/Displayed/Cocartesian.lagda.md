@@ -99,7 +99,7 @@ to a unique universal factorisation of $h'$ through a map $b' \to_{m} u'$
     unique
       : ∀ {u u'} {m : Hom b u} {h' : Hom[ m ∘ f ] a' u'}
       → (m' : Hom[ m ] b' u') → m' ∘' f' ≡ h'
-      → m' ≡ universal m h'
+      → universal m h' ≡ m'
 ```
 
 <!--
@@ -122,26 +122,27 @@ to a unique universal factorisation of $h'$ through a map $b' \to_{m} u'$
   universalp {u = u} p q r h' i =
     universal' (is-set→squarep (λ _ _ → Hom-set a u) (ap (_∘ f) q) p r refl i) h'
 
-  uniquep : ∀ {u u'} {m₁ m₂ : Hom b u} {k : Hom a u}
-          → (p : m₁ ∘ f ≡ k) (q : m₁ ≡ m₂) (r : m₂ ∘ f ≡ k)
-          → {h' : Hom[ k ] a' u'}
-          → (m' : Hom[ m₁ ] b' u')
-          → m' ∘' f' ≡[ p ] h' → m' ≡[ q ] universal' r h'
-  uniquep p q r {h' = h'} m' s  =
-    to-pathp[]⁻ (unique m' (from-pathp[]⁻ s) ∙ from-pathp[]⁻ (universalp p q r h'))
+  uniquep
+    : ∀ {u u'} {m₁ m₂ : Hom b u} {k : Hom a u}
+    → (p : m₁ ∘ f ≡ k) (q : m₁ ≡ m₂) (r : m₂ ∘ f ≡ k)
+    → {h' : Hom[ k ] a' u'}
+    → (m' : Hom[ m₁ ] b' u')
+    → m' ∘' f' ≡[ p ] h'
+    → universal' r h' ≡[ sym q ] m'
+  uniquep p q r {h' = h'} m' s = to-pathp[] $
+    from-pathp[] (universalp r (sym q) p h') ∙ unique _ (from-pathp[]⁻ s)
 
-  uniquep₂ : ∀ {u u'} {m₁ m₂ : Hom b u} {k : Hom a u}
-          → (p : m₁ ∘ f ≡ k) (q : m₁ ≡ m₂) (r : m₂ ∘ f ≡ k)
-          → {h' : Hom[ k ] a' u'}
-          → (m₁' : Hom[ m₁ ] b' u')
-          → (m₂' : Hom[ m₂ ] b' u')
-          → m₁' ∘' f' ≡[ p ] h'
-          → m₂' ∘' f' ≡[ r ] h'
-          → m₁' ≡[ q ] m₂'
+  uniquep₂
+    : ∀ {u u'} {m₁ m₂ : Hom b u} {k : Hom a u}
+    → (p : m₁ ∘ f ≡ k) (q : m₁ ≡ m₂) (r : m₂ ∘ f ≡ k)
+    → {h' : Hom[ k ] a' u'} (m₁' : Hom[ m₁ ] b' u') (m₂' : Hom[ m₂ ] b' u')
+    → m₁' ∘' f' ≡[ p ] h'
+    → m₂' ∘' f' ≡[ r ] h'
+    → m₁' ≡[ q ] m₂'
   uniquep₂ p q r {h' = h'} m₁' m₂' α β = to-pathp[]⁻ $
-       unique m₁' (from-pathp[]⁻ α)
+       sym (unique m₁' (from-pathp[]⁻ α))
     ∙∙ from-pathp[]⁻ (universalp p q r _)
-    ∙∙ ap hom[] (sym (unique m₂' (from-pathp[]⁻ β)))
+    ∙∙ ap hom[] (unique m₂' (from-pathp[]⁻ β))
 
   universalv : ∀ {b''} (f'' : Hom[ f ] a' b'') → Hom[ id ] b' b''
   universalv f'' = universal' (idl _) f''
@@ -155,7 +156,7 @@ to a unique universal factorisation of $h'$ through a map $b' \to_{m} u'$
     : ∀ {x'} {g' : Hom[ f ] a' x'}
     → (h' : Hom[ id ] b' x')
     → h' ∘' f' ≡[ idl _ ] g'
-    → h' ≡ universalv g'
+    → universalv g' ≡ h'
   uniquev h' p = uniquep (idl _) refl (idl _) h' p
 
   uniquev₂

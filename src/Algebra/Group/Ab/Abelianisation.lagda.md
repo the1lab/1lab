@@ -220,5 +220,5 @@ make-free-abelian G .fold {H} f .fst =
 make-free-abelian G .fold {H} f .snd .is-group-hom.pres-⋆ =
   elim! λ _ _ → f .snd .is-group-hom.pres-⋆ _ _
 make-free-abelian G .commute = ext λ _ → refl
-make-free-abelian G .unique f p = ext (p ·ₚ_)
+make-free-abelian G .unique f p = ext (sym p ·ₚ_)
 ```

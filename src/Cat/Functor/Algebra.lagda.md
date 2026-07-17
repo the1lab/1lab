@@ -330,7 +330,7 @@ paired with the universal property of $F^{\infty}(\bot)$.
         → (f : Hom ∐Fⁿ[⊥] a)
         → f ∘ roll ≡ α ∘ F.₁ f
         → fold α ≡ f
-      fold-unique f p = sym $ ∐Fⁿ[⊥].unique _ _ _ (fold-step f p)
+      fold-unique f p = ∐Fⁿ[⊥].unique _ _ _ (fold-step f p)
 ```
 
 If we put all the pieces together, we observe that $(F^{\infty}(\bot), \mathrm{roll})$

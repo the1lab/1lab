@@ -171,7 +171,7 @@ pullback.</summary>
   pb .p₁∘universal {p = p} = ext λ a b → square→pt p b .snd
   pb .p₂∘universal = ext λ _ _ → refl
   pb .unique {p = p} q r = ext λ a b → ap fst $
-    emb _ (_ , q ηₚ a $ₚ b) (square→pt p _)
+    emb _ (square→pt p _) (_ , q ηₚ a $ₚ b)
 ```
 
 </details>
@@ -255,5 +255,5 @@ fibres of $P \mono A$ over $A(f)(x)$.
           P .map .η U it ≡⟨ pb .p₁∘universal ηₚ _ $ₚ _ ⟩
           A ⟪ f ⟫ x      ∎
       in inc (it , prf)
-  in Ω-ua to from
+  in Ω-ua from to
 ```

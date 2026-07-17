@@ -250,11 +250,9 @@ Commutivity and uniqueness follow from the fact that $f'$ is cartesian.
     map-tot' h'
       ∎[]
   cart .unique {x} {P} {m = m} {h' = h'} m' p =
-    Σ-path (Slice-pathp (sym (fam-square m' ∙ idl _))) $
-    let
-      p = f'.unique _ $ from-pathp[]⁻ $ begin[]
-        f' ∘' hom[] (map-tot' m') ≡[]⟨ to-pathp[] (smashr _ (ap (f ∘_) (fam-square m' ∙ idl _)) ∙ reindex _ _) ⟩
-        hom[] (f' ∘' map-tot' m') ≡[]⟨ ap map-tot' p ⟩
-        map-tot' h'               ∎[]
-    in sym (hom[]-is-subst _ _) ∙ p
+    Σ-pathp (Slice-pathp (fam-square m' ∙ idl _)) $
+    f'.uniquep (ap map (ap fst p)) _ _ _ $ begin[]
+      f' ∘' map-tot' m'         ≡[]⟨ wrap refl ⟩
+      hom[] (f' ∘' map-tot' m') ≡[]⟨ ap map-tot' p ⟩
+      map-tot' h'               ∎[]
 ```

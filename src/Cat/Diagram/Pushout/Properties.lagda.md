@@ -43,7 +43,7 @@ $f : A \to B$ is an epimorphism iff. the square below is a pushout
     is-epic→is-pushout epi .universal {i₁' = i₁'} p = i₁'
     is-epic→is-pushout epi .universal∘i₁ = idr _
     is-epic→is-pushout epi .universal∘i₂ {p = p} = idr _ ∙ epi _ _ p
-    is-epic→is-pushout epi .unique p q = intror refl ∙ p
+    is-epic→is-pushout epi .unique p q = sym p ∙ elimr refl
 
     is-pushout→is-epic : is-pushout C f id f id → is-epic f
     is-pushout→is-epic po g h p = sym (po .universal∘i₁ {p = p}) ∙ po .universal∘i₂
@@ -105,15 +105,19 @@ If $\iota_1=\iota_2$, then the identity is a pushout.
     injections-eq→id-is-pushout .universal∘i₂ = idr _ ∙ ap (_ ∘_) eq
       ∙ po .universal∘i₂
     injections-eq→id-is-pushout .unique {a} {f'} {g'} {p = sq} {c} p₁ p₂  =
-      c                    ≡⟨ insertr i⁻¹∘i₁≡id ⟩
-      (c ∘ i⁻¹) ∘ i₁       ≡⟨ po .unique {colim' = c ∘ i⁻¹} (pullr i⁻¹∘i₁≡id ∙ p₁) (pullr i⁻¹∘i₂≡id ∙ p₂) ⟩∘⟨refl ⟩
-      po.universal sq ∘ i₁ ∎
-      where i⁻¹ : Hom p y
-            i⁻¹ = universal po $ idl f ∙ sym (idl f)
-            i⁻¹∘i₁≡id : i⁻¹ ∘ i₁ ≡ id
-            i⁻¹∘i₁≡id = po.universal∘i₁
-            i⁻¹∘i₂≡id : i⁻¹ ∘ i₂ ≡ id
-            i⁻¹∘i₂≡id = ap (i⁻¹ ∘_) (sym eq) ∙ i⁻¹∘i₁≡id
+      let
+        i⁻¹ : Hom p y
+        i⁻¹ = universal po $ idl f ∙ sym (idl f)
+
+        i⁻¹∘i₁≡id : i⁻¹ ∘ i₁ ≡ id
+        i⁻¹∘i₁≡id = po.universal∘i₁
+
+        i⁻¹∘i₂≡id : i⁻¹ ∘ i₂ ≡ id
+        i⁻¹∘i₂≡id = ap (i⁻¹ ∘_) (sym eq) ∙ i⁻¹∘i₁≡id
+      in
+        po.universal sq ∘ i₁ ≡⟨ car (po .unique {colim' = c ∘ i⁻¹} (pullr i⁻¹∘i₁≡id ∙ p₁) (pullr i⁻¹∘i₂≡id ∙ p₂)) ⟩
+        (c ∘ i⁻¹) ∘ i₁       ≡⟨ cancelr i⁻¹∘i₁≡id ⟩
+        c                    ∎
 
     injections-eq→is-epic : is-epic f
     injections-eq→is-epic = is-pushout→is-epic injections-eq→id-is-pushout

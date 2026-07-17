@@ -740,9 +740,10 @@ module _ {o ℓ} {C : Precategory o ℓ} {B} (prod : has-products C) where
   constant-family .F₀ A = cut (π₂ {a = A})
   constant-family .F₁ f .map = ⟨ f ∘ π₁ , π₂ ⟩
   constant-family .F₁ f .com = π₂∘⟨⟩
-  constant-family .F-id    = ext (sym (⟨⟩-unique id-comm (idr _)))
-  constant-family .F-∘ f g = ext $ sym $
-      ⟨⟩-unique (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩)
+  constant-family .F-id    = ext $ ⟨⟩-unique id-comm (idr _)
+  constant-family .F-∘ f g = ext $ ⟨⟩-unique
+    (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩)
+    (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩)
 ```
 
 We can observe that this really is a _constant families_ functor by
@@ -777,14 +778,13 @@ the fibre over $h$ would correspondingly be isomorphic to $A \times \top
   constant-family-fibre {A} h .universal {p₁' = p₁'} {p₂' = p₂'} sq =
     ⟨ π₁ ∘ p₂' , p₁' ⟩
   constant-family-fibre {A} h .p₁∘universal = π₂∘⟨⟩
-  constant-family-fibre {A} h .p₂∘universal {p = p} =
-    ⟨⟩∘ _ ∙ sym (⟨⟩-unique
-      (sym (idl _) ∙ pushr (sym π₁∘⟨⟩))
-      (sym p ∙ pushr (sym π₂∘⟨⟩)))
-  constant-family-fibre {A} h .unique c₁ c₂ =
-    ⟨⟩-unique
-      (sym (idl _) ∙ extendl (sym π₁∘⟨⟩) ∙ (refl⟩∘⟨ c₂))
-      c₁
+  constant-family-fibre {A} h .p₂∘universal {p = p} = ⟨⟩-unique₂
+    (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩ ∙ eliml refl)
+    (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩)
+    refl (sym p)
+  constant-family-fibre {A} h .unique c₁ c₂ = ⟨⟩-unique
+    (sym (idl _) ∙ extendl (sym π₁∘⟨⟩) ∙ cdr c₂)
+    c₁
 ```
 
 The constant families functor is a [[right adjoint]] to the projection
@@ -845,7 +845,7 @@ $f = \id$, so that we are left with $g : A \to B$, an object of $\cC/B$!
 
       eso : is-iso (Comparison-CoEM Forget⊣constant-family .F₀)
       eso .from (X , c) = cut (π₂ ∘ c .ρ)
-      eso .rinv (X , c) = refl ,ₚ ext (sym (⟨⟩-unique (c .ρ-counit) refl))
+      eso .rinv (X , c) = refl ,ₚ ext (⟨⟩-unique (c .ρ-counit) refl)
       eso .linv _ = /-Obj-path refl π₂∘⟨⟩
 ```
 

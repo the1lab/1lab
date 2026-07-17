@@ -65,8 +65,8 @@ $$
   Powering .F₀ (X , A) = X ⋔ A
   Powering .F₁ {X , A} {Y , B} (idx , obj) = prods Y (λ _ → B) .tuple λ i →
     obj ∘ prods X (λ _ → A) .π (idx i)
-  Powering .F-id {X , A} = sym $ prods X (λ _ → A) .unique _ λ i → id-comm
-  Powering .F-∘ {z = Z , C} f g = sym $ prods Z (λ _ → C) .unique _ λ i →
+  Powering .F-id {X , A} = prods X (λ _ → A) .unique _ λ i → id-comm
+  Powering .F-∘ {z = Z , C} f g = prods Z (λ _ → C) .unique _ λ i →
     pulll (prods _ _ .commute) ∙ extendr (prods _ _ .commute)
 ```
 

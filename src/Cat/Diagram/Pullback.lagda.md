@@ -58,22 +58,23 @@ overall square has to commute.
 ~~~
 
 ```agda
-      universal : ∀ {P'} {p₁' : Hom P' X} {p₂' : Hom P' Y}
-               → f ∘ p₁' ≡ g ∘ p₂' → Hom P' P
+      universal
+        : ∀ {P'} {p₁' : Hom P' X} {p₂' : Hom P' Y}
+        → f ∘ p₁' ≡ g ∘ p₂' → Hom P' P
       p₁∘universal : {p : f ∘ p₁' ≡ g ∘ p₂'} → p₁ ∘ universal p ≡ p₁'
       p₂∘universal : {p : f ∘ p₁' ≡ g ∘ p₂'} → p₂ ∘ universal p ≡ p₂'
 
-      unique : {p : f ∘ p₁' ≡ g ∘ p₂'} {lim' : Hom P' P}
-             → p₁ ∘ lim' ≡ p₁'
-             → p₂ ∘ lim' ≡ p₂'
-             → lim' ≡ universal p
+      unique
+        : {p : f ∘ p₁' ≡ g ∘ p₂'} {lim' : Hom P' P}
+        → p₁ ∘ lim' ≡ p₁' → p₂ ∘ lim' ≡ p₂'
+        → universal p ≡ lim'
 
     unique₂
       : {p : f ∘ p₁' ≡ g ∘ p₂'} {lim' lim'' : Hom P' P}
       → p₁ ∘ lim' ≡ p₁' → p₂ ∘ lim' ≡ p₂'
       → p₁ ∘ lim'' ≡ p₁' → p₂ ∘ lim'' ≡ p₂'
       → lim' ≡ lim''
-    unique₂ {p = o} p q r s = unique {p = o} p q ∙ sym (unique r s)
+    unique₂ {p = o} p q r s = sym (unique {p = o} p q) ∙ unique r s
 ```
 
 <!--
@@ -84,7 +85,7 @@ overall square has to commute.
     pullback-univ .snd = is-iso→is-equiv λ where
       .is-iso.from (f , g , α) → universal α
       .is-iso.rinv x → Σ-pathp p₁∘universal $ Σ-prop-pathp (λ _ _ → hlevel 1) p₂∘universal
-      .is-iso.linv x → sym (unique refl refl)
+      .is-iso.linv x → unique refl refl
 ```
 -->
 
@@ -138,13 +139,16 @@ module _ {o ℓ} {C : Precategory o ℓ} where
   is-pullback-is-prop {X = X} {Y = Y} {p₁ = p₁} {f} {p₂} {g} x y = q where
     open is-pullback
     p : Path (∀ {P'} {p₁' : Hom P' X} {p₂' : Hom P' Y} → f ∘ p₁' ≡ g ∘ p₂' → _) (x .universal) (y .universal)
-    p i sq = y .unique {p = sq} (x .p₁∘universal {p = sq}) (x .p₂∘universal) i
+    p i sq = x .unique {p = sq} (y .p₁∘universal {p = sq}) (y .p₂∘universal) i
+
     q : x ≡ y
     q i .square = Hom-set _ _ _ _ (x .square) (y .square) i
     q i .universal = p i
     q i .p₁∘universal {p₁' = p₁'} {p = sq} = is-prop→pathp (λ i → Hom-set _ _ (p₁ ∘ p i sq) p₁') (x .p₁∘universal) (y .p₁∘universal) i
     q i .p₂∘universal {p = sq} = is-prop→pathp (λ i → Hom-set _ _ (p₂ ∘ p i sq) _) (x .p₂∘universal) (y .p₂∘universal) i
-    q i .unique {p = sq} {lim' = lim'} c₁ c₂ = is-prop→pathp (λ i → Hom-set _ _ lim' (p i sq)) (x .unique c₁ c₂) (y .unique c₁ c₂) i
+    q i .unique {p = sq} {lim' = lim'} c₁ c₂ = is-prop→pathp
+      (λ i → Hom-set _ _ (p i sq) lim')
+      (x .unique c₁ c₂) (y .unique c₁ c₂) i
 
   instance
     H-Level-is-pullback : ∀ {P} {p₁ : Hom P X} {f : Hom X Z} {p₂ : Hom P Y} {g : Hom Y Z} {n} → H-Level (is-pullback C p₁ f p₂ g) (suc n)
@@ -282,7 +286,7 @@ observation.
     id-kp .universal {p₁' = p₁'} _ = p₁'
     id-kp .p₁∘universal = idl _
     id-kp .p₂∘universal {p = p} = idl _ ∙ f-monic _ _ p
-    id-kp .unique p q = sym (idl _) ∙ p
+    id-kp .unique p q = sym p ∙ idl _
 ```
 
 Conversely, if $(\id, \id)$ is the kernel pair of $f$, then $f$ is
@@ -363,7 +367,7 @@ it is the unique such map!
     id-kp .universal q = p ∘ p-kp .universal q
     id-kp .p₁∘universal {p = q} = idl _ ∙ p-kp .p₁∘universal
     id-kp .p₂∘universal {p = q} = idl _ ∙ p-kp .p₂∘universal
-    id-kp .unique q r = (sym (idl _)) ∙ q ∙ sym (p-kp .p₁∘universal)
+    id-kp .unique q r = p-kp .p₁∘universal ∙∙ sym q ∙∙ idl _
 ```
 
 # Categories with all pullbacks

@@ -86,7 +86,7 @@ Family-is-cartesian = iscart where
        → is-cartesian Family f λ _ → id
   cart f y' .universal m nt = nt
   cart f y' .commutes m h' = funext λ _ → idl _
-  cart f y' .unique m' p = funext λ _ → introl refl ∙ happly p _
+  cart f y' .unique m' p = funext λ _ → sym (p · _) ∙ eliml refl
 
   iscart : Cartesian-fibration Family
   iscart f y' .x' z = y' (f z)
@@ -114,8 +114,8 @@ pointwise-iso→cartesian {fₓ = fₓ} fₓ-inv = fₓ-cart where
     fₓ-inv.inv (m x) ∘ h' x
   fₓ-cart .commutes m h' =
     funext λ x → cancell (fₓ-inv.invl (m x))
-  fₓ-cart .unique {m = m} m' p =
-    funext λ x → introl (fₓ-inv.invr (m x)) ∙ pullr (happly p x)
+  fₓ-cart .unique {m = m} m' p = funext λ x →
+    pushr (sym p ·ₚ x) ∙ eliml (fₓ-inv.invr (m x))
 ```
 
 Showing the backwards direction requires using the usual trick of
@@ -132,8 +132,8 @@ cartesian→pointwise-iso {X = X} {f = f} {P = P} {Q = Q} {fₓ = fₓ} fₓ-car
   make-invertible
     fₓ⁻¹
     (happly (fₓ-cart.commutes _ _) x)
-    (happly (fₓ-cart.unique {u = X} (λ _ → fₓ⁻¹ ∘ fₓ x) (funext λ _ → cancell (happly (fₓ-cart.commutes _ _) x))) x ∙
-     sym (happly (fₓ-cart.unique (λ _ → id) (funext λ _ → idr _)) x))
+    ( sym (fₓ-cart.unique {u = X} (λ _ → fₓ⁻¹ ∘ fₓ x) (funext λ _ → cancell (happly (fₓ-cart.commutes _ _) x))) ·ₚ x
+    ∙ happly (fₓ-cart.unique (λ _ → id) (funext λ _ → idr _)) x)
   where
     module fₓ-cart = is-cartesian fₓ-cart
 
@@ -302,10 +302,10 @@ the equivalence around.
   gsmall .has-generic-ob .classify-cartesian f .commutes m h' =
     funext λ _ → cancell (is-invertible.invr (counit-iso _))
   gsmall .has-generic-ob .classify-cartesian f .unique {m = m} {h' = h'} m' p =
-    funext λ x →
+    funext λ x → sym $
       m' x                                                 ≡⟨ introl (is-invertible.invl (counit-iso _)) ⟩
-      (counit .η (f (m x)) ∘ counit⁻¹ .η (f (m x))) ∘ m' x ≡⟨ pullr (p $ₚ x) ⟩
-      counit .η (f (m x)) ∘ h' x ∎
+      (counit .η (f (m x)) ∘ counit⁻¹ .η (f (m x))) ∘ m' x ≡⟨ pullr (p ·ₚ x) ⟩
+      counit .η (f (m x)) ∘ h' x                           ∎
 ```
 
 If $\cC$ is itself strict, then the set of objects of $\cC$ forms a
@@ -323,8 +323,7 @@ Strict→Family-generic-object ob-set = gobj where
   gobj .classify' _ _ = id
   gobj .classify-cartesian _ .universal _ h' = h'
   gobj .classify-cartesian _ .commutes _ h' = funext λ _ → idl _
-  gobj .classify-cartesian _ .unique m' p = funext λ x →
-    sym (idl _) ∙ p · x
+  gobj .classify-cartesian _ .unique m' p = funext λ x → sym (p · x) ∙ idl _
 ```
 
 ### Skeletal generic objects

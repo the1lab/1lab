@@ -255,7 +255,7 @@ the apex by a single, _unique_ universal morphism:
         → (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eps x ≡ eps y)
         → (other : C.Hom x apex)
         → (∀ j → ψ j C.∘ other ≡ eps j)
-        → other ≡ universal eps p
+        → universal eps p ≡ other
 ```
 
 <!--
@@ -267,7 +267,7 @@ the apex by a single, _unique_ universal morphism:
       → {o1 : C.Hom x apex} → (∀ j → ψ j C.∘ o1 ≡ eps j)
       → {o2 : C.Hom x apex} → (∀ j → ψ j C.∘ o2 ≡ eps j)
       → o1 ≡ o2
-    unique₂ {x = x} eps p q r = unique eps p _ q ∙ sym (unique eps p _ r)
+    unique₂ {x = x} eps p q r = sym (unique eps p _ q) ∙ unique eps p _ r
 ```
 -->
 
@@ -304,8 +304,8 @@ other data we have been given:
       lim .σ α .η _              ≡˘⟨ C.idl _ ⟩
       C.id C.∘ lim .σ α .η _     ∎
     lim .σ-comm {β = β} = ext λ j → factors (β .η) _
-    lim .σ-uniq {β = β} {σ' = σ'} p = ext λ _ →
-      sym $ unique (β .η) _ (σ' .η tt) (λ j → sym (p ηₚ j))
+    lim .σ-uniq {β = β} {σ' = σ'} p = ext λ _ → unique (β .η) _ (σ' .η tt) λ j →
+      sym (p ηₚ j)
 ```
 
 <!--
@@ -377,7 +377,7 @@ limit:
     ml .universal   = hom
     ml .factors e p = σ-comm {β = eps-nt e p} ηₚ _
     ml .unique {x = x} eps p other q =
-      sym $ σ-uniq {σ' = other-nt} (ext λ j → sym (q j)) ηₚ tt
+      σ-uniq {σ' = other-nt} (ext λ j → sym (q j)) ηₚ tt
       where
         other-nt : !Const x => F
         other-nt .η _ = other
@@ -801,9 +801,10 @@ as the data for a limit.
       (Obs .π j C.∘ eq .equ) C.∘ lim .universal e comm ≡⟨ C.pullr (eq .factors) ⟩
       Obs .π j C.∘ Obs .tuple e                        ≡⟨ Obs .commute ⟩
       e j                                              ∎
-    lim .unique e comm u' fac = eq .unique $ Obs .unique _
-      λ i → C.assoc _ _ _ ∙ fac i
+    lim .unique e comm u' fac = eq .unique $ sym $ Obs .unique _ λ i →
+      C.assoc _ _ _ ∙ fac i
 ```
+
 </details>
 
 This implies that a category with equalisers and large enough indexed products has
@@ -909,7 +910,8 @@ module preserves-limit
     : {x : C.Ob}
     → {eps : (j : J.Ob) → C.Hom x (Dia.F₀ j)}
     → {p : ∀ {i j} (f : J.Hom i j) → Dia.F₁ f C.∘ eps i ≡ eps j}
-    → F.F₁ (lim.universal eps p) ≡ F-lim.universal (λ j → F.F₁ (eps j)) (λ f → F.collapse (p f))
+    → F-lim.universal (λ j → F.F₁ (eps j)) (λ f → F.collapse (p f))
+    ≡ F.F₁ (lim.universal eps p)
   universal = F-lim.unique _ _ _ (λ j → F.collapse (lim.factors _ _))
 
 module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}

@@ -52,7 +52,7 @@ cone is limiting if and only if $f$ is [[invertible]].
     ml .commutes _ = eliml (A .F-id)
     ml .universal eps' _ = inv.inv ∘ eps' tt
     ml .factors eps' _ = cancell inv.invl
-    ml .unique eps' _ other com = sym (lswizzle (sym (com tt)) inv.invr)
+    ml .unique eps' _ other com = lswizzle (sym (com tt)) inv.invr
 
   is-limit→is-iso
     : ∀ {A B : Functor ⊤Cat C} {eps : B F∘ !F => A}

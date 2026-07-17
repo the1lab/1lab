@@ -88,7 +88,7 @@ such that $f_{i} \circ \langle v , h_{i} \rangle = h_{i}$.
       → {hᵢ : ∀ ix → Hom[ uᵢ ix ∘ v ] x' (bᵢ' ix)}
       → (other : Hom[ v ] x' a')
       → (∀ ix → fᵢ ix ∘' other ≡ hᵢ ix)
-      → other ≡ universal v hᵢ
+      → universal v hᵢ ≡ other
 ```
 
 <!--
@@ -127,9 +127,9 @@ such that $f_{i} \circ \langle v , h_{i} \rangle = h_{i}$.
     → {hᵢ : ∀ ix → Hom[ wᵢ ix ] x' (bᵢ' ix)}
     → (other : Hom[ v₁ ] x' a')
     → (∀ ix → fᵢ ix ∘' other ≡[ p ix ] hᵢ ix)
-    → other ≡[ q ] universal' r hᵢ
-  uniquep p q r {hᵢ} other s =
-    to-pathp[]⁻ (unique other (λ ix → from-pathp[]⁻ (s ix)) ∙ from-pathp[]⁻ (universalp p q r hᵢ))
+    → universal' r hᵢ ≡[ sym q ] other
+  uniquep p q r {hᵢ} other s = to-pathp[] $
+    from-pathp[] (universalp r (sym q) p _) ∙ unique _ (λ i → from-pathp[]⁻ (s i))
 
   uniquep₂
     : ∀ {x x'}
@@ -142,8 +142,8 @@ such that $f_{i} \circ \langle v , h_{i} \rangle = h_{i}$.
     → (∀ ix → fᵢ ix ∘' other₂ ≡[ r ix ] hᵢ ix)
     → other₁ ≡[ q ] other₂
   uniquep₂ p q r {hᵢ = hᵢ} other₁ other₂ α β = begin[]
-    other₁          ≡[]⟨ uniquep p refl p other₁ α ⟩
-    universal' p hᵢ ≡[]⟨ symP (uniquep r (sym q) p other₂ β) ⟩
+    other₁          ≡[]⟨ symP (uniquep p refl p other₁ α) ⟩
+    universal' p hᵢ ≡[]⟨ uniquep r (sym q) p other₂ β ⟩
     other₂          ∎[]
 ```
 -->
@@ -248,11 +248,11 @@ empty-jointly-cartesian→codiscrete
   → ¬ Ix
   → is-jointly-cartesian uᵢ fᵢ
   → ∀ {x} (v : Hom x a) → (x' : Ob[ x ]) → is-contr (Hom[ v ] x' a')
-empty-jointly-cartesian→codiscrete ¬ix fᵢ-cart v x' =
-  contr (fᵢ.universal v λ ix → absurd (¬ix ix)) λ other →
-    sym (fᵢ.unique other λ ix → absurd (¬ix ix))
-  where
-    module fᵢ = is-jointly-cartesian fᵢ-cart
+empty-jointly-cartesian→codiscrete ¬ix fᵢ-cart v x' = record where
+  module fᵢ = is-jointly-cartesian fᵢ-cart
+
+  centre      = fᵢ.universal v λ ix → absurd (¬ix ix)
+  paths other = fᵢ.unique other λ ix → absurd (¬ix ix)
 ```
 
 In the other direction, let $f : \cE_{u}(A', B')$ be some map.
@@ -354,7 +354,7 @@ jointly-cartesian-∘ {Ix = Ix} {uᵢⱼ = uᵢⱼ} {fᵢⱼ = fᵢⱼ} {vᵢ = 
         ≡[]⟨ fᵢⱼ.commutesp i _ _ j ⟩
       hᵢⱼ (i , j)
         ∎[]
-    fᵢⱼ∘gᵢ-cart .unique {hᵢ = hᵢⱼ} other p = gᵢ.unique other $ λ i →
+    fᵢⱼ∘gᵢ-cart .unique {hᵢ = hᵢⱼ} other p = gᵢ.unique other $ λ i → symP $
       fᵢⱼ.uniquep i _ _ _ (gᵢ i ∘' other) λ j → begin
         fᵢⱼ i j ∘' gᵢ i ∘' other   ≡[]⟨ assoc' (fᵢⱼ i j) (gᵢ i) other ⟩
         (fᵢⱼ i j ∘' gᵢ i) ∘' other ≡[]⟨ p (i , j) ⟩
@@ -391,8 +391,7 @@ jointly-cartesian-cartesian-∘ {uᵢ = uᵢ} {fᵢ = fᵢ} {v = v} {g = g} fᵢ
       (fᵢ ix ∘' g) ∘' universal fᵢ∘g-cart w hᵢ             ≡[]⟨ pullr[] _ (g.commutes w _) ⟩
       fᵢ ix ∘' fᵢ.universal' (λ ix → assoc (uᵢ ix) v w) hᵢ ≡[]⟨ fᵢ.commutesp _ hᵢ ix ⟩
       hᵢ ix                                                ∎[]
-    fᵢ∘g-cart .unique other pᵢ =
-      g.unique other $
+    fᵢ∘g-cart .unique other pᵢ = g.unique other $ symP $
       fᵢ.uniquep _ _ _ (g ∘' other) λ ix →
         assoc' (fᵢ ix) g other ∙[] pᵢ ix
 ```
@@ -426,7 +425,7 @@ pointwise-cartesian-jointly-cartesian-∘
     (fᵢ ix ∘' gᵢ ix) ∘' gᵢ.universal v (λ ix → fᵢ.universal' ix _ (hᵢ ix)) ≡[]⟨ pullr[] refl (gᵢ.commutes v _ ix) ⟩
     fᵢ ix ∘' fᵢ.universal' ix _ (hᵢ ix)                                    ≡[]⟨ fᵢ.commutesp ix (assoc (uᵢ ix) (vᵢ ix) v) (hᵢ ix) ⟩
     hᵢ ix                                                                  ∎[]
-  fᵢ∘gᵢ-cart .unique other p = gᵢ.unique other λ ix → fᵢ.uniquep ix _ _ _
+  fᵢ∘gᵢ-cart .unique other p = gᵢ.unique other λ ix → symP $ fᵢ.uniquep ix _ _ _
     (gᵢ ix ∘' other) (assoc' (fᵢ ix) (gᵢ ix) other ∙[] p ix)
 ```
 </details>
@@ -471,7 +470,7 @@ jointly-cartesian-vertical-retraction-stable
       fᵢ' ix ∘' ϕ ∘' fᵢ.universal v hᵢ         ≡[]⟨ pulll[] (idr (uᵢ ix)) (factor ix) ⟩
       fᵢ ix ∘' fᵢ.universal v hᵢ               ≡[]⟨ fᵢ.commutes v hᵢ ix ⟩
       hᵢ ix                                    ∎[]
-    fᵢ'-cart .is-jointly-cartesian.unique {v = v} {hᵢ = hᵢ} other p = begin[]
+    fᵢ'-cart .is-jointly-cartesian.unique {v = v} {hᵢ = hᵢ} other p = symP $ begin[]
       let
         unique-lemma : ∀ ix → fᵢ ix ∘' hom[ idl v ] (ϕ.section' ∘' other) ≡ hᵢ ix
         unique-lemma ix = begin[]
@@ -481,7 +480,7 @@ jointly-cartesian-vertical-retraction-stable
           hᵢ ix                                       ∎[]
       in
         other                                 ≡[]⟨ introl[] _ ϕ.is-section' ⟩
-        (ϕ ∘' ϕ.section') ∘' other            ≡[]⟨ pullr[] _ (wrap (idl v) ∙[] fᵢ.unique _ unique-lemma) ⟩
+        (ϕ ∘' ϕ.section') ∘' other            ≡[]⟨ pullr[] _ (wrap (idl v) ∙[] sym (fᵢ.unique _ unique-lemma)) ⟩
         ϕ ∘' fᵢ.universal v hᵢ                ≡[]⟨ wrap (idl v) ⟩
         hom[ idl v ] (ϕ ∘' fᵢ.universal v hᵢ) ∎[]
 ```
@@ -737,12 +736,14 @@ postcompose-equiv→jointly-cartesian {a = a} {uᵢ = uᵢ} fᵢ eqv = fᵢ-cart
   fᵢ-cart : is-jointly-cartesian uᵢ fᵢ
   fᵢ-cart .universal v hᵢ = eqv.from hᵢ
   fᵢ-cart .commutes v hᵢ ix = eqv.ε hᵢ ·ₚ ix
-  fᵢ-cart .unique {hᵢ = hᵢ} other p = sym (eqv.η other) ∙ ap eqv.from (ext p)
+  fᵢ-cart .unique {hᵢ = hᵢ} other p = ap eqv.from (sym (ext p)) ∙ eqv.η other
 
 jointly-cartesian→postcompose-equiv {uᵢ = uᵢ} {fᵢ = fᵢ} fᵢ-cart v x' .is-eqv hᵢ =
-  contr (fᵢ.universal v hᵢ , ext (fᵢ.commutes v hᵢ)) λ fib →
-    Σ-prop-pathp! (sym (fᵢ.unique (fib .fst) (λ ix → fib .snd ·ₚ ix)))
-  where module fᵢ = is-jointly-cartesian fᵢ-cart
+  record where
+    module fᵢ = is-jointly-cartesian fᵢ-cart
+
+    centre    = fᵢ.universal v hᵢ , ext (fᵢ.commutes v hᵢ)
+    paths fib = Σ-prop-pathp! $ fᵢ.unique (fib .fst) (λ ix → fib .snd ·ₚ ix)
 ```
 </details>
 
@@ -843,6 +844,6 @@ spaces arising from lifts of empty families.
       : ∀ {x y : Ob}
       → {u : Hom x y} {x' : Ob[ x ]}
       → (other : Hom[ u ] x' (Codisc* y))
-      → other ≡ codisc* u x'
+      → codisc* u x' ≡ other
     codisc*-unique other = π*.unique other (λ ())
 ```

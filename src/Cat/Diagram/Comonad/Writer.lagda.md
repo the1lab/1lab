@@ -54,8 +54,8 @@ even in the comonadic setting.
   Writer : Functor C C
   Writer .F₀   = A×
   Writer .F₁ f = ⟨ π₁ , f ∘ π₂ ⟩
-  Writer .F-id = sym (unique (idr _) id-comm)
-  Writer .F-∘ f g = sym (unique (pulll π₁∘⟨⟩ ∙ π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ extendr π₂∘⟨⟩))
+  Writer .F-id = unique (idr _) id-comm
+  Writer .F-∘ f g = unique (pulll π₁∘⟨⟩ ∙ π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ extendr π₂∘⟨⟩)
 ```
 
 Since we've already decided that the comonad structure is built on
@@ -82,7 +82,10 @@ them in this `<details>`{.html} block for the curious reader.</summary>
     (pulll π₁∘⟨⟩ ∙ π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ cancelr π₂∘⟨⟩)
     (idr _) (idr _)
   Writer-comonad .has-is-comonad .δ-unitr = π₂∘⟨⟩
-  Writer-comonad .has-is-comonad .δ-assoc = ⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩ refl (pullr π₂∘⟨⟩ ∙ id-comm) ∙ sym (⟨⟩∘ _)
+  Writer-comonad .has-is-comonad .δ-assoc =
+       sym (⟨⟩∘ _)
+    ∙∙ ap₂ ⟨_,_⟩ refl (pullr π₂∘⟨⟩ ∙ id-comm)
+    ∙∙ ⟨⟩∘ _
 ```
 
 </details>
@@ -134,7 +137,7 @@ products.
     mk .has-is-monad .μ-unitr =
       let
         lemma =
-          m.μ ∘ ⟨ π₁ , m.η ∘ ! ∘ π₂ ⟩               ≡˘⟨ ap₂ _∘_ refl (⟨⟩-unique (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩ ∙ idl π₁) (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩ ∙ ap₂ _∘_ refl (!-unique _))) ⟩
+          m.μ ∘ ⟨ π₁ , m.η ∘ ! ∘ π₂ ⟩               ≡⟨ ap₂ _∘_ refl (⟨⟩-unique (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩ ∙ idl π₁) (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩ ∙ ap₂ _∘_ refl (!-unique _))) ⟩
           m.μ ∘ ⟨ id ∘ π₁ , m.η ∘ π₂ ⟩ ∘ ⟨ π₁ , ! ⟩ ≡⟨ pulll m.μ-unitr ⟩
           π₁ ∘ ⟨ π₁ , ! ⟩                           ≡⟨ π₁∘⟨⟩ ⟩
           π₁                                        ∎
@@ -142,7 +145,7 @@ products.
     mk .has-is-monad .μ-unitl =
       let
         lemma =
-          m.μ ∘ ⟨ m.η ∘ ! , π₁ ⟩                    ≡˘⟨ ap₂ _∘_ refl (⟨⟩-unique (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩ ∙ idl π₁)) ⟩
+          m.μ ∘ ⟨ m.η ∘ ! , π₁ ⟩                    ≡⟨ ap₂ _∘_ refl (⟨⟩-unique (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩ ∙ idl π₁)) ⟩
           m.μ ∘ ⟨ m.η ∘ π₁ , id ∘ π₂ ⟩ ∘ ⟨ ! , π₁ ⟩ ≡⟨ pulll m.μ-unitl ⟩
           π₂ ∘ ⟨ ! , π₁ ⟩                           ≡⟨ π₂∘⟨⟩ ⟩
           π₁                                        ∎
@@ -159,7 +162,7 @@ products.
           m.μ ∘ ⟨ m.μ ∘ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₁ ∘ π₂ ∘ π₂ ⟩
             ∎
       in ⟨⟩-unique₂ lemma (products! products)
-        (pulll π₁∘⟨⟩ ∙ pullr (⟨⟩-unique (pulll π₁∘⟨⟩ ∙ π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩)))
+        (pulll π₁∘⟨⟩ ∙ pullr (sym (⟨⟩-unique (pulll π₁∘⟨⟩ ∙ π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩))))
         (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩)
 
 ```

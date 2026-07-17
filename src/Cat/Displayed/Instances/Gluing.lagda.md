@@ -157,9 +157,9 @@ Gl-products {x} {y} a b = done module Gl-products where
     record { com = coh }
     where abstract
     coh : apx .map C.∘ C.⟨ f' .map , g' .map ⟩ ≡ F.₁ (D.⟨ f , g ⟩) C.∘ a' .map
-    coh = C.pullr (C.⟨⟩∘ _) ∙ sym (is.unique
+    coh = C.pullr (sym (C.⟨⟩∘ _)) ∙ is.unique
       (F.pulll D.π₁∘⟨⟩ ∙ sym (f' .com) ∙ sym (C.pullr C.π₁∘⟨⟩))
-      (F.pulll D.π₂∘⟨⟩ ∙ sym (g' .com) ∙ sym (C.pullr C.π₂∘⟨⟩)))
+      (F.pulll D.π₂∘⟨⟩ ∙ sym (g' .com) ∙ sym (C.pullr C.π₂∘⟨⟩))
 
   done .has-is-product' .π₁∘⟨⟩' = Slice-pathp C.π₁∘⟨⟩
   done .has-is-product' .π₂∘⟨⟩' = Slice-pathp C.π₂∘⟨⟩
@@ -377,8 +377,8 @@ indeed an exponential transpose.
   done .has-is-exponential' .commutes' m = Slice-pathp comm1 where abstract
     comm1 : (Cλ.ev C.∘ (pb.p₂ C.⊗₁ C.id)) C.∘ (alpha.alpha m C.⊗₁ C.id) ≡ m .map
     comm1 = C.pullr (sym (Bifunctor.lmap-∘ (Curry C.×-functor) _ _))
-          ∙∙ ap (Cλ.ev C.∘_) (ap₂ C._⊗₁_ pb.p₂∘universal refl)
-          ∙∙ Cλ.commutes _
+         ∙∙ ap (Cλ.ev C.∘_) (ap₂ C._⊗₁_ pb.p₂∘universal refl)
+         ∙∙ Cλ.commutes _
 
   done .has-is-exponential' .unique' {Γ' = Γ} {m = mβ} {m'β} {p} {m' = m} m' q =
     Slice-pathp (pb.unique coh₁ coh₂)
@@ -389,12 +389,12 @@ indeed an exponential transpose.
       pb.p₁ C.∘ m' .map
         ≡⟨ m' .com ⟩
       F.₁ (m'β) C.∘ Γ .map
-        ≡⟨ ap₂ C._∘_ (ap F.₁ (Dλ.unique _ p)) refl ⟩
+        ≡˘⟨ ap₂ C._∘_ (ap F.₁ (Dλ.unique _ p)) refl ⟩
       F.₁ (Dλ.ƛ mβ) C.∘ Γ .map
         ∎
 
     coh₂ : pb.p₂ C.∘ m' .map ≡ Cλ.ƛ (m .map)
-    coh₂ = Cλ.unique _ $
+    coh₂ = sym $ Cλ.unique _ $
       Cλ.ev C.∘ (pb.p₂ C.∘ m' .map) C.⊗₁ C.id
         ≡⟨ ap₂ C._∘_ refl (Bifunctor.lmap-∘ (Curry C.×-functor) _ _) ⟩
       Cλ.ev C.∘ pb.p₂ C.⊗₁ C.id C.∘ m' .map C.⊗₁ C.id

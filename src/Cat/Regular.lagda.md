@@ -281,8 +281,8 @@ obtaining
         m = π₁ C.∘ mn
         n = π₂ C.∘ mn
         sq' : ⟨ k C.∘ p , l C.∘ p ⟩ ≡ ⟨ d C.∘ m , d C.∘ n ⟩
-        sq' = sym (⟨⟩∘ _) ∙ sq'- ∙ ⟨⟩-unique (C.pulll π₁∘⟨⟩ ∙ C.pullr refl)
-                                             (C.pulll π₂∘⟨⟩ ∙ C.pullr refl)
+        sq' = ⟨⟩∘ _ ∙ sq'- ∙ sym (⟨⟩-unique (C.pulll π₁∘⟨⟩ ∙ C.pullr refl)
+                                            (C.pulll π₂∘⟨⟩ ∙ C.pullr refl))
 ```
 
 We define a map $q : P \to R$ into the kernel pair of $a$, factoring
@@ -330,9 +330,9 @@ skip it.
         rem₂ = r.stable d π₁ {p2 = π₁} dgh.left∈L λ where
           .square → π₁∘⟨⟩
           .universal {p₁' = p₁'} {p₂'} p → ⟨ p₂' , π₂ ∘ p₁' ⟩
-          .p₁∘universal {p₁' = p₁'} {p₂'} {p = p} → ⟨⟩∘ _
+          .p₁∘universal {p₁' = p₁'} {p₂'} {p = p} → sym (⟨⟩∘ _)
             ∙∙ ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩ ∙ sym p) (pullr π₂∘⟨⟩ ∙ idl _)
-            ∙∙ sym (⟨⟩-unique refl refl)
+            ∙∙ ⟨⟩-unique refl refl
           .p₂∘universal → π₁∘⟨⟩
           .unique {p = p} {lim'} q r → ⟨⟩-unique r $ sym $
             ap (π₂ ∘_) (sym q) ∙ pulll π₂∘⟨⟩ ∙ ap (_∘ lim') (idl _)
@@ -341,9 +341,9 @@ skip it.
         rem₃ = r.stable d π₂ {p2 = π₂} dgh.left∈L λ where
           .square → π₂∘⟨⟩
           .universal {p₁' = p₁'} {p₂'} p → ⟨ π₁ ∘ p₁' , p₂' ⟩
-          .p₁∘universal {p = p} → ⟨⟩∘ _
+          .p₁∘universal {p = p} → sym (⟨⟩∘ _)
             ∙∙ ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩ ∙ idl _) (pullr π₂∘⟨⟩)
-            ∙∙ sym (⟨⟩-unique refl p)
+            ∙∙ ⟨⟩-unique refl p
           .p₂∘universal → π₂∘⟨⟩
           .unique {p = p} {lim'} q r → ⟨⟩-unique
             (sym (ap (π₁ ∘_) (sym q) ∙ pulll π₁∘⟨⟩ ∙ ap (_∘ lim') (idl _)))
@@ -375,11 +375,11 @@ construction, so $k = l$ --- so $g$ is _also_ monic.
 
         rem₈ : gh C.∘ k ≡ gh C.∘ l
         rem₈ =
-          gh ∘ k              ≡⟨ ⟨⟩-unique refl refl ⟩∘⟨refl ⟩
-          ⟨ g , h ⟩ ∘ k       ≡⟨ ⟨⟩∘ _ ⟩
+          gh ∘ k              ≡˘⟨ ⟨⟩-unique refl refl ⟩∘⟨refl ⟩
+          ⟨ g , h ⟩ ∘ k       ≡˘⟨ ⟨⟩∘ _ ⟩
           ⟨ g ∘ k , h ∘ k ⟩   ≡⟨ ap₂ ⟨_,_⟩ w' rem₇ ⟩
-          ⟨ g ∘ l , h ∘ l ⟩   ≡˘⟨ ⟨⟩∘ _ ⟩
-          ⟨ g , h ⟩ ∘ l       ≡˘⟨ ⟨⟩-unique refl refl ⟩∘⟨refl ⟩
+          ⟨ g ∘ l , h ∘ l ⟩   ≡⟨ ⟨⟩∘ _ ⟩
+          ⟨ g , h ⟩ ∘ l       ≡⟨ ⟨⟩-unique refl refl ⟩∘⟨refl ⟩
           gh ∘ l              ∎
 ```
 
@@ -404,8 +404,8 @@ we do below.
 ```agda
       compute =
         (h ∘ g.from) ∘ f                           ≡⟨ pullr refl ∙ pullr refl ⟩
-        π₂ ∘ dgh.gh ∘ g.from ∘ f                   ≡⟨ refl ⟩∘⟨ ⟨⟩-unique refl refl ⟩∘⟨ refl ⟩
-        π₂ ∘ ⟨ g , h ⟩ ∘ g.from ∘ f                ≡⟨ refl⟩∘⟨ ⟨⟩∘ _ ⟩
+        π₂ ∘ dgh.gh ∘ g.from ∘ f                   ≡˘⟨ refl ⟩∘⟨ ⟨⟩-unique refl refl ⟩∘⟨ refl ⟩
+        π₂ ∘ ⟨ g , h ⟩ ∘ g.from ∘ f                ≡˘⟨ refl⟩∘⟨ ⟨⟩∘ _ ⟩
         π₂ ∘ ⟨ g ∘ g.from ∘ f , h ∘ g.from ∘ f ⟩   ≡⟨ π₂∘⟨⟩ ⟩
         h ∘ g.from ∘ f                             ≡⟨ refl⟩∘⟨ g-ortho.p .centre .snd .fst ⟩
         h ∘ dgh.d                                  ≡⟨ pullr (sym dgh.factors) ⟩
@@ -431,7 +431,7 @@ coequalises _some_ pair of maps.
       go .has-is-coeq .universal w = Make.h w ∘ Make.g.from w
       go .has-is-coeq .factors {e' = e'} {p = w} = Make.compute w
       go .has-is-coeq .unique {e' = e'} {p = p} {colim} q = is-s .fst _ _ $
-        colim ∘ f                      ≡⟨ q ⟩
-        e'                             ≡˘⟨ Make.compute p ⟩
-        (Make.h p ∘ Make.g.from p) ∘ f ∎
+        (Make.h p ∘ Make.g.from p) ∘ f ≡⟨ Make.compute p ⟩
+        e'                             ≡˘⟨ q ⟩
+        colim ∘ f                      ∎
 ```

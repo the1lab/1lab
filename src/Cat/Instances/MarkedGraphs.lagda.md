@@ -503,8 +503,8 @@ Marked-free-category G .Free-object.commute {Y = C} =
   where open Precategory (C .fst)
 Marked-free-category G .Free-object.unique {Y = C} F p =
   Marked-path-category-functor-path
-    (λ x i → p i .node x)
-    (λ e → to-pathp (from-pathp (λ i → p i .edge e) ∙ sym (idl _)))
+    (λ x i → p (~ i) .node x)
+    (λ e → to-pathp (ap (subst₂ Hom _ _) (idl _) ∙ from-pathp (λ i → p (~ i) .edge e)))
   where open Precategory (C .fst)
 ```
 

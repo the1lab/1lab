@@ -107,35 +107,33 @@ exercises, so we leave them hidden in this `<details>` tag.</summary>
     is-subterminal₀→₁ h .is-product.⟨_,_⟩ f g = f
     is-subterminal₀→₁ h .is-product.π₁∘⟨⟩ = idl _
     is-subterminal₀→₁ h .is-product.π₂∘⟨⟩ = idl _ ∙ h _ _ _
-    is-subterminal₀→₁ h .is-product.unique a b = sym (idl _) ∙ a
+    is-subterminal₀→₁ h .is-product.unique a b = sym a ∙ idl _
 
     is-subterminal₁→₀ : is-subterminal₁ P → is-subterminal P
     is-subterminal₁→₀ h X f g = sym (h .is-product.π₁∘⟨⟩) ∙ h .is-product.π₂∘⟨⟩
 
     is-subterminal₁→₂ : is-subterminal₁ P → is-subterminal₂ P
-    is-subterminal₁→₂ h = inc (p , refl)
-      where
-        p : Product C P P
-        p .apex = P
-        p .π₁ = id
-        p .π₂ = id
-        p .has-is-product = h
+    is-subterminal₁→₂ h = inc (p , refl) where
+      p : Product C P P
+      p .apex = P
+      p .π₁ = id
+      p .π₂ = id
+      p .has-is-product = h
 
     is-subterminal₂→₀ : is-subterminal₂ P → is-subterminal P
     is-subterminal₂→₀ = rec! λ p h X f g →
       sym (p .π₁∘⟨⟩) ∙∙ h ⟩∘⟨refl ∙∙ p .π₂∘⟨⟩
 
     is-subterminal₁→₃ : is-subterminal₁ P → is-subterminal₃ P
-    is-subterminal₁→₃ h = inc (p , subst is-invertible eq id-invertible)
-      where
-        p : Product C P P
-        p .apex = P
-        p .π₁ = id
-        p .π₂ = id
-        p .has-is-product = h
+    is-subterminal₁→₃ h = inc (p , subst is-invertible eq id-invertible) where
+      p : Product C P P
+      p .apex = P
+      p .π₁ = id
+      p .π₂ = id
+      p .has-is-product = h
 
-        eq : id ≡ h .is-product.⟨_,_⟩ id id
-        eq = h .is-product.unique (idl _) (idl _)
+      eq : id ≡ h .is-product.⟨_,_⟩ id id
+      eq = sym $ h .is-product.unique (idl _) (idl _)
 
     is-subterminal₃→₁ : is-subterminal₃ P → is-subterminal₁ P
     is-subterminal₃→₁ = rec! λ p h →

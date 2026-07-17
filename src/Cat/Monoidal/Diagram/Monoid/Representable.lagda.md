@@ -141,7 +141,7 @@ answer is yes!
     (mon .η ∘ !) ∘ f ≡⟨ pullr (sym (!-unique (! ∘ f))) ⟩
     mon .η ∘ !       ∎
   precompose-hom-mon-hom {mon = mon} f .pres-⋆ g h =
-    (mon .μ ∘ ⟨ g , h ⟩) ∘ f   ≡⟨ pullr (⟨⟩∘ f) ⟩
+    (mon .μ ∘ ⟨ g , h ⟩) ∘ f   ≡⟨ pullr (sym (⟨⟩∘ f)) ⟩
     mon .μ ∘ ⟨ g ∘ f , h ∘ f ⟩ ∎
 ```
 

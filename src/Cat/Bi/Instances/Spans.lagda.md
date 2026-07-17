@@ -170,12 +170,12 @@ module _ (pb : ∀ {a b c} (f : Hom a b) (g : Hom c b) → Pullback C f g) where
         p = sym (pulll (sym (f .right)) ∙ sym (x.square))
       res .left  = sym (pullr y.p₂∘universal ∙ pulll (sym (f .left)))
       res .right = sym (pullr y.p₁∘universal)
-    mk .lmap-id = Span-hom-path (sym (pb _ _ .unique id-comm (idr _)))
-    mk .rmap-id = Span-hom-path (sym (pb _ _ .unique (idr _) id-comm))
-    mk .lmap-∘ f g = Span-hom-path $ sym $ pb _ _ .unique
+    mk .lmap-id = Span-hom-path (pb _ _ .unique id-comm (idr _))
+    mk .rmap-id = Span-hom-path (pb _ _ .unique (idr _) id-comm)
+    mk .lmap-∘ f g = Span-hom-path $ pb _ _ .unique
       (pulll β₁ ∙ extendr β₁)
       (pulll β₂ ∙ β₂)
-    mk .rmap-∘ f g = Span-hom-path $ sym $ pb _ _ .unique
+    mk .rmap-∘ f g = Span-hom-path $ pb _ _ .unique
       (pulll β₁ ∙ β₁)
       (pulll β₂ ∙ extendr β₂)
     mk .lrmap f g = Span-hom-path $ unique₂ (pb _ _)
@@ -390,7 +390,7 @@ variables and) satisfy the triangle and pentagon identities.
         (pulll β₂ ∙ pulll β₂ ∙ β₂)
         (pulll (pulll β₁ ∙ pullr β₁) ∙ pullr β₁)
         (pulll (pulll β₂ ∙ β₂) ∙ pullr β₂))
-  Spanᵇ .triangle f g = Span-hom-path $ pb _ _ .unique
+  Spanᵇ .triangle f g = Span-hom-path $ sym $ pb _ _ .unique
     (pulll β₁ ∙ pullr β₁ ∙ β₁)
     (pulll β₂ ∙ β₂)
   Spanᵇ .pentagon f g h i = Span-hom-path $ unique₂ (pb _ _)
@@ -401,7 +401,7 @@ variables and) satisfy the triangle and pentagon identities.
       {p = pullr β₂ ∙ extendl (pb _ _ .square) ∙ pullr refl}
       (pulll β₁ ∙ β₁)
       (pulll β₂ ∙ pullr β₂)
-      (pulll β₁ ∙ pb _ _ .unique (pulll β₁ ∙ pulll β₁ ∙ β₁) (pulll β₂ ∙ pullr (pulll β₂ ∙ pullr β₂) ∙ ap₂ C._∘_ refl (pulll β₁) ∙ pulll β₁))
+      (pulll β₁ ∙ sym (pb _ _ .unique (pulll β₁ ∙ pulll β₁ ∙ β₁) (pulll β₂ ∙ pullr (pulll β₂ ∙ pullr β₂) ∙ ap₂ C._∘_ refl (pulll β₁) ∙ pulll β₁)))
       (pulll β₂ ∙ pullr (pulll β₂ ∙ pullr β₂ ∙ pulll β₁) ∙ extendl β₂))
     (pulll β₂ ∙ pullr β₂)
 ```

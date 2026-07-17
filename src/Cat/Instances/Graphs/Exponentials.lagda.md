@@ -60,6 +60,6 @@ Graphs-closed .has-exp A B .has-is-exp .ƛ m = record where
 
 Graphs-closed .has-exp A B .has-is-exp .commutes m = trivialᴳ!
 Graphs-closed .has-exp A B .has-is-exp .unique m' x = ext record where
-  node a b i = x i .node (a , b)
-  edge a i b = x i .edge (a , b)
+  node a b i = x (~ i) .node (a , b)
+  edge a i b = x (~ i) .edge (a , b)
 ```

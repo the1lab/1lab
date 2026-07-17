@@ -82,8 +82,8 @@ surjectivity out of the way, we get what we wanted.
     ∥-∥-elim {P = λ e → go {F} e' p (f x) e ≡ e' x}
       (λ x → hlevel 1) (λ e → p $ₚ (e .fst , x , e .snd)) (surj (f x))
   coeqs .unique {F} {e'} {p} {colim} comm = funext λ a →
-    ∥-∥-elim {P = λ e → colim a ≡ go {F} e' p a e} (λ x → hlevel 1)
-      (λ x → ap colim (sym (x .snd)) ∙ comm $ₚ x .fst)
+    ∥-∥-elim {P = λ e → go {F} e' p a e ≡ colim a} (λ x → hlevel 1)
+      (λ x → sym comm ·ₚ x .fst ∙ ap colim (x .snd))
       (surj a)
 ```
 

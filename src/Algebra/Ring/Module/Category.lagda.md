@@ -261,7 +261,7 @@ path-mangling, but it's nothing _too_ bad:
     Σ-pathp (f .snd .linear _ _ _) (g .snd .linear _ _ _)
   prod .has-is-product .π₁∘⟨⟩ = ext λ _ → refl
   prod .has-is-product .π₂∘⟨⟩ = ext λ _ → refl
-  prod .has-is-product .unique p q = ext λ x → p ·ₚ x ,ₚ q ·ₚ x
+  prod .has-is-product .unique p q = ext λ x → sym p ·ₚ x ,ₚ sym q ·ₚ x
 ```
 
 <!-- [TODO: Amy, 2022-09-15]

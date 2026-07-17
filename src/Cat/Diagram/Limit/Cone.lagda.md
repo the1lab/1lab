@@ -227,7 +227,7 @@ unpacking data.
     term .centre .map   = L.universal K.ψ K.commutes
     term .centre .com _ = L.factors K.ψ K.commutes
     term .paths f =
-      Cone-hom-path (sym (L.unique K.ψ K.commutes (f .map) (f .com)))
+      Cone-hom-path (L.unique K.ψ K.commutes (f .map) (f .com))
 ```
 
 <!--

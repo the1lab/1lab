@@ -59,7 +59,7 @@ free-object→make-is-colimit = record where
     fold (colim.universal _ _) C.∘ F.from (unit D.∘ colim.ψ j) ≡⟨ F.pouncer (D.pulll ob.commute) ⟩
     F.from (colim.universal _ _ D.∘ colim.ψ j)                 ≡⟨ F.fromn't (colim.factors (F.₁ ⊙ eta) (F.collapse ⊙ p)) ⟩
     eta j                                                      ∎
-  unique {y} eta p other p' = ob.unique {y} other $
+  unique {y} eta p other p' = ob.unique {y} other $ sym $
     colim.unique (F.₁ ⊙ eta) (F.collapse ⊙ p) (F.₁ other D.∘ unit)
       λ j → sym (D.assoc _ _ _) ∙ F.unwhackr (p' j)
 

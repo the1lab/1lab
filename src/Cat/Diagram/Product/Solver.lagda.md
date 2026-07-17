@@ -187,7 +187,7 @@ lemmas. The first states that quoting a `vhom f` gives us back `f`.
   vhom-sound : ∀ X Y → (f : Hom ⟦ X ⟧ₒ ⟦ Y ⟧ₒ) → reflect X Y (vhom f) ≡ f
   vhom-sound X (Y ‶⊗‶ Z) f =
     ⟨ reflect X Y (vhom (π₁ ∘ f)) , reflect X Z (vhom (π₂ ∘ f)) ⟩ ≡⟨ ap₂ ⟨_,_⟩ (vhom-sound X Y (π₁ ∘ f)) (vhom-sound X Z (π₂ ∘ f)) ⟩
-    ⟨ π₁ ∘ f , π₂ ∘ f ⟩                                           ≡˘⟨ ⟨⟩-unique refl refl ⟩
+    ⟨ π₁ ∘ f , π₂ ∘ f ⟩                                           ≡⟨ ⟨⟩-unique refl refl ⟩
     f                                                             ∎
   vhom-sound X ‶ x ‶ f = refl
 ```
@@ -233,7 +233,7 @@ soundness for our interpretation of composition.
   sound-k X (Y ‶⊗‶ Z) Z ‶π₂‶ v = vsnd-sound X Y Z v
   sound-k X Y (Z1 ‶⊗‶ Z2) ‶⟨ e1 , e2 ⟩‶ v =
     ⟨ reflect X Z1 (eval e1 v) , reflect X Z2 (eval e2 v) ⟩ ≡⟨ ap₂ ⟨_,_⟩ (sound-k X Y Z1 e1 v) (sound-k X Y Z2 e2 v) ⟩
-    ⟨ ⟦ e1 ⟧ₑ ∘ reflect X Y v , ⟦ e2 ⟧ₑ ∘ reflect X Y v ⟩   ≡˘⟨ ⟨⟩∘ _ ⟩
+    ⟨ ⟦ e1 ⟧ₑ ∘ reflect X Y v , ⟦ e2 ⟧ₑ ∘ reflect X Y v ⟩   ≡⟨ ⟨⟩∘ _ ⟩
     ⟨ ⟦ e1 ⟧ₑ , ⟦ e2 ⟧ₑ ⟩ ∘ reflect X Y v                   ∎
   sound-k X Y Z ‶ x ‶ v = vhom-sound X Z _
 ```

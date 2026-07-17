@@ -73,7 +73,7 @@ your paths scream.
     ∥-∥₀-elim (λ _ → Y .is-tr) λ { (i , x) → f i x } {- 1 -}
   coprod .has-is-ic .commute = refl
   coprod .has-is-ic .unique {Y = Y} f p = funext
-    (∥-∥₀-elim (λ _ → is-prop→is-set (Y .is-tr _ _)) λ x → happly (p _) _)
+    (∥-∥₀-elim (λ _ → is-prop→is-set (Y .is-tr _ _)) λ x → sym (p _) ·ₚ _)
 ```
 
 Note that, in the construction of `match`{.Agda} above, we used the fact
@@ -134,11 +134,7 @@ definition.
   colim .commutes f = funext λ _ → sym (quot (f , refl))
   colim .universal {A} eta p x = univ {A} eta (λ f → happly (p f)) x
   colim .factors eta p = refl
-  colim .unique {A} eta p other q = funext λ x →
-    Coeq-elim-prop
-      (λ x →  A .is-tr (other x) (univ {A} eta (λ f → happly (p f)) x))
-      (λ x → happly (q (x .fst)) (x .snd))
-      x
+  colim .unique {A} eta p other q = ext λ j x → sym (q j) ·ₚ x
 ```
 
 ## Finite set-colimits
@@ -185,7 +181,7 @@ Coproducts are given by disjoint sums:
   Sets-coproducts A B .has-is-coproduct .is-coproduct.[_,_] f g = Data.Sum.[ f , g ]
   Sets-coproducts A B .has-is-coproduct .[]∘ι₁ = refl
   Sets-coproducts A B .has-is-coproduct .[]∘ι₂ = refl
-  Sets-coproducts A B .has-is-coproduct .unique p q = sym ([]-unique (sym p) (sym q))
+  Sets-coproducts A B .has-is-coproduct .unique p q = []-unique (sym p) (sym q)
 ```
 
 [[Set coequalisers]] are described in their own module.
@@ -198,7 +194,7 @@ Coproducts are given by disjoint sums:
   Sets-coequalisers f g .has-is-coeq .coequal = ext λ x → glue _
   Sets-coequalisers f g .has-is-coeq .universal {e' = e'} p = Coeq-rec e' (unext p)
   Sets-coequalisers f g .has-is-coeq .factors = refl
-  Sets-coequalisers f g .has-is-coeq .unique q = reext! q
+  Sets-coequalisers f g .has-is-coeq .unique q = reext! (sym q)
 ```
 
 Pushouts are similar to coequalisers, but gluing together points of $A + B$.
@@ -216,7 +212,7 @@ Pushouts are similar to coequalisers, but gluing together points of $A + B$.
   Sets-pushouts f g .has-is-po .universal∘i₁ = refl
   Sets-pushouts f g .has-is-po .universal∘i₂ = refl
   Sets-pushouts f g .has-is-po .unique q r =
-    ext (Equiv.from ⊎-universal (unext q , unext r))
+    ext (Equiv.from ⊎-universal (unext (sym q) , unext (sym r)))
 ```
 
 Hence, `Sets`{.Agda} is finitely cocomplete:

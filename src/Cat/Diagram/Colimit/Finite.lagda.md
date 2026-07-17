@@ -124,17 +124,16 @@ of $in_0f$ and $in_1g$.
 
     po : is-pushout C _ _ _ _
     po .square = sym (assoc _ _ _) ∙ cq.coequal ∙ assoc _ _ _
-    po .universal {i₁' = i₁'} {i₂'} p =
-      cq.universal {e' = cp.[ i₁' , i₂' ]} (
-        cp.[ i₁' , i₂' ] ∘ (in1 ∘ f) ≡⟨ pulll cp.[]∘ι₁ ⟩
-        i₁' ∘ f                      ≡⟨ p ⟩
-        i₂' ∘ g                      ≡˘⟨ pulll cp.[]∘ι₂ ⟩
-        cp.[ i₁' , i₂' ] ∘ (in2 ∘ g) ∎
-      )
+    po .universal {i₁' = i₁'} {i₂'} p = cq.universal {e' = cp.[ i₁' , i₂' ]} $
+      cp.[ i₁' , i₂' ] ∘ (in1 ∘ f) ≡⟨ pulll cp.[]∘ι₁ ⟩
+      i₁' ∘ f                      ≡⟨ p ⟩
+      i₂' ∘ g                      ≡˘⟨ pulll cp.[]∘ι₂ ⟩
+      cp.[ i₁' , i₂' ] ∘ (in2 ∘ g) ∎
     po .universal∘i₁ = pulll cq.factors ∙ cp.[]∘ι₁
     po .universal∘i₂ = pulll cq.factors ∙ cp.[]∘ι₂
-    po .unique p q =
-      cq.unique ((cp.unique (sym (assoc _ _ _) ∙ p) (sym (assoc _ _ _) ∙ q)))
+    po .unique p q = cq.unique $ sym $ cp.unique
+      (sym (assoc _ _ _) ∙ p)
+      (sym (assoc _ _ _) ∙ q)
 ```
 
 Thus, if a category has an initial object, binary coproducts, and

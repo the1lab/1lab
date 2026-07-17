@@ -57,7 +57,7 @@ Pushout→Initial-cocone {f = f} {g} po = colim where
   colim .has⊥ cc .centre .com cs-a = po.universal∘i₁
   colim .has⊥ cc .centre .com cs-b = po.universal∘i₂
   colim .has⊥ cc .centre .com cs-c = pulll po.universal∘i₁ ∙ cc .commutes (lift tt)
-  colim .has⊥ cc .paths otherhom = Cocone-hom-path _ (sym (po.unique (otherhom .com _) (otherhom .com _)))
+  colim .has⊥ cc .paths otherhom = Cocone-hom-path _ (po.unique (otherhom .com _) (otherhom .com _))
 
 Initial-cocone→Pushout
   : ∀ {x y}
@@ -75,7 +75,7 @@ Initial-cocone→Pushout {F = F} colim = po where
   po .has-is-po .universal∘i₁ {p = p} = colim.has⊥ (Square→Cocone _ _ p) .centre .com cs-a
   po .has-is-po .universal∘i₂ {p = p} = colim.has⊥ (Square→Cocone _ _ p) .centre .com cs-b
   po .has-is-po .unique {i₁' = i₁'} {i₂'} {p} {colim'} a b =
-    sym (ap map (colim.has⊥ (Square→Cocone _ _ p) .paths other))
+    ap map (colim.has⊥ (Square→Cocone _ _ p) .paths other)
     where
       other : Cocone-hom _ _ _
       other .map = _

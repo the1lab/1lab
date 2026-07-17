@@ -98,13 +98,13 @@ This is a corollary of `image-is-product`{.Agda}.
 ```agda
     π₁inv : ∀ {a} {b} → F.₁ C.π₁ D.∘ comparison.inv {a} {b} ≡ D.π₁
     π₁inv =
-      F.₁ C.π₁ D.∘ comparison.inv                       ≡⟨ ap₂ D._∘_ refl (D.intror (sym (D.⟨⟩-unique (D.idr _) (D.idr _)))) ⟩
+      F.₁ C.π₁ D.∘ comparison.inv                       ≡⟨ ap₂ D._∘_ refl (D.intror (D.⟨⟩-unique (D.idr _) (D.idr _))) ⟩
       F.₁ C.π₁ D.∘ comparison.inv D.∘ D.⟨ D.π₁ , D.π₂ ⟩ ≡⟨ preserved.π₁∘⟨⟩ ⟩
       D.π₁                                              ∎
 
     π₂inv : ∀ {a} {b} → F.₁ C.π₂ D.∘ comparison.inv {a} {b} ≡ D.π₂
     π₂inv =
-      F.₁ C.π₂ D.∘ comparison.inv                       ≡⟨ ap₂ D._∘_ refl (D.intror (sym (D.⟨⟩-unique (D.idr _) (D.idr _)))) ⟩
+      F.₁ C.π₂ D.∘ comparison.inv                       ≡⟨ ap₂ D._∘_ refl (D.intror (D.⟨⟩-unique (D.idr _) (D.idr _))) ⟩
       F.₁ C.π₂ D.∘ comparison.inv D.∘ D.⟨ D.π₁ , D.π₂ ⟩ ≡⟨ preserved.π₂∘⟨⟩ ⟩
       D.π₂                                              ∎
 ```

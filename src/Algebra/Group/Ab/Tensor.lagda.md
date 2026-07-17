@@ -328,7 +328,6 @@ module _ {ℓ} {A B C : Abelian-group ℓ} where instance
       {f = λ h → curry-bilinear (Hom≃Bilinear.to h)}
       (λ {x} p → Hom≃Bilinear.injective (Equiv.injective (_ , curry-bilinear-is-equiv) p))
       ef
-  {-# OVERLAPS Extensional-tensor-hom #-}
 ```
 -->
 

@@ -42,21 +42,22 @@ record is-indexed-product (F : Idx → C.Ob) (π : ∀ i → C.Hom P (F i))
   field
     tuple   : ∀ {Y} → (∀ i → C.Hom Y (F i)) → C.Hom Y P
     commute : ∀ {i} {Y} {f : ∀ i → C.Hom Y (F i)} → π i C.∘ tuple f ≡ f i
-    unique  : ∀ {Y} {h : C.Hom Y P} (f : ∀ i → C.Hom Y (F i))
-            → (∀ i → π i C.∘ h ≡ f i)
-            → h ≡ tuple f
+    unique
+      : ∀ {Y} {h : C.Hom Y P} (f : ∀ i → C.Hom Y (F i))
+      → (∀ i → π i C.∘ h ≡ f i)
+      → tuple f ≡ h
 
-  eta : ∀ {Y} (h : C.Hom Y P) → h ≡ tuple λ i → π i C.∘ h
+  eta : ∀ {Y} (h : C.Hom Y P) → tuple (λ i → π i C.∘ h) ≡ h
   eta h = unique _ λ _ → refl
 
   unique₂ : ∀ {Y} {g h : C.Hom Y P} → (∀ i → π i C.∘ g ≡ π i C.∘ h) → g ≡ h
-  unique₂ {g = g} {h} eq = eta g ∙ ap tuple (funext eq) ∙ sym (eta h)
+  unique₂ {g = g} {h} eq = sym (eta g) ∙ ap tuple (funext eq) ∙ eta h
 
   hom-iso : ∀ {Y} → C.Hom Y P ≃ (∀ i → C.Hom Y (F i))
   hom-iso = (λ f i → π i C.∘ f) , is-iso→is-equiv λ where
     .is-iso.from   → tuple
     .is-iso.rinv x → funext λ i → commute
-    .is-iso.linv x → sym (unique _ λ _ → refl)
+    .is-iso.linv x → unique _ λ _ → refl
 ```
 
 A category $\cC$ **admits indexed products** (of level $\ell$) if,
@@ -78,9 +79,9 @@ record Indexed-product (F : Idx → C.Ob) : Type (o ⊔ ℓ ⊔ level-of Idx) wh
 module _ {ℓ'} {I : Type ℓ'} (F : I → C .Precategory.Ob) (ip : Indexed-product F) where
   private module ip = Indexed-product ip
 
-  tuple∘ : ∀ {A B} (f : ∀ i → C.Hom B (F i))
-          {g : C.Hom A B}
-        → ip.tuple f C.∘ g ≡ ip.tuple λ i → f i C.∘ g
+  tuple∘
+    : ∀ {A B} (f : ∀ i → C.Hom B (F i)) {g : C.Hom A B}
+    → ip.tuple (λ i → f i C.∘ g) ≡ ip.tuple f C.∘ g
   tuple∘ f = ip.unique _ λ i → C.pulll ip.commute
 
 Indexed-product-≃
@@ -125,7 +126,7 @@ is-indexed-product-is-prop {Idx = Idx} {F = F} {ΠF = ΠF} {π = π} P Q = path 
   open is-indexed-product
 
   p : ∀ {X} → (f : (i : Idx) → C.Hom X (F i)) → P .tuple f ≡ Q .tuple f
-  p f = Q .unique f (λ idx → P .commute)
+  p f = P .unique f (λ x → Q .commute)
 
   path : P ≡ Q
   path i .tuple f = p f i
@@ -133,10 +134,9 @@ is-indexed-product-is-prop {Idx = Idx} {F = F} {ΠF = ΠF} {π = π} P Q = path 
     is-prop→pathp (λ i → C.Hom-set _ _ (π idx C.∘ p f i) (f idx))
       (P .commute)
       (Q .commute) i
-  path i .unique {h = h} f q =
-      is-prop→pathp (λ i → C.Hom-set _ _ h (p f i))
-        (P .unique f q)
-        (Q .unique f q) i
+  path i .unique {h = h} f q = is-prop→pathp (λ i → C.Hom-set _ _ (p f i) h)
+    (P .unique f q)
+    (Q .unique f q) i
 
 module _ {ℓ'} {Idx : Type ℓ'} {F : Idx → C.Ob} {P P' : Indexed-product F} where
   private
@@ -258,14 +258,14 @@ given isomorphism as projection.
     Pa .π _ = C.id
     Pa .has-is-ip .tuple f = f _
     Pa .has-is-ip .commute = C.idl _
-    Pa .has-is-ip .unique f p = sym (C.idl _) ∙ p _
+    Pa .has-is-ip .unique f p = sym (p _) ∙ C.idl _
 
     Pb : Indexed-product {Idx = ⊤} (λ _ → a)
     Pb .ΠF = b
     Pb .π _ = is .C.from
     Pb .has-is-ip .tuple f = is .C.to C.∘ f _
     Pb .has-is-ip .commute = C.cancell (is .C.invr)
-    Pb .has-is-ip .unique f p = sym (C.lswizzle (sym (p _)) (is .C.invl))
+    Pb .has-is-ip .unique f p = C.lswizzle (sym (p _)) (is .C.invl)
 ```
 
 By uniqueness, the two products are equal, which gives us an equality $a \equiv b$
@@ -328,9 +328,7 @@ The rest of the structure follows a similar pattern.
     Πᵃᵇ' : is-indexed-product X πᵃᵇ'
     Πᵃᵇ' .tuple f = ΠᵃΠᵇ .tuple λ a → Πᵇ a .tuple λ b → f (a , b)
     Πᵃᵇ' .commute = C.pullr (ΠᵃΠᵇ .commute) ∙ Πᵇ _ .commute
-    Πᵃᵇ' .unique {h = h} f p =
-      ΠᵃΠᵇ .unique _ λ a →
-      Πᵇ _ .unique _ λ b →
+    Πᵃᵇ' .unique {h = h} f p = ΠᵃΠᵇ .unique _ λ a → sym $ Πᵇ _ .unique _ λ b →
       C.assoc _ _ _ ∙ p (a , b)
 ```
 

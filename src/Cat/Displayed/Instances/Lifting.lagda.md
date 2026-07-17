@@ -386,13 +386,13 @@ reindexing $G'$ pointwise.
 </summary>
 
 ```agda
-    G'* .F-id' = symP $ π*.uniquep _ _ _ _ $ begin
+    G'* .F-id' = π*.uniquep _ _ _ _ $ begin
       π* _ _ ∘' id'          ≡[]⟨ idr' _ ⟩
       π* _ _                 ≡[]⟨ symP (idl' _) ⟩
       id' ∘' π* _ _          ≡[]⟨ (λ i → G' .F-id' (~ i) ∘' π* (α .η _) (G' .F₀' _)) ⟩
       G' .F₁' J.id ∘' π* _ _ ∎[]
 
-    G'* .F-∘' f g = symP $ π*.uniquep _ _ _ _ $ begin
+    G'* .F-∘' f g = π*.uniquep _ _ _ _ $ begin
       π* _ _ ∘' G'* .F₁' f ∘' G'* .F₁' g        ≡[]⟨ pulll[] _ (π*.commutes _ _) ⟩
       hom[] (G' .F₁' f ∘' π* _ _) ∘' G'* .F₁' g ≡[ ap (_∘ F.F₁ g) (α .is-natural _ _ _) ]⟨ to-pathp[]⁻ (whisker-l (sym (α .is-natural _ _ _))) ⟩
       (G' .F₁' f ∘' π* _ _) ∘' G'* .F₁' g       ≡[]⟨ pullr[] _ (π*.commutes _ _) ⟩

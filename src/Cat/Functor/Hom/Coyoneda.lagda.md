@@ -118,7 +118,7 @@ Finally, uniqueness: This just follows by the commuting conditions on
 `α`.
 
 ```agda
-    colim .unique eta comm α p = ext λ x px →
+    colim .unique eta comm α p = sym $ ext λ x px →
       α .η x px               ≡˘⟨ ap (α .η x) (happly P.F-id px) ⟩
       α .η x (P.F₁ id px)     ≡⟨ happly (p _ ηₚ x) id ⟩
       eta (elem x px) .η x id ∎

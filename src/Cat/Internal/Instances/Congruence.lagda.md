@@ -89,32 +89,28 @@ around products and pullbacks.
 
 ```agda
   icat .has-internal-cat .idli {x = x} {y = y} f =
-    Internal-hom-path $
-    has-is-monic _ _ $
+    Internal-hom-path $ has-is-monic _ _ $
     inclusion ∘ has-trans ∘ R×R.universal _  ≡⟨ unpair-trans _ ⟩
     ⟨ rel₁ ∘ f .ihom , rel₂ ∘ has-refl ∘ y ⟩ ≡⟨ ap₂ ⟨_,_⟩ (f .has-src) (pulll refl-p₂ ∙ idl _) ⟩
-    ⟨ x , y ⟩                                ≡˘⟨ ⟨⟩-unique (assoc _ _ _ ∙ f .has-src) (assoc _ _ _ ∙ f .has-tgt) ⟩
+    ⟨ x , y ⟩                                ≡⟨ ⟨⟩-unique (assoc _ _ _ ∙ f .has-src) (assoc _ _ _ ∙ f .has-tgt) ⟩
     inclusion ∘ f .ihom                      ∎
   icat .has-internal-cat .idri {x = x} {y = y} f =
-    Internal-hom-path $
-    has-is-monic _ _ $
+    Internal-hom-path $ has-is-monic _ _ $
     inclusion ∘ has-trans ∘ R×R.universal _  ≡⟨ unpair-trans _ ⟩
     ⟨ rel₁ ∘ has-refl ∘ x , rel₂ ∘ f .ihom ⟩ ≡⟨ ap₂ ⟨_,_⟩ (pulll refl-p₁ ∙ idl _) (f .has-tgt) ⟩
-    ⟨ x , y ⟩                                ≡˘⟨ ⟨⟩-unique (assoc _ _ _ ∙ f .has-src) (assoc _ _ _ ∙ f .has-tgt) ⟩
-    inclusion ∘ f .ihom ∎
+    ⟨ x , y ⟩                                ≡⟨ ⟨⟩-unique (assoc _ _ _ ∙ f .has-src) (assoc _ _ _ ∙ f .has-tgt) ⟩
+    inclusion ∘ f .ihom                      ∎
   icat .has-internal-cat .associ {w = w} {x = x} {y = y} {z = z} f g h =
-    Internal-hom-path $
-    has-is-monic _ _ $
+    Internal-hom-path $ has-is-monic _ _ $
     inclusion ∘ has-trans ∘ R×R.universal _                 ≡⟨ unpair-trans _ ⟩
     ⟨ rel₁ ∘ has-trans ∘ R×R.universal _ , rel₂ ∘ f .ihom ⟩ ≡⟨ ap₂ ⟨_,_⟩ (pulll trans-p₁ ∙ pullr R×R.p₂∘universal) refl ⟩
     ⟨ rel₁ ∘ h .ihom , rel₂ ∘ f .ihom ⟩                     ≡˘⟨ ap₂ ⟨_,_⟩ refl (pulll trans-p₂ ∙ pullr R×R.p₁∘universal) ⟩
     ⟨ rel₁ ∘ h .ihom , rel₂ ∘ has-trans ∘ R×R.universal _ ⟩ ≡˘⟨ unpair-trans _ ⟩
-    inclusion ∘ has-trans ∘ R×R.universal _ ∎
+    inclusion ∘ has-trans ∘ R×R.universal _                 ∎
   icat .has-internal-cat .idi-nat σ =
     Internal-hom-path (sym (assoc _ _ _))
-  icat .has-internal-cat .∘i-nat f g σ =
-    Internal-hom-path $
-    sym (assoc _ _ _)
-    ∙ ap (has-trans ∘_) (R×R.unique (pulll R×R.p₁∘universal) (pulll R×R.p₂∘universal))
+  icat .has-internal-cat .∘i-nat f g σ = Internal-hom-path $ sym $
+      ap (has-trans ∘_) (R×R.unique (pulll R×R.p₁∘universal) (pulll R×R.p₂∘universal))
+    ∙ assoc _ _ _
 ```
 </details>

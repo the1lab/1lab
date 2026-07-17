@@ -177,5 +177,5 @@ properties of colimiting maps for every other colimit.
     unique
       : ∀ {W : Cowedge F} {g : D.Hom cowedge.nadir (W .nadir)}
       → (∀ {a} → g D.∘ cowedge.ψ a ≡ W .ψ a)
-      → g ≡ factor W
+      → factor W ≡ g
 ```
