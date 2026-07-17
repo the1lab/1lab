@@ -3,6 +3,7 @@
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Instances.Shape.Parallel
 open import Cat.Diagram.Limit.Equaliser
+open import Cat.Instances.Shape.Initial
 open import Cat.Diagram.Limit.Pullback
 open import Cat.Diagram.Limit.Terminal
 open import Cat.Diagram.Product.Finite
@@ -46,8 +47,9 @@ every diagram with a [[finite|finite category]] shape.
 
 ```agda
   is-finitely-complete : Typeω
-  is-finitely-complete = ∀ {o ℓ} {D : Precategory o ℓ} → is-finite-precategory D
-                       → (F : Functor D C) → Limit F
+  is-finitely-complete =
+    ∀ {o ℓ} {D : Precategory o ℓ}
+    → is-finite-precategory D → (F : Functor D C) → Limit F
 ```
 
 Similarly to the case with [[arbitrary limits|complete category]], we can get away with
@@ -384,8 +386,7 @@ is indeed the equaliser of $f$ and $g$.
 
 ```agda
       eq .has-is-eq .universal {e' = e'} p =
-        Pb.universal (Bb.unique₂ refl refl (sym p1) (sym p2))
-        where
+        Pb.universal (Bb.unique₂ refl refl (sym p1) (sym p2)) where
           p1 : Bb.π₁ ∘ ⟨id,id⟩ ∘ f ∘ e' ≡ Bb.π₁ ∘ ⟨f,g⟩ ∘ e'
           p1 =
             Bb.π₁ ∘ ⟨id,id⟩ ∘ f ∘ e'   ≡⟨ cancell Bb.π₁∘⟨⟩ ⟩
@@ -401,8 +402,7 @@ is indeed the equaliser of $f$ and $g$.
 
       eq .has-is-eq .factors = Pb.p₂∘universal
       eq .has-is-eq .unique {F} {e' = e'} {other = other} p₂∘l=e' =
-        Pb.unique path p₂∘l=e'
-        where
+        Pb.unique path p₂∘l=e' where
           path : Pb.p₁ ∘ other ≡ f ∘ e'
           path =
             Pb.p₁ ∘ other                   ≡⟨ insertl Bb.π₁∘⟨⟩ ⟩
@@ -438,32 +438,12 @@ Putting it all together into a record we get our proof of finite completeness:
 
   is-complete→finitely
     : ∀ {a b} → is-complete a b C → Finitely-complete
-  is-complete→finitely {a} {b} compl = with-pullbacks term' pb
-    where
-      pb : ∀ {x y z} (f : Hom x z) (g : Hom y z) → Pullback C f g
-      pb f g = Limit→Pullback C (compl (cospan→cospan-diagram _ _ f g))
+  is-complete→finitely {a} {b} compl = with-pullbacks term' pb where
+    pb : ∀ {x y z} (f : Hom x z) (g : Hom y z) → Pullback C f g
+    pb f g = Limit→Pullback C (compl (cospan→cospan-diagram _ _ f g))
 
-      idx : Precategory a b
-      idx = Lift-cat a b (Disc ⊥ λ x → absurd x)
-
-      F : Functor idx C
-      F .Functor.F₀ ()
-      F .Functor.F₁ {()}
-      F .Functor.F-id {()}
-      F .Functor.F-∘ {()}
-
-      limF : Limit F
-      limF = compl F
-      open Terminal
-      open Cone-hom
-      open Cone
-
-      term' : Terminal C
-      term' = record where
-        top  = Limit.apex limF
-        has⊤ x = record where
-          centre  = Limit.universal limF (λ ()) λ { {()} }
-          paths h = Limit.unique limF _ _ h λ ()
+    term' : Terminal C
+    term' = Limit→Terminal C (is-complete-lower a b lzero lzero compl ¡F)
 ```
 -->
 
