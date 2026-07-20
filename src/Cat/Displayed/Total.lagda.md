@@ -74,10 +74,13 @@ the bundled morphisms form an hset, and another characterizing
 the paths between morphisms.
 
 ```agda
-  ∫Hom-path : ∀ {X Y : Total} {f g : ∫Hom X Y}
-            → (p : f .fst ≡ g .fst) → f .snd ≡[ p ] g .snd → f ≡ g
+  ∫Hom-path
+    : ∀ {X Y : Total} {f g : ∫Hom X Y}
+    → (p : f .fst ≡ g .fst)
+    → f .snd ≡[ p ] g .snd
+    → f ≡ g
   ∫Hom-path p p' i .fst = p i
-  ∫Hom-path {f = f} {g = g} p p' i .snd = p' i
+  ∫Hom-path p p' i .snd = p' i
 ```
 
 <!--
@@ -104,9 +107,9 @@ With all that in place, we can construct the total category!
   ∫ .Precategory.id .snd = id'
   ∫ .Precategory._∘_ f g .fst = f .fst ∘ g .fst
   ∫ .Precategory._∘_ f g .snd = f .snd ∘' g .snd
-  ∫ .Precategory.idr _ = ∫Hom-path (idr _) (idr' _)
-  ∫ .Precategory.idl _ = ∫Hom-path (idl _) (idl' _)
-  ∫ .Precategory.assoc _ _ _ = ∫Hom-path (assoc _ _ _) (assoc' _ _ _)
+  ∫ .Precategory.idr _ = ∫Hom-path _ (idr' _)
+  ∫ .Precategory.idl _ = ∫Hom-path _ (idl' _)
+  ∫ .Precategory.assoc _ _ _ = ∫Hom-path _ (assoc' _ _ _)
 ```
 
 ## Relation to base and fibre categories
@@ -145,7 +148,7 @@ itself and pairing vertical morphisms with the identity.
     ιᶠ-base-change f = nt where
       nt : _ => _
       nt ._=>_.η x              = ∫hom f (π* f x)
-      nt ._=>_.is-natural x y g = ∫Hom-path id-comm $ begin[]
+      nt ._=>_.is-natural x y g = ∫Hom-path _ $ begin
         π* f y ∘' π*.universal id (hom[] (g ∘' π* f x)) ≡[]⟨ π*.commutes id _ ⟩
         hom[] (g ∘' π* f x)                             ≡[]⟨ unwrap (sym (id-comm)) ⟩
         g ∘' π* f x                                     ∎[]
@@ -156,7 +159,7 @@ itself and pairing vertical morphisms with the identity.
       ≡ ιᶠ-base-change f
       ∘nt nat-unassoc-from (ιᶠ-base-change g ◂ base-change f)
       ∘nt (ιᶠ a ▸ base-change-comp f g .CR._≅_.to)
-    ιᶠ-base-change-comp f g = ext λ _ → ∫Hom-path (ap (f ∘_) (sym (idr _))) $ begin[]
+    ιᶠ-base-change-comp f g = ext λ _ → ∫Hom-path _ $ begin
       π* (f ∘ g) _                                                                ≡[]˘⟨ π*.commutes g _ ⟩
       π* f _ ∘' π*.universal g (π* (f ∘ g) _)                                     ≡[]⟨ wrapr _ ⟩
       π* f _ ∘' hom[] (π*.universal g (π* (f ∘ g) _))                             ≡[]˘⟨ refl⟩∘'⟨ π*.commutes id _ ⟩
@@ -193,8 +196,8 @@ isomorphisms in $\cB$ and $\cE$.
   iso[]→total-iso {x≅y = x≅y} x'≅y' = ∫E.make-iso
     (∫hom (to x≅y) (to' x'≅y'))
     (∫hom (from x≅y) (from' x'≅y'))
-    (∫Hom-path (invl x≅y) (invl' x'≅y'))
-    (∫Hom-path (invr x≅y) (invr' x'≅y'))
+    (∫Hom-path _ (invl' x'≅y'))
+    (∫Hom-path _ (invr' x'≅y'))
 ```
 
 ## Pullbacks in the total category
@@ -259,20 +262,17 @@ Uniqueness follows from the fact that $p_1'$ is cartesian.
 
     total-pb : is-pullback ∫ _ _ _ _
     total-pb .square = ∫Hom-path (pb .square) square'
-    total-pb .universal {a , a'} {p₁''} {p₂''} p =
-      ∫hom (pb .universal (ap fst p))
-        (p₁'.universal' (pb .p₁∘universal) (p₁'' .snd))
-    total-pb .p₁∘universal =
-      ∫Hom-path (pb .p₁∘universal) (p₁'.commutesp _ _)
-    total-pb .p₂∘universal {p = p} =
-      ∫Hom-path (pb .p₂∘universal) $
-        g'.uniquep₂ _ _ _ _ _
-          (pulll[] _ (symP square')
-          ∙[] pullr[] _ (p₁'.commutesp (pb .p₁∘universal) _))
-          (symP $ ap snd p)
-    total-pb .unique p q =
-      ∫Hom-path (pb .unique (ap fst p) (ap fst q)) $
-        p₁'.uniquep _ _ (pb .p₁∘universal) _ (ap snd p)
+    total-pb .universal {a , a'} {p₁''} {p₂''} p = ∫hom
+      (pb .universal (ap fst p))
+      (p₁'.universal' (pb .p₁∘universal) (p₁'' .snd))
+    total-pb .p₁∘universal = ∫Hom-path (pb .p₁∘universal) (p₁'.commutesp _ _)
+    total-pb .p₂∘universal {p = p} = ∫Hom-path (pb .p₂∘universal) $
+      g'.uniquep₂ _ _ _ _ _
+        (   pulll[] _ (symP square')
+        ∙[] pullr[] _ (p₁'.commutesp (pb .p₁∘universal) _))
+        (symP $ ap snd p)
+    total-pb .unique p q = ∫Hom-path (pb .unique (ap fst p) (ap fst q)) $
+      p₁'.uniquep _ _ (pb .p₁∘universal) _ (ap snd p)
 ```
 
 We can also show the converse, provided that $\cE$ is a [[fibration|cartesian fibration]].
@@ -300,12 +300,9 @@ to obtain a cone in $\cE$. From here, we use the fact that $p_1'$ and
 $g'$ are cartesian to construct the relevant paths.
 
 ```agda
-  cartesian+total-pullback→pullback
-    {p} {x} {y} {z}
-    {p₁ = p₁} {f} {p₂} {g} {p₁'} {f'} {p₂'} {g'} fib p₁-cart g-cart total-pb = pb where
-    open is-pullback
-    open ∫Hom
+  cartesian+total-pullback→pullback {f' = f'} fib p₁-cart g-cart total-pb = pb where
     open Cartesian-fibration E fib
+    open is-pullback
     module p₁' = is-cartesian p₁-cart
     module g' = is-cartesian g-cart
 
@@ -327,16 +324,26 @@ $g'$ are cartesian to construct the relevant paths.
 <!--
 ```agda
 module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} {E : Displayed B o' ℓ'} where
-  open CR B
+  open Precategory B
+  open Displayed E
+  open ∫Hom
 
   instance
     Funlike-∫Hom
       : ∀ {ℓ'' ℓ'''} {A : Type ℓ''} {B : A → Type ℓ'''}
       → {X Y : Total E} ⦃ i : Funlike (Hom (X .fst) (Y .fst)) A B ⦄
       → Funlike (∫Hom E X Y) A B
-    Funlike-∫Hom ⦃ i ⦄ .Funlike._·_ f x = f .∫Hom.fst · x
+    Funlike-∫Hom ⦃ i ⦄ .Funlike._·_ f x = f .fst · x
 
     H-Level-∫Hom' : ∀ {X Y} {n} → H-Level (∫Hom E X Y) (2 + n)
     H-Level-∫Hom' = H-Level-∫Hom E
+
+  ∫Hom-path[]_
+    : {X Y : Total E} {f g : ∫Hom E X Y}
+    → f .snd ∫≡ g .snd
+    → f ≡ g
+  ∫Hom-path[] p = ∫Hom-path E (ap fst p) (ap snd p)
+
+  infix 1 ∫Hom-path[]_
 ```
 -->

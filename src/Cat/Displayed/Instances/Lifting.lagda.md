@@ -110,9 +110,9 @@ Liftings of a functor $F : \cJ \to \cB$ yield functors from $\cJ$ to the
 ```agda
   Lifting→Functor : ∀ {F : Functor J B} → Lifting F → Functor J (∫ E)
   Lifting→Functor {F} F' .F₀ j = F .F₀ j , F' .F₀' j
-  Lifting→Functor {F} F' .F₁ f = ∫hom (F .F₁ f) (F' .F₁' f)
-  Lifting→Functor {F} F' .F-id = ∫Hom-path E (F .F-id) (F' .F-id')
-  Lifting→Functor {F} F' .F-∘ f g = ∫Hom-path E (F .F-∘ f g) (F' .F-∘' f g)
+  Lifting→Functor {F} F' .F₁ f = ∫hom _ (F' .F₁' f)
+  Lifting→Functor {F} F' .F-id = ∫Hom-path E _ (F' .F-id')
+  Lifting→Functor {F} F' .F-∘ f g = ∫Hom-path E _ (F' .F-∘' f g)
 ```
 
 Furthermore, such liftings commute *extremely strictly*. Not only are
@@ -456,9 +456,9 @@ their types, we omit the definitions from the page entirely.
   Functor+Lifting→∫Functor F F' .F₁ f .fst = F .F₁ f
   Functor+Lifting→∫Functor F F' .F₁ f .snd = F' .F₁' f
   Functor+Lifting→∫Functor F F' .F-id =
-    ∫Hom-path E (F .F-id) (F' .F-id')
+    ∫Hom-path E _ (F' .F-id')
   Functor+Lifting→∫Functor F F' .F-∘ f g =
-    ∫Hom-path E (F .F-∘ f g) (F' .F-∘' f g)
+    ∫Hom-path E _ (F' .F-∘' f g)
 
   ∫Nat→Nat α .η x = α .η x .fst
   ∫Nat→Nat α .is-natural x y f = ap fst (α .is-natural x y f)
@@ -466,7 +466,7 @@ their types, we omit the definitions from the page entirely.
   Nat+Nat-lift→∫Nat α α' .η x .fst = α .η x
   Nat+Nat-lift→∫Nat α α' .η x .snd = α' .η' x
   Nat+Nat-lift→∫Nat α α' .is-natural x y f =
-    ∫Hom-path E (α .is-natural x y f) (α' .is-natural' x y f)
+    ∫Hom-path E _ (α' .is-natural' x y f)
 
   ∫Nat→Nat-lift α .η' x = α .η x .snd
   ∫Nat→Nat-lift α .is-natural' x y f = ap snd (α .is-natural x y f)

@@ -225,7 +225,7 @@ adjoint]] that sends an object $A : \cC$ to the [[free algebra]] $(M(A),
 gives us **cofree coalgebras**.
 
 ```agda
-  Cofree-coalgebra : Ob → Coalgebras.Ob W
+  Cofree-coalgebra : Ob → ⌞ Coalgebras W ⌟
   Cofree-coalgebra A .fst = W₀ A
   Cofree-coalgebra A .snd .ρ = δ _
   Cofree-coalgebra A .snd .ρ-counit = δ-unitr

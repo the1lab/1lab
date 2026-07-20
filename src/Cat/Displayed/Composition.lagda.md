@@ -133,15 +133,12 @@ universal.
 
 ```agda
       f-lift .cartesian .is-cartesian.universal m (h' , h'') =
-        ℰ.π*.universal m h' ,
-        ℱ.π*.universal' (∫Hom-path ℰ refl (ℰ.π*.commutes m h')) h''
+        _ , ℱ.π*.universal' (∫Hom-path ℰ refl (ℰ.π*.commutes m h')) h''
       f-lift .cartesian .is-cartesian.commutes m h' =
-        ℰ.π*.commutes m (h' .fst) ,ₚ
-        ℱ.π*.commutesp _ (h' .snd)
+        _ ,ₚ ℱ.π*.commutesp _ (h' .snd)
       f-lift .cartesian .is-cartesian.unique m' p =
-        ℰ.π*.unique (m' .fst) (ap fst p) ,ₚ
-        ℱ.π*.uniquep _ _
-          (∫Hom-path ℰ refl (ℰ.π*.commutes _ _))
-          (m' .snd)
-          (ap snd p)
+           ℰ.π*.unique (m' .fst) (ap fst p)
+        ,ₚ ℱ.π*.uniquep _ _ (∫Hom-path ℰ refl (ℰ.π*.commutes _ _))
+            (m' .snd)
+            (ap snd p)
 ```

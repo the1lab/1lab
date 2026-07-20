@@ -56,7 +56,8 @@ category over $\cA$:
 Σ[_] .idl' (f' , f'') = Σ-pathp (ℰ.idl' f') (ℱ.idl' f'')
 Σ[_] .assoc' (f' , f'') (g' , g'') (h' , h'') = Σ-pathp
     (ℰ.assoc' f' g' h') (ℱ.assoc' f'' g'' h'')
-Σ[_] .hom[_] p (f' , f'') = ℰ.hom[ p ] f'
+Σ[_] .hom[_] p (f' , f'') =
+    ℰ.hom[ p ] f'
   , ℱ.hom[ ∫Hom-path ℰ p (ℰ.coh[ p ] f') ] f''
 Σ[_] .coh[_] p (f' , f'') = Σ-pathp (ℰ.coh[ p ] f')
   (ℱ.coh[ (λ i → ∫hom (p i) (ℰ.coh[ p ] f' i)) ] f'')

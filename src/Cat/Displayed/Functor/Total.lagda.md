@@ -38,9 +38,9 @@ module _
 ```agda
   ∫ᶠ : Functor (∫ ℰ) (∫ ℱ)
   ∫ᶠ .F₀ (x , x') = ₀ F x , ₀' F' x'
-  ∫ᶠ .F₁ (∫hom f f') = ∫hom (₁ F f) (₁' F' f')
-  ∫ᶠ .F-id = ∫Hom-path ℱ (F .F-id) (F' .F-id')
-  ∫ᶠ .F-∘ (∫hom f f') (∫hom g g') = ∫Hom-path ℱ (F .F-∘ f g) (F' .F-∘')
+  ∫ᶠ .F₁ (∫hom f f') = ∫hom _ (₁' F' f')
+  ∫ᶠ .F-id = ∫Hom-path ℱ _ (F' .F-id')
+  ∫ᶠ .F-∘ (∫hom f f') (∫hom g g') = ∫Hom-path ℱ _ (F' .F-∘')
 ```
 
 The total functor respects the projection `πᶠ`{.Agda} to the base
@@ -110,15 +110,16 @@ module _
   {F : Functor B C} {G : Functor A B}
   {F' : Displayed-functor F ℱ 𝒢} {G' : Displayed-functor G ℰ ℱ}
   where
-  private module A = Precategory A
-  private module ℰ = Displayed ℰ
-  private module ∫ℰ = Precategory (∫ ℰ)
-  private module B = Precategory B
-  private module ℱ = Displayed ℱ
-  private module ∫ℱ = Precategory (∫ ℱ)
-  private module C = Precategory A
-  private module 𝒢 = Displayed 𝒢
-  private module ∫𝒢 = Precategory (∫ 𝒢)
+  private
+    module A = Precategory A
+    module ℰ = Displayed ℰ
+    module ∫ℰ = Precategory (∫ ℰ)
+    module B = Precategory B
+    module ℱ = Displayed ℱ
+    module ∫ℱ = Precategory (∫ ℱ)
+    module C = Precategory A
+    module 𝒢 = Displayed 𝒢
+    module ∫𝒢 = Precategory (∫ 𝒢)
 ```
 -->
 
@@ -163,9 +164,8 @@ module _
 ```agda
   ∫ⁿ : ∫ᶠ F' => ∫ᶠ G'
   ∫ⁿ = record where
-    η (x , x') = ∫hom (η x) (η' x')
-    is-natural (x , x') (y , y') (∫hom f f') = ∫Hom-path ℱ
-      (is-natural x y f) (is-natural' x' y' f')
+    η (x , x') = ∫hom _ (η' x')
+    is-natural (x , x') (y , y') (∫hom f f') = ∫Hom-path ℱ _ (is-natural' x' y' f')
 ```
 
 Applying the projection `πᶠ`{.Agda} to the total natural transformation

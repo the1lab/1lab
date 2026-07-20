@@ -85,13 +85,11 @@ associated to $L$ are $F$-algebra homomorphisms.
     L' : make-is-limit K apex
     L' .ψ j .fst = L.ψ j
     L' .ψ j .snd = L.factors _ _
-    L' .universal eps p .fst =
-      L.universal (λ j → eps j .fst) (λ f → ap fst (p f))
-    L' .universal eps p .snd =
-      L.unique₂ (λ j → K.F₀ j .snd ∘ F.₁ (eps j .fst))
-        (λ f → pulll (K.₁ f .snd) ∙ F.pullr (ap fst (p f)))
-        (λ j → pulll (L.factors _ _) ∙ eps j .snd)
-        (λ j → pulll (L.factors _ _) ∙ F.pullr (L.factors _ _))
+    L' .universal eps p .fst = L.universal (λ j → eps j .fst) (λ f → ap fst (p f))
+    L' .universal eps p .snd = L.unique₂ (λ j → K.F₀ j .snd ∘ F.₁ (eps j .fst))
+      (λ f → pulll (K.₁ f .snd) ∙ F.pullr (ap fst (p f)))
+      (λ j → pulll (L.factors _ _) ∙ eps j .snd)
+      (λ j → pulll (L.factors _ _) ∙ F.pullr (L.factors _ _))
 ```
 
 Finally, equality of morphisms of $F$-algebras is given by equality on
@@ -99,12 +97,9 @@ the underlying morphisms, so all of the relevant diagrams in $\FAlg{F}$
 commute.
 
 ```agda
-    L' .commutes f =
-      ∫Hom-path (F-Algebras F) (L.commutes f) prop!
-    L' .factors eps p =
-      ∫Hom-path (F-Algebras F) (L.factors _ _) prop!
-    L' .unique eps p other q =
-      ∫Hom-path (F-Algebras F) (L.unique _ _ _ λ j → ap fst (q j)) prop!
+    L' .commutes f = ext (L.commutes f)
+    L' .factors eps p = ext (L.factors _ _)
+    L' .unique eps p other q = ext $ L.unique _ _ _ λ j → ap fst (q j)
 ```
 
 <!--

@@ -223,23 +223,18 @@ to a product diagram in the [[total category]] of $\cE$.
 <details>
 <summary>The proof is largely shuffling data about, so we elide the details.
 </summary>
+
 ```agda
-  is-total-product→total-is-product {π₁ = π₁} {π₂ = π₂} {prod = prod} total-prod = ∫prod where
+  is-total-product→total-is-product {π₁ = π₁} {π₂} {prod} total-prod = ∫prod where
     open is-product-over total-prod
-    open is-product prod
 
     ∫prod : is-product (∫ E) π₁ π₂
-    ∫prod .is-product.⟨_,_⟩ f g =
-      ∫hom ⟨ f .fst , g .fst ⟩ ⟨ f .snd , g .snd ⟩'
-    ∫prod .is-product.π₁∘⟨⟩ =
-      ∫Hom-path E π₁∘⟨⟩ π₁∘⟨⟩'
-    ∫prod .is-product.π₂∘⟨⟩ =
-      ∫Hom-path E π₂∘⟨⟩ π₂∘⟨⟩'
-    ∫prod .is-product.unique p1 p2 =
-      ∫Hom-path E
-        (unique (ap fst p1) (ap fst p2))
-        (unique' (ap snd p1) (ap snd p2))
+    ∫prod .is-product.⟨_,_⟩ f g = ∫hom _ ⟨ f .snd , g .snd ⟩'
+    ∫prod .is-product.π₁∘⟨⟩ = ∫Hom-path E _ π₁∘⟨⟩'
+    ∫prod .is-product.π₂∘⟨⟩ = ∫Hom-path E _ π₂∘⟨⟩'
+    ∫prod .is-product.unique p1 p2 = ∫Hom-path E _ (unique' (ap snd p1) (ap snd p2))
 ```
+
 </details>
 
 ::: warning

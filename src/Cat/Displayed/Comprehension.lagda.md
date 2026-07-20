@@ -456,11 +456,11 @@ is given by duplication.
   comonad : Comonad-on comprehend
   comonad .counit .η (Γ , x) = ∫hom πᶜ πᶜ'
   comonad .comult .η (Γ , x) = ∫hom δᶜ δᶜ'
-  comonad .counit .is-natural _ _ (∫hom σ f) = ∫Hom-path E (sub-proj f) (sub-proj' f)
-  comonad .comult .is-natural _ _ (∫hom σ f) = ∫Hom-path E dup-extend dup-extend'
-  comonad .has-is-comonad .δ-unitl = ∫Hom-path E extend-proj-dup extend-proj-dup'
-  comonad .has-is-comonad .δ-unitr = ∫Hom-path E proj-dup proj-dup'
-  comonad .has-is-comonad .δ-assoc = ∫Hom-path E extend-dup² extend-dup²'
+  comonad .counit .is-natural _ _ (∫hom σ f) = ∫Hom-path E _ (sub-proj' f)
+  comonad .comult .is-natural _ _ (∫hom σ f) = ∫Hom-path E _ dup-extend'
+  comonad .has-is-comonad .δ-unitl = ∫Hom-path E _ extend-proj-dup'
+  comonad .has-is-comonad .δ-unitr = ∫Hom-path E _ proj-dup'
+  comonad .has-is-comonad .δ-assoc = ∫Hom-path E _ extend-dup²'
 ```
 
 To see that this comonad is a comprehension comonad, note that the
