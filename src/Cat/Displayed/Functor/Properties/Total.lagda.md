@@ -61,8 +61,8 @@ interact with the corresponding [properties of the base functor] $F :
   inv (∫hom f f') = ∫hom (ff.from f) (ff'⁻¹ f')
 
   invr : is-right-inverse inv ∫F'.₁
-  invr (∫hom f f') = ∫Hom-path ℱ (ff.ε f) (ε[] f')
+  invr (∫hom f f') = ∫Hom-path ℱ _ (ε[] f')
 
   invl : is-left-inverse inv ∫F'.₁
-  invl (∫hom f f') = ∫Hom-path ℰ (ff.η f) (η[] f')
+  invl (∫hom f f') = ∫Hom-path ℰ _ (η[] f')
 ```
