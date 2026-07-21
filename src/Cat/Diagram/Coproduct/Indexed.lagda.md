@@ -50,6 +50,12 @@ record is-indexed-coproduct (F : Idx → C.Ob) (ι : ∀ i → C.Hom (F i) S)
   unique₂ : ∀ {Y} {g h : C.Hom S Y} → (∀ i → g C.∘ ι i ≡ h C.∘ ι i) → g ≡ h
   unique₂ {g = g} {h} eq = sym (eta g) ∙∙ ap match (funext eq) ∙∙ eta h
 
+  unique-id
+    : ∀ (u : C.Hom S S)
+    → (∀ i → u C.∘ ι i ≡ ι i)
+    → u ≡ C.id
+  unique-id u p = unique₂ (λ i → p i ∙ introl refl)
+
   hom-iso : ∀ {Y} → C.Hom S Y ≃ (∀ i → C.Hom (F i) Y)
   hom-iso = (λ z i → z C.∘ ι i) , is-iso→is-equiv λ where
     .is-iso.from   → match
