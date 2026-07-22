@@ -192,6 +192,8 @@ compileAgda stateVar = do
       oldVisited <- useTC stVisitedModules
 
       resetState
+      -- drop the read file cache
+      modifySession (lensReadFileCache . lensEra) succ
 
       -- Force Cubical even if we've not got a --cubical header.
       setCommandLineOptions' (Just baseDir) defaultOptions
