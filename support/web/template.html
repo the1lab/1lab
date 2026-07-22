@@ -50,6 +50,10 @@
       body span.reasoning-step .alternate {
         display: none;
       }
+
+      .js-only {
+        display: none !important;
+      }
     </style>
   </noscript>
 
@@ -93,7 +97,7 @@
           $endif$
 
           <!-- Navbar navigation (lol) -->
-          <div class="search-form search-form-proxy mathpar" role="form">
+          <div class="search-form search-form-proxy mathpar js-only" role="form">
             <input id="search-box-proxy" type_="text" placeholder="Search..." autocomplete="off" tabindex="0" />
           </div>
 
@@ -117,13 +121,13 @@
       <article>
         <!-- Article navigation (narrow screens only) -->
         <div class="narrow-only" id="article-nav">
-          <!-- Index return anchor (only if the page is not the index) -->
-          $if(is-index)$
-          $else$
-          <div id=return>
-            <a href="$base-url$/">back to index</a>
+          <div id="article-nav-left">
+            <a id=logo href="$base-url$/">
+              <img alt="1Lab" src="$base-url$/static/cube-72x.png" style="display: block; margin-bottom: 1em; margin: auto;"
+                width="32px" height="32px" />
+            </a>
+            <button id="narrow-search-btn" class="js-only">🔍</button>
           </div>
-          $endif$
 
           <!-- Navbar equations control -->
           <span class="equations" style="display: flex; gap: 0.25em; flex-wrap: nowrap;">

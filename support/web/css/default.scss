@@ -340,6 +340,18 @@ article {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: var(--parskip);
+
+    #article-nav-left {
+      display: flex;
+      gap: 16px;
+
+      #narrow-search-btn {
+        background-color: transparent;
+        border: none;
+        font-size: 24px;
+      }
+    }
   }
 
   > p {

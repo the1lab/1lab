@@ -351,10 +351,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  const searchInputProxy = document.getElementById("search-box-proxy") as HTMLInputElement | null;
-  if (searchInputProxy) {
-    searchInputProxy.addEventListener("focus", () => startSearch());
-  }
+  document.getElementById("search-box-proxy")?.addEventListener("focus", () => startSearch())
+  document.getElementById("narrow-search-btn")?.addEventListener("click", () => startSearch())
+
 
   document.addEventListener("keydown", e => {
     if (e.key == "k" && isShortcut(e)) {
