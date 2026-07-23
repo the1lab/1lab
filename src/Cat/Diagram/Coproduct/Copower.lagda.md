@@ -6,6 +6,7 @@ open import Cat.Diagram.Colimit.Base
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Functor.Naturality
 open import Cat.Instances.Discrete
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Diagram.Terminal
 open import Cat.Functor.Adjoint
@@ -88,13 +89,21 @@ underlying object by a morphism $g : A \to B$. This is functorial by the
 uniqueness properties of colimiting maps.
 
 ```agda
-  Copowering : Functor (Sets ℓ ×ᶜ C) C
-  Copowering .F₀ (X , A) = X ⊗ A
-  Copowering .F₁ {X , A} {Y , B} (idx , obj) =
-    coprods X (λ _ → A) .match λ i → coprods Y (λ _ → B) .ι (idx i) ∘ obj
-  Copowering .F-id {X , A} = coprods X (λ _ → A) .unique _ λ i → sym id-comm
-  Copowering .F-∘ {X , A} f g = coprods X (λ _ → A) .unique _ λ i →
-    pullr (coprods _ _ .commute) ∙ extendl (coprods _ _ .commute)
+  Copowering : Bifunctor (Sets ℓ) C C
+  Copowering = make-bifunctor record where
+    F₀ X A = (X ⊗ A)
+    lmap {X} {Y} {A} f = coprods X (λ _ → A) .match λ x → coprods Y (λ _ → A) .ι (f x)
+    rmap {A} {B} {X} f = coprods X (λ _ → A) .match λ x → coprods X (λ _ → B) .ι x ∘ f
+    lmap-id = coprods _ _ .unique _ λ i → idl _
+    rmap-id = coprods _ _ .unique _ λ i → id-comm-sym
+    lmap-∘ f g = coprods _ _ .unique _ λ x →
+      pullr (coprods _ _ .commute) ∙ coprods _ _ .commute
+    rmap-∘ f g = coprods _ _ .unique _ λ x →
+      pullr (coprods _ _ .commute) ∙ extendl (coprods _ _ .commute)
+    lrmap f g = unique₂ (coprods _ _) λ x →
+      pullr (coprods _ _ .commute) ∙ pulll (coprods _ _ .commute)
+      ∙ (sym $ coprods _ _ .commute)
+      ∙ pushr (sym $ coprods _ _ .commute)
 ```
 
 ```agda
@@ -111,12 +120,12 @@ uniqueness properties of colimiting maps.
     Indexed-coproduct (coprods (el! Idx) (λ _ → X))
 ```
 
-
 <!--
 ```agda
 cocomplete→copowering
   : ∀ {o ℓ} {C : Precategory o ℓ}
-  → is-cocomplete ℓ ℓ C → Functor (Sets ℓ ×ᶜ C) C
+  → is-cocomplete ℓ ℓ C
+  → Bifunctor (Sets ℓ) C C
 cocomplete→copowering colim = Copowers.Copowering λ S F → Colimit→IC _ F (colim _)
 ```
 -->

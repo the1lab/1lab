@@ -91,7 +91,7 @@ embedding]].
 よ : Bifunctor C (C ^op) (Sets h)
 よ = Flip Hom[-,-]
 
-open Functor よ renaming (F₀ to よ₀) using () public
+open Functor よ renaming (F₀ to よ₀; F₁ to よ₁) using () public
 ```
 
 <!--

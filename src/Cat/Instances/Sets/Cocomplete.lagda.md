@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Diagram.Coproduct.Indexed
+open import Cat.Diagram.Colimit.Weighted
 open import Cat.Instances.Sets.Complete
 open import Cat.Diagram.Colimit.Finite
 open import Cat.Diagram.Colimit.Base
@@ -225,6 +226,41 @@ Hence, `Sets`{.Agda} is finitely cocomplete:
   Sets-finitely-cocomplete .coproducts = Sets-coproducts
   Sets-finitely-cocomplete .coequalisers = Sets-coequalisers
   Sets-finitely-cocomplete .pushouts = Sets-pushouts
+```
+
+## Weighted colimits
+
+<!--
+```agda
+module _
+  {oj ℓj ℓw} {J : Precategory oj ℓj}
+  (W : Functor (J ^op) (Sets ℓw))
+  (F : Functor J (Sets (oj ⊔ ℓj ⊔ ℓw)))
+  where
+  private
+    module J = Precategory J
+    open is-weighted-colimit
+    open Weighted-colimit
+```
+-->
+
+```agda
+  dimapl dimapr : Σ[ i ∈ J ] Σ[ j ∈ J ] Σ[ h ∈ J.Hom i j ] (W ʻ j × F ʻ i) → Σ[ j ∈ J.Ob ] (W ʻ j × F ʻ j)
+  dimapl (i , j , h , wj , fi) = j , wj , F ⟪ h ⟫ fi
+  dimapr (i , j , h , wj , fi) = i , W ⟪ h ⟫ wj , fi
+
+  Sets-is-coeq-weighted-colimit
+    : is-weighted-colimit W F (el! (Coeq dimapl dimapr)) (λ j wj fj → inc (j , wj , fj))
+  Sets-is-coeq-weighted-colimit .commutes {i} {j} f wj = ext λ fi → glue (i , j , f , wj , fi)
+  Sets-is-coeq-weighted-colimit .universal ψ ψ-nat =
+    Coeq-rec (λ (j , w , f) → ψ j w f) λ (i , j , f , wj , fi) → ψ-nat f wj ·ₚ fi
+  Sets-is-coeq-weighted-colimit .factors ψ ψ-nat j wj = refl
+  Sets-is-coeq-weighted-colimit .unique ψ ψ-nat u p = ext λ j wj fj → sym (p j wj ·ₚ fj)
+
+  Sets-weighted-colimits : Weighted-colimit W F
+  Sets-weighted-colimits .colim = el! (Coeq dimapl dimapr)
+  Sets-weighted-colimits .ι j wj fj = inc (j , wj , fj)
+  Sets-weighted-colimits .has-is-weighted-colimit = Sets-is-coeq-weighted-colimit
 ```
 
 # Coproducts are disjoint
