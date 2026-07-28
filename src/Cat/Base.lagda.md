@@ -164,7 +164,7 @@ respect to $C$: $f \circ_{op} g = g \circ f$.
 The left and right identity laws are swapped for the construction of the
 opposite precategory: For `idr`{.Agda} one has to show $f \circ_{op}
 \id = f$, which computes into having to show that $\id
-\circ_{op}{f} = f$. The case for `idl`{.Agda} is symmetric.
+\circ f = f$. The case for `idl`{.Agda} is symmetric.
 
 ```agda
 (C ^op) .Precategory.assoc f g h i = C .Precategory.assoc h g f (~ i)
