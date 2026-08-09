@@ -130,7 +130,7 @@ as Turing machines, one might have literally taken more steps than the
 other.
 
 We write the information ordering as $x \lsq y$: it holds whenever $x$
-is *more defined than* $y$, and they agree on this common extent.
+is *less defined than* $y$, and they agree on this common extent.
 
 ```agda
 record _⊑_ {ℓ} {A : Type ℓ} (x y : ↯ A) : Type ℓ where
