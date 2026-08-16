@@ -686,7 +686,7 @@ principle: it is the *composition* of a path $p : x \is y$ with a
 *continuous* function $f : A \to B$.
 
 ```agda
-ap : ∀ {a b} {A : Type a} {B : A → Type b}
+ap : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : A → Type ℓ₂}
    → (f : ∀ x → B x) {x y : A} (p : x ≡ y)
    → PathP (λ i → B (p i)) (f x) (f y)
 ap f p i = f (p i)
@@ -707,7 +707,7 @@ We can also define a corresponding operation for *dependent* paths in
 the domain, as long as we're given a *line* of functions.
 
 ```agda
-apd : ∀ {a b} {A : I → Type a} {B : (i : I) → A i → Type b}
+apd : ∀ {ℓ₁ ℓ₂} {A : I → Type ℓ₁} {B : (i : I) → A i → Type ℓ₂}
     → (f : ∀ i (a : A i) → B i a) {x : A i0} {y : A i1}
     → (p : PathP A x y)
     → PathP (λ i → B i (p i)) (f i0 x) (f i1 y)
@@ -722,9 +722,9 @@ apart from the ludicrous amount of quantification.
 
 ```agda
 _
-  : ∀ {a b} {A A' : Type a} {B : A → Type b} {B' : A' → Type b}
+  : ∀ {ℓ₁ ℓ₂} {A A' : Type ℓ₁} {B : A → Type ℓ₂} {B' : A' → Type ℓ₂}
       {f : ∀ x → B x} {g : ∀ x → B' x} {x : A} {y : A'}
-  → {pa : A ≡ A'} {pb : PathP (λ i → pa i → Type b) B B'}
+  → {pa : A ≡ A'} {pb : PathP (λ i → pa i → Type ℓ₂) B B'}
   → (pf : PathP (λ i → ∀ x → pb i x) f g)
   → (px : PathP (λ i → pa i) x y)
   → PathP (λ i → pb i (px i)) (f x) (g y)
@@ -734,7 +734,7 @@ _ = λ pf px → apd (λ i → pf i) px
 <!--
 ```agda
 ap₂
-  : ∀ {a b c} {A : Type a} {B : A → Type b} {C : (x : A) → B x → Type c}
+  : ∀ {ℓ₁ ℓ₂ ℓ₃} {A : Type ℓ₁} {B : A → Type ℓ₂} {C : (x : A) → B x → Type ℓ₃}
       (f : (x : A) (y : B x) → C x y) {x y : A} {α : B x} {β : B y}
   → (p : x ≡ y) (q : PathP (λ i → B (p i)) α β)
   → PathP (λ i → C (p i) (q i)) (f x α) (f y β)
@@ -1124,7 +1124,7 @@ J-refl {x = x} P prefl i = transport-filler (λ i → P _ (λ j → x)) prefl (~
 
 <!--
 ```agda
-inspect : ∀ {a} {A : Type a} (x : A) → Singleton x
+inspect : ∀ {ℓ} {A : Type ℓ} (x : A) → Singleton x
 inspect x = x , refl
 ```
 -->
