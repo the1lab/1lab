@@ -50,6 +50,12 @@ record is-indexed-coproduct (F : Idx → C.Ob) (ι : ∀ i → C.Hom (F i) S)
   unique₂ : ∀ {Y} {g h : C.Hom S Y} → (∀ i → g C.∘ ι i ≡ h C.∘ ι i) → g ≡ h
   unique₂ {g = g} {h} eq = sym (eta g) ∙∙ ap match (funext eq) ∙∙ eta h
 
+  unique-id
+    : ∀ (u : C.Hom S S)
+    → (∀ i → u C.∘ ι i ≡ ι i)
+    → u ≡ C.id
+  unique-id u p = unique₂ (λ i → p i ∙ introl refl)
+
   hom-iso : ∀ {Y} → C.Hom S Y ≃ (∀ i → C.Hom (F i) Y)
   hom-iso = (λ z i → z C.∘ ι i) , is-iso→is-equiv λ where
     .is-iso.from   → match
@@ -73,6 +79,9 @@ record Indexed-coproduct (F : Idx → C.Ob) : Type (o ⊔ ℓ ⊔ level-of Idx) 
 
 <!--
 ```agda
+{-# INLINE is-indexed-coproduct.constructor #-}
+{-# INLINE Indexed-coproduct.constructor #-}
+
 Indexed-coproduct-≃
   : ∀ {ℓ ℓ'} {I : Type ℓ} {J : Type ℓ'} → (e : I ≃ J)
   → {F : I → C.Ob} → Indexed-coproduct (F ⊙ Equiv.from e) → Indexed-coproduct F
@@ -215,6 +224,26 @@ is-indexed-coproduct-assoc {A = A} {B} {X} {ΣᵃΣᵇX = ΣᵃΣᵇX} {ιᵃ = 
     Σᵃᵇ' .commute = C.pulll (ΣᵃΣᵇ .commute) ∙ Σᵇ _ .commute
     Σᵃᵇ' .unique {h = h} f p = ΣᵃΣᵇ .unique _ λ a → sym $ Σᵇ _ .unique _ λ b →
       sym (C.assoc _ _ _) ∙ p (a , b)
+```
+
+Every object $X : \cC$ can be regarded as the indexed coproduct
+of a constant family $\lambda (a : A).\ X$ if $A$ is contractible.
+
+```agda
+is-contr-indexed-coproduct
+  : ∀ {κ} {A : Type κ} {X : C.Ob}
+  → is-contr A
+  → is-indexed-coproduct {Idx = A} (λ _ → X) λ _ → C.id
+is-contr-indexed-coproduct A-contr = record where
+  match f = f (A-contr .centre)
+  commute {a} {Y} {f} =
+    f (A-contr .centre) ∘ id ≡⟨ C.elimr refl ⟩
+    f (A-contr .centre) ≡⟨ ap f (A-contr .paths a) ⟩
+    f a ∎
+  unique {h = h} f p =
+    f (A-contr .centre) ≡˘⟨ p (A-contr .centre) ⟩
+    h ∘ id              ≡⟨ C.idr h ⟩
+    h                   ∎
 ```
 
 # Categories with all indexed coproducts
