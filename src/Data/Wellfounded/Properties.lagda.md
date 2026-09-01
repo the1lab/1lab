@@ -34,6 +34,14 @@ Wf-is-prop : is-prop (Wf R)
 Wf-is-prop = Π-is-hlevel 1 Acc-is-prop
 ```
 
+<!--
+```agda
+instance
+  H-Level-Acc : ∀ {x n} → H-Level (Acc R x) (suc n)
+  H-Level-Acc = prop-instance (Acc-is-prop _)
+```
+-->
+
 ## Instances
 
 The usual induction principle for the natural numbers is equivalent to
