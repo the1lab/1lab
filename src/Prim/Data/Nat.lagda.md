@@ -71,4 +71,6 @@ suc n < suc m = n < m
 _≤_ : Nat → Nat → Bool
 x ≤ y = x < suc y
 {-# INLINE _≤_ #-}
-```
+
+_>_ : Nat → Nat → Bool
+x > y = y < x
