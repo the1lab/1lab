@@ -75,7 +75,7 @@ following fronts:
   or removed entirely. We've also removed a lot of other obsolete files
   when compared to upstream, including kept tests that were *already*
   outdated, thousands of lines of notes, the source code for a variety
-  papers, and a lot of stale documentation.
+  of papers, and a lot of stale documentation.
 
   The test suite, which was previously a `sed`-powered and in large
   driven by the `Makefile`, was entirely ported to `tasty`, and made to
