@@ -214,6 +214,13 @@ We can prove that the `Maybe`{.Agda} type constructor, considered as a
 function from a universe to itself, is injective.
 
 ```agda
+maybe-injective : Maybe A ≃ Maybe B → A → B
+maybe-injective e x with e .fst (just x) in p
+... | just y = y
+... | nothing with e .fst nothing in q
+... | just y = y
+... | nothing = absurd (just≠nothing (Equiv.injective₂ e (Id≃path.to p) (Id≃path.to q)))
+
 Maybe-injective : Maybe A ≃ Maybe B → A ≃ B
 Maybe-injective e = Iso→Equiv (a→b , iso b→a (lemma e) il) where
   a→b = maybe-injective e
@@ -225,19 +232,19 @@ Maybe-injective e = Iso→Equiv (a→b , iso b→a (lemma e) il) where
       module e⁻¹ = Equiv e.inverse
 
     lemma : is-right-inverse (maybe-injective (Equiv.inverse e)) (maybe-injective e)
-    lemma x with inspect (e.from (just x))
-    lemma x | just y , p with inspect (e.to (just y))
-    lemma x | just y , p | just z  , q = just-inj (sym q ∙ ap e.to (sym p) ∙ e.ε _)
-    lemma x | just y , p | nothing , q with inspect (e.to nothing)
-    lemma x | just y , p | nothing , q | nothing , r = absurd (just≠nothing (e.injective₂ q r))
-    lemma x | just y , p | nothing , q | just z  , r = absurd (nothing≠just (sym q ∙ ap e.to (sym p) ∙ e.ε _))
-    lemma x | nothing , p with inspect (e.from nothing)
-    lemma x | nothing , p | nothing , q = absurd (just≠nothing (e⁻¹.injective₂ p q))
-    lemma x | nothing , p | just y , q with inspect (e.to (just y))
-    lemma x | nothing , p | just y , q | just z  , r = absurd (just≠nothing (sym r ∙ ap e.to (sym q) ∙ e.ε _))
-    lemma x | nothing , p | just y , q | nothing , r with inspect (e.to nothing)
-    lemma x | nothing , p | just y , q | nothing , r | nothing , s = absurd (just≠nothing (e.injective₂ r s))
-    lemma x | nothing , p | just y , q | nothing , r | just z , s = just-inj (sym s ∙ ap e.to (sym p) ∙ e.ε _)
+    lemma x with e.from (just x) in p
+    lemma x | just y with e.to (just y) in q
+    lemma x | just y | just z  = just-inj (sym (Id≃path.to q) ∙ ap e.to (sym (Id≃path.to p)) ∙ e.ε _)
+    lemma x | just y | nothing with e.to nothing in r
+    lemma x | just y | nothing | nothing = absurd (just≠nothing (e.injective₂ (Id≃path.to q) (Id≃path.to r)))
+    lemma x | just y | nothing | just z  = absurd (nothing≠just (sym (Id≃path.to q) ∙ ap e.to (sym (Id≃path.to p)) ∙ e.ε _))
+    lemma x | nothing with e.from nothing in q
+    lemma x | nothing | nothing = absurd (just≠nothing (e⁻¹.injective₂ (Id≃path.to p) (Id≃path.to q)))
+    lemma x | nothing | just y with e.to (just y) in r
+    lemma x | nothing | just y | just z = absurd (just≠nothing (sym (Id≃path.to r) ∙ ap e.to (sym (Id≃path.to q)) ∙ e.ε _))
+    lemma x | nothing | just y | nothing with e.to nothing in s
+    lemma x | nothing | just y | nothing | nothing = absurd (just≠nothing (e.injective₂ (Id≃path.to r) (Id≃path.to s)))
+    lemma x | nothing | just y | nothing | just z = just-inj (sym (Id≃path.to s) ∙ ap e.to (sym (Id≃path.to p)) ∙ e.ε _)
 
   abstract
     il : is-left-inverse b→a a→b
