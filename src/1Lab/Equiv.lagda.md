@@ -1232,6 +1232,14 @@ is-equiv≃fibre-is-contr {f = f} =
     is-eqv
     (λ fib-contr → record { is-eqv = fib-contr })
 
+is-equiv-if-inhabited→is-equiv
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → (f : A → B)
+  → (B → is-equiv f)
+  → is-equiv f
+is-equiv-if-inhabited→is-equiv f h = E.from λ x → E.to (h x) x
+  where open module E = Equiv is-equiv≃fibre-is-contr
+
 -- This ideally would go in 1Lab.HLevel, but we don't have equivalences
 -- defined that early in the bootrapping process.
 is-prop→is-contr-iff-inhabited
