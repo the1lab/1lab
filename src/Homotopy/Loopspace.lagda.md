@@ -80,6 +80,21 @@ zero map.
 
 <!--
 ```agda
+  Ω¹-map-refl
+    : ∀ {ℓ'} {B : Type ℓ'} (f : A .fst → B)
+    → Path (Ω¹ A →∙ Ω¹ (B , f (A .snd))) (Ω¹-map (f , refl)) (ap f , refl)
+  Ω¹-map-refl f i .fst α = conj-refl (ap f α) i
+  Ω¹-map-refl f i .snd = conj-refl-square i
+
+  Ω¹-map-refl'
+    : ∀ {ℓ'} {B : Type ℓ'} (f : A .fst → B)
+    → (p : A .snd ≡ A .snd)
+    → PathP (λ i → A .snd ≡ A .snd , p →∙ f (A .snd) ≡ f (A .snd) , Ω¹-map-refl f i .fst p)
+       (Ω¹-map {A = A} (f , refl) .fst , refl)
+       (ap f , refl)
+  Ω¹-map-refl' f p i .fst α = conj-refl (ap f α) i
+  Ω¹-map-refl' f p i .snd = refl
+
 Ω¹-map∙ : Maps∙ A B →∙ Maps∙ (Ω¹ A) (Ω¹ B)
 Ω¹-map∙ .fst = Ω¹-map
 Ω¹-map∙ .snd = Ω¹-map-zero
