@@ -7,11 +7,11 @@ open import Algebra.Group.Cat.Base
 open import Algebra.Group.Homotopy
 open import Algebra.Group
 
+open import Data.Set.Truncation
+
 open import Homotopy.Space.Delooping
 open import Homotopy.Conjugation
 open import Homotopy.Loopspace
-
-open import Data.Set.Truncation
 ```
 -->
 
