@@ -1,6 +1,8 @@
 <!--
 ```agda
+open import 1Lab.Function.Surjection
 open import 1Lab.Path.IdentitySystem
+open import 1Lab.Function.Embedding
 open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Universe
 open import 1Lab.HLevel.Closure
@@ -145,8 +147,62 @@ module ∥-∥₀-path {ℓ} {A : Type ℓ} {x} {y}
   = Equiv (∥-∥₀-path-equiv {A = A} {x} {y})
 ```
 
+# Surjectivity and set truncation
+
+It can be shown that a function $f$ is [[surjective | surjection ]] when it is surjective
+at the level of set truncations.
+
+Indeed, `f` being surjective at the level of sets means that there merely exists an
+$a : \| A \|_0$ such that $\| f b \|_0 = a$. Because what we want to prove is a mere
+proposition and thus also a set, we can assume an $a : A$ such that it is merely equal to $f b$.
+
+Because what we want to prove is still a mere proposition, we can then assume $f b = a$
+and give an inhabitant of $fibre f b$.
+
+The converse can be proven in a similar fashion.
+```agda
+∥-∥₀-is-surjective→is-surjective
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A → B)
+  → is-surjective (∥-∥₀-map f)
+  → is-surjective f
+∥-∥₀-is-surjective→is-surjective {A = A} f ∥-∥₀-is-surj b =
+  ∥-∥-rec squash rec₂ $ ∥-∥₀-is-surj (inc b)
+  where
+  P : ∥ A ∥₀ → Type _
+  P a = (∥-∥₀-map f a ≡ inc b) → ∥ fibre f b ∥
+
+  rec₁ : ∀ a → P (inc a)
+  rec₁ a p = ∥-∥-rec squash (λ p → inc (a , p)) (Equiv.to ∥-∥₀-path-equiv p)
+
+  rec₂ : fibre (∥-∥₀-map f) (inc b) → ∥ fibre f b ∥
+  rec₂ (a , p) = ∥-∥₀-elim (λ a → hlevel {T = P a} 2) rec₁ a p
+
+is-surjective→∥-∥₀-is-surjective
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A → B)
+  → is-surjective f
+  → is-surjective (∥-∥₀-map f)
+is-surjective→∥-∥₀-is-surjective {B = B} f is-surj b =
+  ∥-∥₀-elim (λ b → hlevel {T = P b} 2) (λ b → ∥-∥-map (rec b) (is-surj b)) b
+  where
+  P : ∥ B ∥₀ → Type _
+  P b = ∥ fibre (∥-∥₀-map f) b ∥
+
+  rec : ∀ b → fibre f b → fibre (∥-∥₀-map f) (inc b)
+  rec b (a , p) = inc a , ap inc p
+
+```
 <!--
 ```agda
+
+embeding-∥-∥₀-surjective→is-equiv
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A → B)
+  → is-surjective (∥-∥₀-map f)
+  → is-embedding f
+  → is-equiv f
+embeding-∥-∥₀-surjective→is-equiv f is-surj is-embed =
+  embedding-surjective→is-equiv is-embed $
+    (∥-∥₀-is-surjective→is-surjective f is-surj)
+
 instance
   H-Level-∥-∥₀ : ∀ {ℓ} {A : Type ℓ} {n : Nat} → H-Level ∥ A ∥₀ (2 + n)
   H-Level-∥-∥₀ {n = n} = basic-instance 2 squash

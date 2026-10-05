@@ -89,6 +89,14 @@ opaque
     : ∀ {ℓ} (A : Type∙ ℓ) n p q
     → πₙ-def A n · inc (p ∙ q) ≡ πₙ-def A n · inc p ∙ πₙ-def A n · inc q
   πₙ-def-∙ A = n-Tr-Ωⁿ-∙ A 1
+
+π-sucP : ∀ {ℓ} n (A : Type∙ ℓ) → ⌞ πₙ₊₁ (suc n) A ⌟ ≡ ⌞ πₙ₊₁ n (Ω¹ A) ⌟
+π-sucP n A i = ∥ Ω¹ (Ωⁿ-sucP A n i) .fst ∥₀
+
+π-suc-naturalP : ∀ {ℓ} n {A : Type∙ ℓ} {B : Type∙ ℓ} (f : A →∙ B)
+              → PathP (λ i → π-sucP n A i → π-sucP n B i)
+                 (πₙ₊₁-map (suc n) f) (πₙ₊₁-map n (Ω¹-map f))
+π-suc-naturalP n f i = ∥-∥₀-map (Ω¹-map (Ω-suc-naturalP n f i) .fst)
 ```
 -->
 
