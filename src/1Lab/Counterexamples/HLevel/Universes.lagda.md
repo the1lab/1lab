@@ -34,8 +34,10 @@ $n = 3$, said universes live in lower homotopy levels.
 ## The universe of homotopy sets is not a homotopy set
 
 We are about to make use of `Bool`{.Agda}, the type of booleans. Since
-it is only defined for the bottom level universe, we will
-[[lift|1Lab.Type.html#lifting]] it as needed.
+it is only defined for the bottom level universe, we will [lift] it as
+needed.
+
+[lift] : 1Lab.Type.html#lifting
 
 Together with its proof of being a homotopy set, (the lifting of)
 `Bool`{.Agda} lives in the universe of all homotopy sets as a pair
