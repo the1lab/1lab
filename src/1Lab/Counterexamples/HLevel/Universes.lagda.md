@@ -7,6 +7,7 @@ description: |
 ```agda
 open import 1Lab.HLevel.Universe
 open import 1Lab.HLevel.Closure
+open import 1Lab.Univalence
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -33,9 +34,15 @@ $n = 3$, said universes live in lower homotopy levels.
 
 ## The universe of homotopy sets is not a homotopy set
 
-We are about to make use of `Bool`{.Agda}, the type of booleans. Since
-it is only defined for the bottom level universe, we will [lift] it as
-needed.
+In example 3.1.9, [-@HoTT] uses `Bool`{.Agda}, the type of
+[[booleans]], to show that [[univalence]] implies that the bottom level
+universe of all types is not a homotopy set. This way, one observes that
+univalence truly bestows higher structure upon the type universe.
+Because `Bool`{.Agda} is, in particular, a homotopy set itself, we can
+reuse the same proof strategy to show that not even the universe of
+homotopy sets is a homotopy set. Since Mikan's `Bool`{.Agda} is only
+defined for the bottom level universe, and we want our proof to be
+parametric in a universe level, we will [lift] `Bool`{.Agda} as needed.
 
 [lift] : 1Lab.Type.html#lifting
 
@@ -48,7 +55,7 @@ private
   variable
     ℓ : Level
 
-  set-Bool : n-Type ℓ 2
+  set-Bool : Set ℓ
   set-Bool {ℓ} = el (Lift ℓ Bool) (hlevel 2)
 ```
 
@@ -79,8 +86,57 @@ our previous observation.
 ¬is-set-Set h =
   let
     k = h set-Bool set-Bool
-    Lift-id≡not = (Equiv→is-hlevel 1 n-univalence k) id≃ (Lift-ap not≃)
+    Lift-id≡not = Equiv→is-hlevel 1 n-univalence k id≃ (Lift-ap not≃)
+  in Lift-id≠not Lift-id≡not
+```
+
+We also prove the weaker statement from example 3.1.9, which only
+concerns the type universe. Again, we make it parametric in an arbitrary
+universe level.
+
+```agda
+¬is-set-Type : ¬ is-set (Type ℓ)
+¬is-set-Type {ℓ} h =
+  let
+    k = h (Lift ℓ Bool) (Lift ℓ Bool)
+    Equiv≃Path = Equiv.inverse (Iso→Equiv Path≃Equiv)
+    Lift-id≡not = Equiv→is-hlevel 1 Equiv≃Path k id≃ (Lift-ap not≃)
   in Lift-id≠not Lift-id≡not
 ```
 
 ## The universe of homotopy groupoids is not a homotopy groupoid
+
+To prove that the universe of homotopy groupoids is not a homotopy
+groupoid, we replace `Bool`{.Agda} from the proof above with
+`S¹`{.Agda}, the [[circle]]. Again, we will [lift] it as needed.
+
+[lift] : 1Lab.Type.html#lifting
+
+```agda
+private
+  groupoid-S¹ : n-Type ℓ 3
+  groupoid-S¹ {ℓ} = el (Lift ℓ S¹) (hlevel 3)
+```
+
+The crux of the previous proof was showing that there is more than one
+equivalence on `Bool`{.Agda}, i.e. the type of equivalences on
+`Bool`{.Agda} is not a proposition. Similarly, we will not need to prove
+that the type of equivalences on `S¹`{.Agda} is not a homotopy set. This
+is more involved. Our proof follows section §2 of [-@Cagne:symmetries].
+
+```agda
+{-¬is-groupoid-Groupoid : ¬ is-hlevel (n-Type ℓ 3) 3
+¬is-groupoid-Groupoid h =
+  let
+    k = h groupoid-S¹ groupoid-S¹
+  in ?-}
+```
+
+## Necessity of Higher Inductive Types
+
+On top of [[univalence]], both proofs above make use of higher inductive
+types. In the absence of these, [[-@Kraus:higher]] explains in section
+§6 that it should be possible to construct a model where, for every $n
+\geq 0$, every type in the universe at level $n$ is $(n + 2)$-truncated.
+As a consequence, the bottom universe would then be a homotopy groupoid,
+and so would any homotopy universe in it.
