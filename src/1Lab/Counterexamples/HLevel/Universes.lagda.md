@@ -44,7 +44,7 @@ homotopy sets is a homotopy set. Since Mikan's `Bool`{.Agda} is only
 defined for the bottom level universe, and we want our proof to be
 parametric in a universe level, we will [lift] `Bool`{.Agda} as needed.
 
-[lift] : 1Lab.Type.html#lifting
+[lift]: 1Lab.Type.html#lifting
 
 Together with its proof of being a homotopy set, (the lifting of)
 `Bool`{.Agda} lives in the universe of all homotopy sets as a pair
@@ -110,7 +110,7 @@ To prove that the universe of homotopy groupoids is not a homotopy
 groupoid, we replace `Bool`{.Agda} from the proof above with
 `S¹`{.Agda}, the [[circle]]. Again, we will [lift] it as needed.
 
-[lift] : 1Lab.Type.html#lifting
+[lift]: 1Lab.Type.html#lifting
 
 ```agda
 private
@@ -135,7 +135,7 @@ is more involved. Our proof follows section §2 of [-@Cagne:symmetries].
 ## Necessity of Higher Inductive Types
 
 On top of [[univalence]], both proofs above make use of higher inductive
-types. In the absence of these, [[-@Kraus:higher]] explains in section
+types. In the absence of these, [-@Kraus:higher] explains in section
 §6 that it should be possible to construct a model where, for every $n
 \geq 0$, every type in the universe at level $n$ is $(n + 2)$-truncated.
 As a consequence, the bottom universe would then be a homotopy groupoid,
