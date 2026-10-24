@@ -81,4 +81,4 @@ our previous observation.
   in Lift-id≠not Lift-id≡not
 ```
 
-## The universe of homotopy groupoids isnot a homotopy groupoid
+## The universe of homotopy groupoids is not a homotopy groupoid
