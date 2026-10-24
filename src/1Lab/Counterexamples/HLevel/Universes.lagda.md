@@ -7,14 +7,14 @@ description: |
 ```agda
 open import 1Lab.HLevel.Universe
 open import 1Lab.HLevel.Closure
-open import 1Lab.Equiv
 open import 1Lab.HLevel
+open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
-open import Homotopy.Space.Circle
-
 open import Data.Bool
+
+open import Homotopy.Space.Circle
 ```
 -->
 
@@ -33,44 +33,52 @@ $n = 3$, said universes live in lower homotopy levels.
 
 ## The universe of homotopy sets is not a homotopy set
 
-Consider `Bool`{.Agda}, the type of booleans. We know it to be a
-homotopy set, but not a proposition, since `true`{.Agda} is distinct
-from `false`{.Agda}.
+We are about to make use of `Bool`{.Agda}, the type of booleans. Since
+it is only defined for the bottom level universe, we will
+[[lift|1Lab.Type.html#lifting]] it as needed.
+
+Together with its proof of being a homotopy set, (the lifting of)
+`Bool`{.Agda} lives in the universe of all homotopy sets as a pair
+`set-Bool`{.Agda}.
 
 ```agda
 private
-  set-Bool : n-Type lzero 2
-  set-Bool = el Bool (hlevel 2)
+  variable
+    ℓ : Level
 
-  ¬is-prop-Bool : ¬ is-prop Bool
-  ¬is-prop-Bool h = true≠false (h true false)
+  set-Bool : n-Type ℓ 2
+  set-Bool {ℓ} = el (Lift ℓ Bool) (hlevel 2)
 ```
 
-As a consequence, the type of equivalences on `Bool`{.Agda}, which is
-equivalent to `Bool`{.Agda} itself, is not a proposition, either.
+Since `true`{.Agda} and `false`{.Agda} are distinct, so are the two
+equivalences on (the lifting of) `Bool`.{.Agda} given by the identity
+function and negation respectively.
 
 ```agda
-  Bool-automorphisms⁻¹ : Bool ≃ (Bool ≃ Bool)
-  Bool-automorphisms⁻¹ = Equiv.inverse Bool-automorphisms
+  Lift-true≠false : ¬_ {ℓ} (lift true ≡ lift false)
+  Lift-true≠false = true≠false ∘ ap (fst (Lift-≃))
 
-  ¬is-prop-Bool≃Bool : ¬ is-prop (Bool ≃ Bool)
-  ¬is-prop-Bool≃Bool = ¬is-prop-Bool ∘ Equiv→is-hlevel 1 Bool-automorphisms⁻¹
+  Lift-id≠not : ¬ id≃ ≡ Lift-ap {ℓ' = ℓ} not≃
+  Lift-id≠not = Lift-true≠false ∘ ap λ f → fst f (lift true)
 ```
 
-We assume the universe of all homotopy sets to also be a homotopy set
-and get to a contradiction. By definition of homotopy set, the path type
-from `Bool`{.Agda} (equipped with the proof of it being a homotopy set)
-to itself would be a proposition. Now, in such a homotopy universe,
-univalence guarantees this path type to be equivalent to the type of
-equivalences on `Bool`{.Agda}. Because homotopy levels are preserved by
-equivalences, the type of equivalances from `Bool`{.Agda} to itself
-would then also be a proposition. This contradicts our previous
-observation.
+We now assume the universe of all homotopy sets to also be a homotopy
+set, aiming for a contradiction. By definition of homotopy set, the path
+type from `set-Bool`{.Agda} to itself would be a proposition. Now, in
+such a homotopy universe, univalence guarantees this path type to be
+equivalent to the type of equivalences on `Bool`{.Agda}. Because
+homotopy levels are preserved by equivalences, the type of equivalances
+from `Bool`{.Agda} to itself would then also be a proposition. We would
+therefore have a path from the identity to negation. This contradicts
+our previous observation.
 
 ```agda
-¬is-set-Set : ¬ is-set (Set lzero)
-¬is-set-Set h = let k = h set-Bool set-Bool
-  in ¬is-prop-Bool≃Bool (Equiv→is-hlevel 1 n-univalence k)
+¬is-set-Set : ¬ is-set (Set ℓ)
+¬is-set-Set h =
+  let
+    k = h set-Bool set-Bool
+    Lift-id≡not = (Equiv→is-hlevel 1 n-univalence k) id≃ (Lift-ap not≃)
+  in Lift-id≠not Lift-id≡not
 ```
 
-## The universe of homotopy groupoids is not a homotopy groupoid
+## The universe of homotopy groupoids isnot a homotopy groupoid
