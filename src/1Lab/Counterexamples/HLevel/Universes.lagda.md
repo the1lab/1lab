@@ -5,8 +5,10 @@ description: |
 ---
 <!--
 ```agda
+open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Universe
 open import 1Lab.HLevel.Closure
+open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -67,8 +69,8 @@ function and negation respectively.
   Lift-true≠false : ¬_ {ℓ} (lift true ≡ lift false)
   Lift-true≠false = true≠false ∘ ap (fst (Lift-≃))
 
-  Lift-id≠not : ¬ id≃ ≡ Lift-ap {ℓ' = ℓ} not≃
-  Lift-id≠not = Lift-true≠false ∘ ap λ f → fst f (lift true)
+  id≠not : ¬ id≃ ≡ Lift-ap {ℓ' = ℓ} not≃
+  id≠not = Lift-true≠false ∘ ap λ f → fst f (lift true)
 ```
 
 We now assume the universe of all homotopy sets to also be a homotopy
@@ -83,11 +85,11 @@ our previous observation.
 
 ```agda
 ¬is-set-Set : ¬ is-set (Set ℓ)
-¬is-set-Set h =
+¬is-set-Set is-set-Set =
   let
-    k = h set-Bool set-Bool
-    Lift-id≡not = Equiv→is-hlevel 1 n-univalence k id≃ (Lift-ap not≃)
-  in Lift-id≠not Lift-id≡not
+    h = is-set-Set set-Bool set-Bool
+    id≡not = Equiv→is-hlevel 1 n-univalence h id≃ (Lift-ap not≃)
+  in id≠not id≡not
 ```
 
 We also prove the weaker statement from example 3.1.9, which only
@@ -96,12 +98,12 @@ universe level.
 
 ```agda
 ¬is-set-Type : ¬ is-set (Type ℓ)
-¬is-set-Type {ℓ} h =
+¬is-set-Type {ℓ} is-set-Type =
   let
-    k = h (Lift ℓ Bool) (Lift ℓ Bool)
+    k = is-set-Type (Lift ℓ Bool) (Lift ℓ Bool)
     Equiv≃Path = Equiv.inverse (Iso→Equiv Path≃Equiv)
-    Lift-id≡not = Equiv→is-hlevel 1 Equiv≃Path k id≃ (Lift-ap not≃)
-  in Lift-id≠not Lift-id≡not
+    id≡not = Equiv→is-hlevel 1 Equiv≃Path k id≃ (Lift-ap not≃)
+  in id≠not id≡not
 ```
 
 ## The universe of homotopy groupoids is not a homotopy groupoid
@@ -121,15 +123,43 @@ private
 The crux of the previous proof was showing that there is more than one
 equivalence on `Bool`{.Agda}, i.e. the type of equivalences on
 `Bool`{.Agda} is not a proposition. Similarly, we will not need to prove
-that the type of equivalences on `S¹`{.Agda} is not a homotopy set. This
-is more involved. Our proof follows section §2 of [-@Cagne:symmetries].
+that the type of equivalences on `S¹`{.Agda} is not a homotopy set.
 
 ```agda
-{-¬is-groupoid-Groupoid : ¬ is-hlevel (n-Type ℓ 3) 3
-¬is-groupoid-Groupoid h =
+  Lift-always-loop : (x : Lift ℓ S¹) → x ≡ x
+  Lift-always-loop (lift x) = ap lift (always-loop x)
+
+  id-loop : id≃ {A = Lift ℓ S¹} ≡ id≃
+  id-loop = Σ-prop-path is-equiv-is-prop (funext Lift-always-loop)
+
+  Lift-parity : _≡_ {ℓ} (lift base) (lift base) → Bool
+  Lift-parity l =
+    let
+      p = ap (fst Lift-≃) l
+    in subst möbius p true
+
+  Lift-refl≠loop : refl {ℓ} ≠ ap lift loop
+  Lift-refl≠loop p = true≠false (ap Lift-parity p)
+
+  Lift-never-refl : (x : S¹) → Lift-always-loop {ℓ} (lift x) ≠ refl
+  Lift-never-refl = S¹-elim (Lift-refl≠loop ∘ sym) prop!
+
+  refl≠id-loop : id-loop {ℓ} ≠ refl
+  refl≠id-loop h =
+    let
+      fst-path = fst (Equiv.inverse Σ-pathp≃)
+      base-path p = happly p (lift base)
+      refl-at-base = ap (base-path ∘ fst ∘ fst-path) h
+    in Lift-never-refl base refl-at-base
+
+¬is-groupoid-Groupoid : ¬ is-hlevel (n-Type ℓ 3) 3
+¬is-groupoid-Groupoid {ℓ} h =
   let
     k = h groupoid-S¹ groupoid-S¹
-  in ?-}
+    is-set-S¹≃S^1 = Equiv→is-hlevel 2 n-univalence k
+    is-prop-id≃id = is-set-S¹≃S^1 id≃ id≃
+    refl≡id-loop = is-prop-id≃id id-loop refl
+  in refl≠id-loop refl≡id-loop
 ```
 
 ## Necessity of Higher Inductive Types
