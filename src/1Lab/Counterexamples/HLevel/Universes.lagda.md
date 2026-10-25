@@ -124,14 +124,28 @@ The crux of the previous proof was showing that there is more than one
 equivalence on `Bool`{.Agda}, i.e. the type of equivalences on
 `Bool`{.Agda} is not a proposition. Similarly, we will not need to prove
 that the type of equivalences on `S¹`{.Agda} is not a homotopy set.
+First, we lift the construction of `always-loop`{.Agda}, which we know
+not to be `refl`{.Agda} at any input.
 
 ```agda
   Lift-always-loop : (x : Lift ℓ S¹) → x ≡ x
   Lift-always-loop (lift x) = ap lift (always-loop x)
+```
 
-  id-loop : id≃ {A = Lift ℓ S¹} ≡ id≃
-  id-loop = Σ-prop-path is-equiv-is-prop (funext Lift-always-loop)
+We use it construct a loop around the identity on `S¹`{.Agda} regarded
+as an [equivalence].
 
+[equivalence]: 1Lab.Equiv.html#equivalences-proper
+
+```agda
+  id≃-loop : id≃ {A = Lift ℓ S¹} ≡ id≃
+  id≃-loop = Σ-prop-path is-equiv-is-prop (funext Lift-always-loop)
+```
+
+To prove that, `Lift-always-loop`{.Agda} and `refl`{.Agda} do not agree
+on any input, we lift the proof seen in [[circle]].
+
+```agda
   Lift-parity : _≡_ {ℓ} (lift base) (lift base) → Bool
   Lift-parity l =
     let
@@ -143,23 +157,43 @@ that the type of equivalences on `S¹`{.Agda} is not a homotopy set.
 
   Lift-never-refl : (x : S¹) → Lift-always-loop {ℓ} (lift x) ≠ refl
   Lift-never-refl = S¹-elim (Lift-refl≠loop ∘ sym) prop!
+```
 
-  refl≠id-loop : id-loop {ℓ} ≠ refl
-  refl≠id-loop h =
+We now prove `id≃-loop`{.Agda} to be distinct from `refl`. If the two
+were equal, moving to the first component of the $\Sigma$-type
+`_≃_`{.Agda} and then to homotopies, `Lift-always-loop`{.Agda} would
+coincide with `id`{.Agda}. In particular, by evaluating both functions
+to `lift base`{.Agda}, we would contradict `Lift-never-refl`{.Agda}. So
+`id≃-loop`{.Agda} must be distinct from `refl`{.Agda}.
+
+```agda
+  refl≠id≃-loop : id≃-loop {ℓ} ≠ refl
+  refl≠id≃-loop h =
     let
       fst-path = fst (Equiv.inverse Σ-pathp≃)
       base-path p = happly p (lift base)
       refl-at-base = ap (base-path ∘ fst ∘ fst-path) h
     in Lift-never-refl base refl-at-base
+```
 
+We can now use the circle to refute the idea that the universe of all
+homotopy groupoids is a homotopy groupoid. Assume it is. Then, in
+particular, the loop space on `S¹`{.Agda} would be a homotopy set. By
+univalence for homotopy sets, and because equivalences respect homotopy
+levels, so would the type of equivalences on `S¹`{.Agda}. In particular,
+the loop space on the equivalence on `S¹`{.Agda} given by the identity
+would be a proposition. Thus, `id≃-loop`{.Agda} would have to coincide
+with `refl`. This contradicts our observation above.
+
+```agda
 ¬is-groupoid-Groupoid : ¬ is-hlevel (n-Type ℓ 3) 3
 ¬is-groupoid-Groupoid {ℓ} h =
   let
     k = h groupoid-S¹ groupoid-S¹
     is-set-S¹≃S^1 = Equiv→is-hlevel 2 n-univalence k
-    is-prop-id≃id = is-set-S¹≃S^1 id≃ id≃
-    refl≡id-loop = is-prop-id≃id id-loop refl
-  in refl≠id-loop refl≡id-loop
+    is-prop-id≃≡id≃ = is-set-S¹≃S^1 id≃ id≃
+    id≃-loop≡refl = is-prop-id≃≡id≃ id≃-loop refl
+  in refl≠id≃-loop id≃-loop≡refl
 ```
 
 ## Necessity of Higher Inductive Types
