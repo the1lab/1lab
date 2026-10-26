@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import 1Lab.Counterexamples.HLevel.Universes
 open import 1Lab.Counterexamples.GlobalChoice
 open import 1Lab.Function.Surjection
 open import 1Lab.Function.Embedding
@@ -261,6 +262,7 @@ _ = ×-is-hlevel
 _ = Π-is-hlevel
 _ = is-groupoid
 _ = is-hlevel-suc
+_ = ¬is-set-Type
 ```
 -->
 
@@ -271,6 +273,7 @@ _ = is-hlevel-suc
   * Example 3.1.6: `Π-is-hlevel`{.Agda} (special case)
 * Definition 3.1.7: `is-groupoid`{.Agda}
 * Lemma 3.1.8: `is-hlevel-suc`{.Agda} (special case)
+* Example 3.1.9: `¬is-set-Type`{.Agda}
 
 ### 3.2: Propositions as types?
 
