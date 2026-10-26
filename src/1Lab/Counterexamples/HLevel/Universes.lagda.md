@@ -196,11 +196,11 @@ with `refl`. This contradicts our observation above.
   in refl≠id≃-loop id≃-loop≡refl
 ```
 
-## Necessity of Higher Inductive Types
+### Necessity of Higher Inductive Types
 
-On top of [[univalence]], both proofs above make use of higher inductive
-types. In the absence of these, [-@Kraus:higher] explains in section
-§6 that it should be possible to construct a model where, for every $n
-\geq 0$, every type in the universe at level $n$ is $(n + 2)$-truncated.
-As a consequence, the bottom universe would then be a homotopy groupoid,
-and so would any homotopy universe in it.
+On top of [[univalence]], this last proof makes use of an higher
+inductive type. In the absence of these, [-@Kraus:higher] explains in
+section §6 that it should be possible to construct a model where, for
+every $n \geq 0$, every type in the universe at level $n$ is $(n +
+2)$-truncated. As a consequence, the bottom universe would then be a
+homotopy groupoid, and so would any homotopy universe in it.
